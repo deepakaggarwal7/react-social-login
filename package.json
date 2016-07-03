@@ -1,0 +1,26 @@
+{
+  "name": "react-social-login",
+  "version": "1.0.2",
+  "description": "React Component for Login via Social Providers",
+  "main": "dist/social-login.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepakaggarwal7/react-social-login.git"
+  },
+  "keywords": [
+    "social",
+    "oauth"
+  ],
+  "author": "Deepak Aggarwal <deepakaggarwal7@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deepakaggarwal7/react-social-login/issues"
+  },
+  "homepage": "https://github.com/deepakaggarwal7/react-social-login#readme",
+  "dependencies": {
+    "react": "^15.2.0"
+  }
+}
