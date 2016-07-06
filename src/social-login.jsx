@@ -2,6 +2,8 @@ import React from 'react'
 
 export default class SocialUser {
   constructor(){
+    this.provider='';
+
     this.profile =
     {
         name:'',
@@ -28,14 +30,14 @@ export default class SocialLogin extends React.Component{
 
   handleSocialLoginInvokeSuccess(res){
     var user = new SocialUser();
-    //Object.assign(user,res)
-    console.log(res);
+
+    user.provider = this.props.provider;
     user.profile.id = res.wc.Ka;
     user.profile.firstName = res.wc.Za;
     user.profile.lastName = res.wc.Na;
     user.profile.email = res.wc.hg;
     user.profile.name = res.wc.wc;
-    user.profilePicUrl = res.wc.Ph;
+    user.profile.profilePicUrl = res.wc.Ph;
     user.token.accessToken = res.hg.access_token;
     user.token.expiresAt = res.hg.expires_at;
     this.props.callback(user,null);
@@ -80,7 +82,7 @@ var loader = {
     js.src='https://apis.google.com/js/platform.js';
     js.id = 'gapi-client';
     js.onload = (function(){
-      console.log(window.gapi);
+      
       gapi.load('auth2',()=>{
         if(!window.gapi.auth2.getAuthInstance())
             window.gapi.auth2.init({client_id:appId});
