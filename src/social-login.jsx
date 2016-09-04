@@ -71,14 +71,14 @@ export default class SocialLogin extends React.Component{
     var ctx = this;
     var handleSuccess = ctx.handleSocialLoginInvokeSuccess;
     console.log("handleLogin called");
-    if(this.props.provider=="Facebook")
+    if(this.props.provider=="facebook")
     {
 
       FB.init({
           appId      : '209060642824026',
           xfbml      : true,
 
-          version    : 'v2.0'
+          version    : 'v2.7'
         });
         console.log("FB.Init.called")
 
@@ -87,11 +87,11 @@ export default class SocialLogin extends React.Component{
         var loginResponse = response;
         console.log(response)
         //invoke facebook /me for profile
-        FB.api('/me', {fields: 'id,first_name,last_name,picture,email'}, function(response) {
-          Object.assign(response,loginResponse);
-          ctx.handleSocialLoginInvokeSuccess(response);
-        },{scope:'email'});
-      });
+        FB.api('/me', {fields:'email,name,id,first_name,last_name,picture'}, function(profileResponse) {
+          Object.assign(profileResponse,loginResponse);
+          ctx.handleSocialLoginInvokeSuccess(profileResponse);
+        });
+      },{scope:'email'});
       //login process extends
 
 
@@ -102,9 +102,9 @@ export default class SocialLogin extends React.Component{
   componentDidMount(){
       var d = document;
       var appId = this.props.appId;
-      if(this.props.provider=='Google')
+      if(this.props.provider=='google')
             loader.loadGoogleSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
-      else if(this.props.provider=='Facebook')
+      else if(this.props.provider=='facebook')
             loader.loadFacebookSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
   }
 
@@ -118,7 +118,7 @@ export default class SocialLogin extends React.Component{
 
 //SupportedTypes
 SocialLogin.propTypes = {
-  provider  : React.PropTypes.oneOf(['Google','Facebook']).isRequired,
+  provider  : React.PropTypes.oneOf(['google','facebook']).isRequired,
   appId     : React.PropTypes.string.isRequired,
   children  : React.PropTypes.element.isRequired,
   callback  : React.PropTypes.func
