@@ -29,24 +29,26 @@ export default class SocialLogin extends React.Component{
 
 
   handleSocialLoginInvokeSuccess(res){
-    console.log('handleSocialLoginInvokeSuccess:RawResponse')
-    console.log(res)
+    //console.log('handleSocialLoginInvokeSuccess:RawResponse')
+    //console.log(res)
     var user = new SocialUser();
 
-    if(this.props.provider=="google")
+    if(this.props.provider=="Google")
     {
+      var profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+      var authResponse = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse(true);
       user.provider = this.props.provider;
-      user.profile.id = res.wc.Ka;
-      user.profile.firstName = res.wc.Za;
-      user.profile.lastName = res.wc.Na;
-      user.profile.email = res.wc.hg;
-      user.profile.name = res.wc.wc;
-      user.profile.profilePicUrl = res.wc.Ph;
-      user.token.accessToken = res.hg.access_token;
-      user.token.expiresAt = res.hg.expires_at;
+      user.profile.id = profile.getId();
+      user.profile.firstName = profile.getGivenName();
+      user.profile.lastName = profile.getFamilyName();
+      user.profile.email = profile.getEmail();
+      user.profile.name = profile.getName();
+      user.profile.profilePicUrl = profile.getImageUrl();
+      user.token.accessToken = authResponse.access_token;
+      user.token.expiresAt = authResponse.expires_at;
       this.props.callback(user,null);
    }
-   else if(this.props.provider=="facebook")
+   else if(this.props.provider=="Facebook")
    {
      user.provider = this.props.provider;
      user.profile.id = res.id;
@@ -57,8 +59,8 @@ export default class SocialLogin extends React.Component{
      user.profile.profilePicUrl = res.picture.data.url;
      user.token.accessToken = res.authResponse.accessToken;
      user.token.expiresAt = res.authResponse.expiresIn;
-     console.log(user);
-     console.log(this);
+     //console.log(user);
+     //console.log(this);
      this.props.callback(user,null);
    }
   }
@@ -70,8 +72,8 @@ export default class SocialLogin extends React.Component{
   handleLogin(e, obj){
     var ctx = this;
     var handleSuccess = ctx.handleSocialLoginInvokeSuccess;
-    console.log("handleLogin called");
-    if(this.props.provider=="facebook")
+    //console.log("handleLogin called");
+    if(this.props.provider=="Facebook")
     {
 
       FB.init({
@@ -80,12 +82,12 @@ export default class SocialLogin extends React.Component{
 
           version    : 'v2.7'
         });
-        console.log("FB.Init.called")
+        //console.log("FB.Init.called")
 
         //invoke Facebook Login
         FB.login(function(response){
         var loginResponse = response;
-        console.log(response)
+        //console.log(response)
         //invoke facebook /me for profile
         FB.api('/me', {fields:'email,name,id,first_name,last_name,picture'}, function(profileResponse) {
           Object.assign(profileResponse,loginResponse);
@@ -102,9 +104,9 @@ export default class SocialLogin extends React.Component{
   componentDidMount(){
       var d = document;
       var appId = this.props.appId;
-      if(this.props.provider=='google')
+      if(this.props.provider=="Google")
             loader.loadGoogleSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
-      else if(this.props.provider=='facebook')
+      else if(this.props.provider=='Facebook')
             loader.loadFacebookSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
   }
 
@@ -118,7 +120,7 @@ export default class SocialLogin extends React.Component{
 
 //SupportedTypes
 SocialLogin.propTypes = {
-  provider  : React.PropTypes.oneOf(['google','facebook']).isRequired,
+  provider  : React.PropTypes.oneOf(['Google','Facebook']).isRequired,
   appId     : React.PropTypes.string.isRequired,
   children  : React.PropTypes.element.isRequired,
   callback  : React.PropTypes.func

@@ -130,18 +130,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(SocialLogin, [{
 	    key: 'handleSocialLoginInvokeSuccess',
 	    value: function handleSocialLoginInvokeSuccess(res) {
+	      console.log('handleSocialLoginInvokeSuccess:RawResponse');
+	      console.log(res);
 	      var user = new SocialUser();
 
-	      user.provider = this.props.provider;
-	      user.profile.id = res.wc.Ka;
-	      user.profile.firstName = res.wc.Za;
-	      user.profile.lastName = res.wc.Na;
-	      user.profile.email = res.wc.hg;
-	      user.profile.name = res.wc.wc;
-	      user.profile.profilePicUrl = res.wc.Ph;
-	      user.token.accessToken = res.hg.access_token;
-	      user.token.expiresAt = res.hg.expires_at;
-	      this.props.callback(user, null);
+	      if (this.props.provider == "Google") {
+	        var profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+	        var authResponse = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse(true);
+	        user.provider = this.props.provider;
+	        user.profile.id = profile.getId();
+	        user.profile.firstName = profile.getGivenName();
+	        user.profile.lastName = profile.getFamilyName();
+	        user.profile.email = profile.getEmail();
+	        user.profile.name = profile.getName();
+	        user.profile.profilePicUrl = profile.getImageUrl();
+	        user.token.accessToken = authResponse.access_token;
+	        user.token.expiresAt = authResponse.expires_at;
+	        this.props.callback(user, null);
+	      } else if (this.props.provider == "Facebook") {
+	        user.provider = this.props.provider;
+	        user.profile.id = res.id;
+	        user.profile.firstName = res.first_name;
+	        user.profile.lastName = res.last_name;
+	        user.profile.email = res.email;
+	        user.profile.name = res.name;
+	        user.profile.profilePicUrl = res.picture.data.url;
+	        user.token.accessToken = res.authResponse.accessToken;
+	        user.token.expiresAt = res.authResponse.expiresIn;
+	        console.log(user);
+	        console.log(this);
+	        this.props.callback(user, null);
+	      }
 	    }
 	  }, {
 	    key: 'handleSocialLoginInvokeFailure',
@@ -149,18 +168,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.props.callback(null, err);
 	    }
 	  }, {
+	    key: 'handleLogin',
+	    value: function handleLogin(e, obj) {
+	      var ctx = this;
+	      var handleSuccess = ctx.handleSocialLoginInvokeSuccess;
+	      console.log("handleLogin called");
+	      if (this.props.provider == "Facebook") {
+
+	        FB.init({
+	          appId: '209060642824026',
+	          xfbml: true,
+
+	          version: 'v2.7'
+	        });
+	        console.log("FB.Init.called");
+
+	        //invoke Facebook Login
+	        FB.login(function (response) {
+	          var loginResponse = response;
+	          console.log(response);
+	          //invoke facebook /me for profile
+	          FB.api('/me', { fields: 'email,name,id,first_name,last_name,picture' }, function (profileResponse) {
+	            Object.assign(profileResponse, loginResponse);
+	            ctx.handleSocialLoginInvokeSuccess(profileResponse);
+	          });
+	        }, { scope: 'email' });
+	        //login process extends
+	      }
+	    }
+	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      var d = document;
 	      var appId = this.props.appId;
-	      if (this.props.provider == 'Google') loader.loadGoogleSdk(d, this.id, appId, this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
+	      if (this.props.provider == "Google") loader.loadGoogleSdk(d, this.id, appId, this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));else if (this.props.provider == 'Facebook') loader.loadFacebookSdk(d, this.id, appId, this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        { id: this.id },
+	        { id: this.id, onClick: this.handleLogin.bind(this) },
 	        this.props.children
 	      );
 	    }
@@ -196,6 +244,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    };
 	    if (document.getElementsByTagName('script').length == 0) d.appendChild(js);else document.getElementsByTagName('script')[0].parentNode.appendChild(js);
+	  },
+	  loadFacebookSdk: function loadFacebookSdk(d, cid, appId, fn, err) {
+	    var id = 'fb-client';
+	    var js,
+	        fjs = d.getElementsByTagName('script')[0];
+	    if (d.getElementById(id)) {
+	      return;
+	    }
+	    js = d.createElement('script');js.id = id;
+	    js.src = "//connect.facebook.net/en_US/all.js";
+	    js.onLoad = function () {
+	      window.fbAsyncInit = function () {
+	        FB.init({
+	          appId: appId,
+	          xfbml: true,
+	          version: 'v2.6'
+	        });
+	      };
+	    };
+	    fjs.parentNode.insertBefore(js, fjs);
 	  }
 	};
 
