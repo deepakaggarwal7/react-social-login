@@ -77,7 +77,7 @@ export default class SocialLogin extends React.Component{
     {
 
       FB.init({
-          appId      : '209060642824026',
+          appId      : 'PUT YOUR APP ID HERE',
           xfbml      : true,
 
           version    : 'v2.7'
