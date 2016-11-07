@@ -75,11 +75,9 @@ export default class SocialLogin extends React.Component{
     //console.log("handleLogin called");
     if(this.props.provider=="Facebook")
     {
-
       FB.init({
           appId      : '209060642824026',
           xfbml      : true,
-
           version    : 'v2.7'
         });
         //console.log("FB.Init.called")
@@ -94,12 +92,15 @@ export default class SocialLogin extends React.Component{
           ctx.handleSocialLoginInvokeSuccess(profileResponse);
         });
       },{scope:'email'});
+    }
       //login process extends
-
+      else   if(this.props.provider=="Linkedin"){
+        IN.User.authorize(function(data){console.log(data)});
+      }
 
 
     }
-  }
+
 
   componentDidMount(){
       var d = document;
@@ -108,6 +109,8 @@ export default class SocialLogin extends React.Component{
             loader.loadGoogleSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
       else if(this.props.provider=='Facebook')
             loader.loadFacebookSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
+      else if(this.props.provider == "Linkedin")
+          loader.loadLinkedInSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
   }
 
   render(){
@@ -120,7 +123,7 @@ export default class SocialLogin extends React.Component{
 
 //SupportedTypes
 SocialLogin.propTypes = {
-  provider  : React.PropTypes.oneOf(['Google','Facebook']).isRequired,
+  provider  : React.PropTypes.oneOf(['Google','Facebook','Linkedin']).isRequired,
   appId     : React.PropTypes.string.isRequired,
   children  : React.PropTypes.element.isRequired,
   callback  : React.PropTypes.func
@@ -167,5 +170,16 @@ var loader = {
 
      }
      fjs.parentNode.insertBefore(js, fjs);
-   })
+   }),
+    loadLinkedInSdk: (function(d, cid, appIf, fn, err){
+      var id='li-client';
+      var js, fjs = d.getElementsByTagName('script')[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement('script'); js.id = id;
+      js.src = "//platform.linkedin.com/in.js?async=true";
+      js.onload = ()=> {
+        IN.init({'api_key':'81oplz05qxuccs','authorize':true});
+      };
+      fjs.parentNode.insertBefore(js, fjs);
+    })
 }
