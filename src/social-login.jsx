@@ -30,7 +30,7 @@ export default class SocialLogin extends React.Component{
 
   handleSocialLoginInvokeSuccess(res){
     //console.log('handleSocialLoginInvokeSuccess:RawResponse')
-    //console.log(res)
+    console.log(res)
     var user = new SocialUser();
 
     if(this.props.provider=="Google")
@@ -59,6 +59,21 @@ export default class SocialLogin extends React.Component{
      user.profile.profilePicUrl = res.picture.data.url;
      user.token.accessToken = res.authResponse.accessToken;
      user.token.expiresAt = res.authResponse.expiresIn;
+     //console.log(user);
+     //console.log(this);
+     this.props.callback(user,null);
+   }
+   else if(this.props.provider=="Linkedin")
+   {
+     user.provider = this.props.provider;
+     user.profile.id = res.id;
+     user.profile.firstName = res.values[0].firstName;
+     user.profile.lastName = res.values[0].lastName;
+     user.profile.email = res.values[0].emailAddress;
+     user.profile.name = res.values[0].firstName;
+     user.profile.profilePicUrl = res.values[0].pictureUrl;
+     //user.token.accessToken = res.authResponse.accessToken;
+     //user.token.expiresAt = res.authResponse.expiresIn;
      //console.log(user);
      //console.log(this);
      this.props.callback(user,null);
@@ -94,8 +109,16 @@ export default class SocialLogin extends React.Component{
       },{scope:'email'});
     }
       //login process extends
-      else   if(this.props.provider=="Linkedin"){
-        IN.User.authorize(function(data){console.log(data)});
+      else if(this.props.provider=="Linkedin"){
+        IN.User.authorize(function(data){
+          IN.API.Profile("me").fields(["id", "firstName", "lastName", "pictureUrl", "publicProfileUrl", "emailAddress"])
+            .result(function(profile) {
+              ctx.handleSocialLoginInvokeSuccess(profile)
+            })
+            .error(function(err) {
+                alert(err);
+          });
+        });
       }
 
 
