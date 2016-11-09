@@ -66,14 +66,16 @@ export default class SocialLogin extends React.Component{
    else if(this.props.provider=="Linkedin")
    {
      user.provider = this.props.provider;
-     user.profile.id = res.id;
+     user.profile.id = IN.ENV.auth.member_id;
      user.profile.firstName = res.values[0].firstName;
      user.profile.lastName = res.values[0].lastName;
      user.profile.email = res.values[0].emailAddress;
      user.profile.name = res.values[0].firstName;
      user.profile.profilePicUrl = res.values[0].pictureUrl;
      //user.token.accessToken = res.authResponse.accessToken;
-     //user.token.expiresAt = res.authResponse.expiresIn;
+     var expiresIn = new Date();
+     expiresIn.setSeconds(expiresIn.getSeconds() + IN.ENV.auth.oauth_expires_in);
+     user.token.expiresAt = expiresIn
      //console.log(user);
      //console.log(this);
      this.props.callback(user,null);
@@ -136,6 +138,13 @@ export default class SocialLogin extends React.Component{
           loader.loadLinkedInSdk(d,this.id,appId,this.handleSocialLoginInvokeSuccess.bind(this), this.handleSocialLoginInvokeFailure.bind(this));
   }
 
+getProfile(){
+  IN.API.Profile("me").fields(["id", "firstName", "lastName", "pictureUrl", "publicProfileUrl", "emailAddress"])
+    .result(function(profile) {
+      alert(profile);
+    })
+}
+
   render(){
     return(
         <div id={this.id} onClick={this.handleLogin.bind(this)}>{this.props.children}</div>
@@ -194,14 +203,14 @@ var loader = {
      }
      fjs.parentNode.insertBefore(js, fjs);
    }),
-    loadLinkedInSdk: (function(d, cid, appIf, fn, err){
+    loadLinkedInSdk: (function(d, cid, appId, fn, err){
       var id='li-client';
       var js, fjs = d.getElementsByTagName('script')[0];
       if (d.getElementById(id)) {return;}
       js = d.createElement('script'); js.id = id;
       js.src = "//platform.linkedin.com/in.js?async=true";
       js.onload = ()=> {
-        IN.init({'api_key':'81oplz05qxuccs','authorize':true});
+        IN.init({'api_key':appId,'authorize':true});
       };
       fjs.parentNode.insertBefore(js, fjs);
     })
