@@ -1,22 +1,23 @@
-var webpack = require('webpack');
-//import webpack from 'webpack';
+const path = require('path')
 
 module.exports = {
   entry: './src/index.js',
-  externals:{
-    "react": "umd react"
+  externals: {
+    react: 'umd react'
   },
-  output: { path: __dirname + '/dist', filename: 'social-login.js', libraryTarget: 'umd' },
-  module: {
-    loaders: [
-      {
-        test: /.jsx?$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/,
-        query: {
-          presets: ['es2015', 'react']
-        }
+  output: {
+    path: path.join(__dirname, 'dist'),
+    filename: 'social-login.js',
+    libraryTarget: 'umd'
+  },
+  module: {
+    rules: [{
+      test: /\.(js|jsx)$/,
+      exclude: /node_modules/,
+      loader: 'babel-loader',
+      options: {
+        presets: ['es2015', 'react', 'stage-2']
       }
-    ]
-  },
-};
+    }]
+  }
+}
