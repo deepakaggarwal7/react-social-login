@@ -506,11 +506,11 @@ var SocialLogin = function (_Component) {
       var appId = this.props.appId;
 
       if (this.props.provider === 'google') {
-        _loaders2.default.googleSDKLoader(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
+        _loaders2.default.google(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
       } else if (this.props.provider === 'facebook') {
-        _loaders2.default.facebookSDKLoader(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
+        _loaders2.default.facebook(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
       } else if (this.props.provider === 'linkedin') {
-        _loaders2.default.linkedInSDKLoader(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
+        _loaders2.default.linkedIn(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
       }
     }
   }, {
