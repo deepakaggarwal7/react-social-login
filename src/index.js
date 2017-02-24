@@ -116,11 +116,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         if (this.props.autoLogin) {
           this.sdk.checkLogin().then((authResponse) => {
             if (authResponse.status === 'connected') {
-              console.log('Wiil succss')
               this.onLoginSuccess(authResponse)
-            } else {
-              console.log('Wiil erro')
-              this.onLoginFailure('NO ERROR')
             }
           })
         }
@@ -128,9 +124,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   onLoginSuccess (response) {
-    console.log('onLoginSuccess')
-
-    const provider = this.props.provider
+    const { onLoginSuccess, provider } = this.props
     const user = new SocialUser()
     let userProfile
     let token
@@ -208,8 +202,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   onLoginFailure (err) {
-    console.log('onLoginFailure')
-
     this.setState((prevState) => ({
       ...prevState,
       isFetching: false,
@@ -222,10 +214,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   login () {
-    console.log('login')
-
     if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
-      console.log('Should login')
       this.setState((prevState) => ({
         ...prevState,
         isFetching: true
