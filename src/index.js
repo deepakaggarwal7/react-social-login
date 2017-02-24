@@ -226,11 +226,11 @@ export default class SocialLogin extends Component {
     const appId = this.props.appId
 
     if (this.props.provider === 'google') {
-      loaders.googleSDKLoader(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
+      loaders.google(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
     } else if (this.props.provider === 'facebook') {
-      loaders.facebookSDKLoader(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
+      loaders.facebook(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
     } else if (this.props.provider === 'linkedin') {
-      loaders.linkedInSDKLoader(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
+      loaders.linkedIn(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
     }
   }
 

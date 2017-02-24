@@ -7,7 +7,7 @@ react-social-login is a "social component" for react. Just wrap it around any HT
 ## Code Example
 ```
  <SocialLogin 
-    provider="Google" 
+    provider="google" 
 	appId="1085669919173-lslfngv7lb6j9sr7eostmtk54mrdmhc5.apps.googleusercontent.com" 
     callback={handleSocialLogin}>
                      <!-- ANY HTML THAT LOOKS GOOD ON YOUR PAGE //-->

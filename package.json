@@ -10,7 +10,7 @@
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run lint && webpack",
-    "start": "webpack-dev-server --progress --colors"
+    "start": "cd demo && webpack-dev-server --progress --colors"
   },
   "repository": {
     "type": "git",
@@ -42,7 +42,9 @@
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-react": "^6.9.0",
     "eslint-plugin-standard": "^2.0.1",
+    "html-webpack-plugin": "^2.28.0",
     "react-dom": "^15.2.0",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
   }
 }
