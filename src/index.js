@@ -1,7 +1,7 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 
 import config from './config'
-import loaders from './loaders'
+import sdk from './sdk'
 
 class SocialUser {
   constructor () {
@@ -77,42 +77,69 @@ class SocialUser {
   }
 }
 
-export default class SocialLogin extends Component {
+const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   static propTypes = {
     appId: PropTypes.string.isRequired,
-    callback: PropTypes.func,
-    children: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-      PropTypes.element,
-      PropTypes.node
-    ]).isRequired,
+    autoLogin: PropTypes.bool,
+    onLoginFailure: PropTypes.func,
+    onLoginSuccess: PropTypes.func,
     provider: PropTypes.oneOf(config.providers).isRequired,
     version: PropTypes.string
   }
 
   static defaultProps = {
+    autoLogin: true,
     version: '2.8'
   }
 
   constructor (props) {
     super(props)
 
-    this.id = 'sl' + Math.floor(Math.random() * 0xFFFF)
+    this.state = {
+      isLoaded: false,
+      isConnected: false,
+      isFetching: false
+    }
+    this.sdk = sdk[props.provider]
 
-    this.handleSocialLoginInvokeSuccess = this.handleSocialLoginInvokeSuccess.bind(this)
-    this.handleSocialLoginInvokeFailure = this.handleSocialLoginInvokeFailure.bind(this)
-    this.handleLogin = this.handleLogin.bind(this)
+    this.onLoginSuccess = this.onLoginSuccess.bind(this)
+    this.onLoginFailure = this.onLoginFailure.bind(this)
+    this.login = this.login.bind(this)
   }
 
-  handleSocialLoginInvokeSuccess (res) {
-    const { callback, provider } = this.props
+  componentDidMount () {
+    this.sdk.load(this.props.appId)
+      .then(() => this.setState((prevState) => ({
+        ...prevState,
+        isLoaded: true
+      }), () => {
+        if (this.props.autoLogin) {
+          this.sdk.checkLogin().then((authResponse) => {
+            if (authResponse.status === 'connected') {
+              console.log('Wiil succss')
+              this.onLoginSuccess(authResponse)
+            } else {
+              console.log('Wiil erro')
+              this.onLoginFailure('NO ERROR')
+            }
+          })
+        }
+      }))
+  }
 
-    //console.log(res)  //uncomment to check response coming from provider in log
+  onLoginSuccess (response) {
+    console.log('onLoginSuccess')
 
+    const provider = this.props.provider
     const user = new SocialUser()
     let userProfile
     let token
+
+    this.setState((prevState) => ({
+      ...prevState,
+      isFetching: false,
+      isConnected: true
+    }))
 
     switch (provider) {
       case 'google':
@@ -135,36 +162,36 @@ export default class SocialLogin extends Component {
         break
       case 'facebook':
         userProfile = {
-          id: res.id,
-          name: res.name,
-          firstName: res.first_name,
-          lastName: res.last_name,
-          email: res.email,
-          profilePicURL: res.picture.data.url
+          id: response.id,
+          name: response.name,
+          firstName: response.first_name,
+          lastName: response.last_name,
+          email: response.email,
+          profilePicURL: response.picture.data.url
         }
         token = {
-          accessToken: res.authResponse.accessToken,
-          expiresAt: res.authResponse.expiresIn
+          accessToken: response.authResponse.accessToken,
+          expiresAt: response.authResponse.expiresIn
         }
 
         break
       case 'linkedin':
         userProfile = {
           id: window.IN.ENV.auth.member_id,
-          name: `${res.values[0].firstName} ${res.values[0].lastName}`,
-          firstName: res.values[0].firstName,
-          lastName: res.values[0].lastName,
-          email: res.values[0].emailAddress,
-          profilePicURL: res.values[0].pictureUrl
+          name: `${response.values[0].firstName} ${response.values[0].lastName}`,
+          firstName: response.values[0].firstName,
+          lastName: response.values[0].lastName,
+          email: response.values[0].emailAddress,
+          profilePicURL: response.values[0].pictureUrl
         }
         token = {
           accessToken: undefined //Couldn't find a way to fetch token
         }
 
-        const expiresIn = new Date()
+        const expiresAt = new Date()
 
-        expiresIn.setSeconds(expiresIn.getSeconds() + window.IN.ENV.auth.oauth_expires_in)
-        user.token.expiresAt = expiresIn
+        expiresAt.setSeconds(expiresAt.getSeconds() + window.IN.ENV.auth.oauth_expires_in)
+        user.token.expiresAt = expiresAt
 
         break
       default:
@@ -175,81 +202,64 @@ export default class SocialLogin extends Component {
     user.profile = userProfile
     user.token = token
 
-    callback(user, null)
-  }
-
-  handleSocialLoginInvokeFailure (err) {
-    this.props.callback(null, err)
-  }
-
-  handleLogin (e, obj) {
-    const { appId, provider, version } = this.props
-    const handleSuccess = this.handleSocialLoginInvokeSuccess
-
-    if (provider === 'facebook') {
-      window.FB.init({
-        appId,
-        xfbml: true,
-        version: `v${version}`
-      })
-
-      // Invoke Facebook Login
-      window.FB.login((response) => {
-        const loginResponse = response
-
-        window.FB.api('/me', { fields: 'email,name,id,first_name,last_name,picture' }, (profileResponse) => {
-          Object.assign(profileResponse, loginResponse)
-
-          handleSuccess(profileResponse)
-        })
-      }, { scope: 'email' })
-    } else if (provider === 'linkedin') {
-        window.IN.User.authorize((data) => {
-        window.IN.API.Profile('me').fields([
-          'id',
-          'firstName',
-          'lastName',
-          'pictureUrl',
-          'publicProfileUrl',
-          'emailAddress'
-        ]).result((profile) => {
-          handleSuccess(profile)
-        }).error((err) => {
-          this.handleSocialLoginInvokeFailure(err)
-        })
-      })
+    if (typeof WrappedComponent.props.onLoginSuccess === 'function') {
+      WrappedComponent.props.onLoginSuccess(user)
     }
   }
 
-  componentDidMount () {
-    const d = document
-    const appId = this.props.appId
+  onLoginFailure (err) {
+    console.log('onLoginFailure')
 
-    if (this.props.provider === 'google') {
-      loaders.google(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
-    } else if (this.props.provider === 'facebook') {
-      loaders.facebook(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
-    } else if (this.props.provider === 'linkedin') {
-      loaders.linkedin(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
+    this.setState((prevState) => ({
+      ...prevState,
+      isFetching: false,
+      isConnected: false
+    }))
+
+    if (typeof WrappedComponent.props.onLoginSuccess === 'function') {
+      WrappedComponent.props.onLoginFailure(err)
     }
   }
 
-  getProfile () {
-    window.IN.API.Profile('me').fields([
-      'id',
-      'firstName',
-      'lastName',
-      'pictureUrl',
-      'publicProfileUrl',
-      'emailAddress'
-    ]).result(function (profile) {
-      alert(profile)
-    })
+  login () {
+    console.log('login')
+
+    if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
+      console.log('Should login')
+      this.setState((prevState) => ({
+        ...prevState,
+        isFetching: true
+      }))
+
+      this.sdk.login()
+        .then((response) => this.onLoginSuccess(response))
+        .catch(() => this.onLoginFailure('Login failed'))
+
+        // case 'linkedin':
+        //   window.IN.User.authorize((data) => {
+        //     window.IN.API.Profile('me').fields([
+        //       'id',
+        //       'firstName',
+        //       'lastName',
+        //       'pictureUrl',
+        //       'publicProfileUrl',
+        //       'emailAddress'
+        //     ]).result((profile) => {
+        //       this.onLoginSuccess(profile)
+        //     }).error((err) => {
+        //       this.onLoginFailure(err)
+        //     })
+        //   })
+        //
+        //   break
+    }
   }
 
   render () {
     return (
-      <div id={this.id} onClick={this.handleLogin}>{this.props.children}</div>
+      <WrappedComponent onClick={this.login} provider={this.props.provider} />
     )
   }
 }
+
+export default SocialLogin
