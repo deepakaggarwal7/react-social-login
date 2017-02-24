@@ -1,24 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import SocialLogin from '../dist/social-login'
+import SocialLogin from '../src'
 
 const handleSocialLogin = (user, err) => {
   console.log(user)
   console.log(err)
 }
 
+const Button = ({ provider }) => (
+  <button>Login with {provider}</button>
+)
+
+const FBButton = SocialLogin(Button)
+
 ReactDOM.render(
   <div>
-    <SocialLogin provider='google' appId='1085669919173-lslfngv7lb6j9sr7eostmtk54mrdmhc5.apps.googleusercontent.com' callback={handleSocialLogin}>
-    	 <button>Login with Google</button>
-     </SocialLogin> 
-    <SocialLogin provider='facebook' appId='1688338261458536' callback={handleSocialLogin}>
-      	<button>Login with Facebook</button>
-    </SocialLogin>
-    <SocialLogin provider='linkedin' appId='81oplz05qxuccs' callback={handleSocialLogin}>
-      	<button>Login with LinkedIn</button>
-    </SocialLogin>
+    <FBButton provider='facebook' appId='1688338261458536' onLoginSuccess={handleSocialLogin} />
   </div>,
   document.getElementById('app')
 )
