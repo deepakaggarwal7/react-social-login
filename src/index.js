@@ -196,8 +196,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     user.profile = userProfile
     user.token = token
 
-    if (typeof WrappedComponent.props.onLoginSuccess === 'function') {
-      WrappedComponent.props.onLoginSuccess(user)
+    if (typeof onLoginSuccess === 'function') {
+      onLoginSuccess(user)
     }
   }
 
@@ -208,8 +208,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       isConnected: false
     }))
 
-    if (typeof WrappedComponent.props.onLoginSuccess === 'function') {
-      WrappedComponent.props.onLoginFailure(err)
+    if (typeof this.props.onLoginFailure === 'function') {
+      this.props.onLoginFailure(err)
     }
   }
 
@@ -223,30 +223,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       this.sdk.login()
         .then((response) => this.onLoginSuccess(response))
         .catch(() => this.onLoginFailure('Login failed'))
-
-        // case 'linkedin':
-        //   window.IN.User.authorize((data) => {
-        //     window.IN.API.Profile('me').fields([
-        //       'id',
-        //       'firstName',
-        //       'lastName',
-        //       'pictureUrl',
-        //       'publicProfileUrl',
-        //       'emailAddress'
-        //     ]).result((profile) => {
-        //       this.onLoginSuccess(profile)
-        //     }).error((err) => {
-        //       this.onLoginFailure(err)
-        //     })
-        //   })
-        //
-        //   break
     }
   }
 
   render () {
     return (
-      <WrappedComponent onClick={this.login} provider={this.props.provider} />
+      <WrappedComponent onClick={this.login} {...this.props} />
     )
   }
 }
