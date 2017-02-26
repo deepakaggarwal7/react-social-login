@@ -158,7 +158,7 @@ export default class SocialLogin extends Component {
           profilePicURL: res.values[0].pictureUrl
         }
         token = {
-          accessToken: res.authResponse.accessToken
+          accessToken: undefined //Couldn't find a way to fetch token
         }
 
         const expiresIn = new Date()
@@ -230,7 +230,7 @@ export default class SocialLogin extends Component {
     } else if (this.props.provider === 'facebook') {
       loaders.facebook(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
     } else if (this.props.provider === 'linkedin') {
-      loaders.linkedIn(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
+      loaders.linkedin(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
     }
   }
 

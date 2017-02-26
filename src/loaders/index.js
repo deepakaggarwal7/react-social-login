@@ -1,9 +1,9 @@
 import facebook from './facebook'
 import google from './google'
-import linkedIn from './linkedin'
+import linkedin from './linkedin'
 
 export default {
   google,
   facebook,
-  linkedIn
+  linkedin
 }

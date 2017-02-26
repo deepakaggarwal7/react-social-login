@@ -120,7 +120,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = {
   google: _google2.default,
   facebook: _facebook2.default,
-  linkedIn: _linkedin2.default
+  linkedin: _linkedin2.default
 };
 
 /***/ }),
@@ -299,7 +299,7 @@ var SocialUser = function () {
     key: 'provider',
     set: function set(provider) {
       if (_config2.default.providers.indexOf(provider) === -1) {
-        throw new Error('Provider \u2019' + provider + '\u2019 isn\u2019t supported.');
+        throw new Error('Provider ’' + provider + '’ isn’t supported.');
       }
 
       this._provider = provider;
@@ -321,7 +321,7 @@ var SocialUser = function () {
       if (Object.keys(rest).length > 0) {
         var keys = Object.keys(rest).join(', ');
 
-        console.warn('The following keys are not supported and thus won\u2019t be saved: ' + keys);
+        console.warn('The following keys are not supported and thus won’t be saved: ' + keys);
       }
 
       this._profile = {
@@ -346,7 +346,7 @@ var SocialUser = function () {
       if (Object.keys(rest).length > 0) {
         var keys = Object.keys(rest).join(', ');
 
-        console.warn('The following keys are not supported and thus won\u2019t be saved: ' + keys);
+        console.warn('The following keys are not supported and thus won’t be saved: ' + keys);
       }
 
       this._token = {
@@ -436,7 +436,7 @@ var SocialLogin = function (_Component) {
             profilePicURL: res.values[0].pictureUrl
           };
           token = {
-            accessToken: res.authResponse.accessToken
+            accessToken: undefined //Couldn't find a way to fetch token
           };
 
           var expiresIn = new Date();
@@ -446,7 +446,7 @@ var SocialLogin = function (_Component) {
 
           break;
         default:
-          throw new Error('Provider \u2019' + provider + '\u2019 isn\u2019t supported.');
+          throw new Error('Provider ’' + provider + '’ isn’t supported.');
       }
 
       user.provider = provider;
@@ -510,7 +510,7 @@ var SocialLogin = function (_Component) {
       } else if (this.props.provider === 'facebook') {
         _loaders2.default.facebook(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
       } else if (this.props.provider === 'linkedin') {
-        _loaders2.default.linkedIn(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
+        _loaders2.default.linkedin(d, this.id, appId, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure);
       }
     }
   }, {
