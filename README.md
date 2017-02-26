@@ -32,21 +32,41 @@ Currently supports Google (only) as a provider. Facebook coming soon!
  * Kind of re-birth of my previous .Net driven similar open source - SocialAuth.NET
 
 ## Installation
+
+__Install Nuget Package by:__
 ```
 npm install react-social-login
 ```
+__Compile code locally by:__
+```
+npm install
+npm update
+npm build
+```
 
-## API Reference
+__Try demo by:__
+```
+npm start
+and then open http://localhost:8080 
+```
 
-TBD
+## Change Log
+
+__v2.0.0__ [26 Feb 2017]
+* Use small case for providers
+* Linkedin support added along with previous google and facebook
+* A lot of refactoring done
+* Uses Webpack 2.x
+__Huge  Thanks to  Nicolas Goudry for his generous contribution __
+
 
 ## Tests
 
 TBD
 
 ## Contributors
-
-Myself at the moment.
+* [Nicolas Goudry] (https://github.com/nicolas-goudry)
+* No longer just myself
 
 ## License
 
