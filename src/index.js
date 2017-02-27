@@ -116,9 +116,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       }), () => {
         if (this.props.autoLogin) {
           this.sdk.checkLogin().then((authResponse) => {
-            if (authResponse.status === 'connected') {
-              this.onLoginSuccess(authResponse)
-            }
+            this.onLoginSuccess(authResponse)
           })
         }
       }))
