@@ -31,7 +31,7 @@ const checkLogin = () => new Promise((resolve, reject) => {
         return resolve(response.authResponse)
       case 'not_authorized':
       case 'unknown':
-        return resolve()
+        return reject()
     }
   })
 })
