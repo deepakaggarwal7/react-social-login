@@ -1,4 +1,4 @@
-
+import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 
 import SocialLogin from '../src'
@@ -8,33 +8,25 @@ const handleSocialLogin = (user, err) => {
   console.log(err)
 }
 
-const SocialButton = SocialLogin(({ onClick, provider }) => (
-  <button onClick={onClick}>Login with {provider}</button>
-))
-
-ReactDOM.render(
-  <div>
-    <FBButton provider='facebook' appId='209060642824026' onLoginSuccess={handleSocialLogin} />
-  </div>,
-  document.getElementById('app')
+const PureButton = (props) => (
+  <button {...props}>Login with Facebook</button>
 )
 
-import ReactDOM from 'react-dom'
-
-import SocialLogin from '../src'
-
-const handleSocialLogin = (user, err) => {
-  console.log(user)
-  console.log(err)
+class Button extends Component {
+  render () {
+    return (
+      <button {...this.props}>Login with Facebook</button>
+    )
+  }
 }
 
-const SocialButton = SocialLogin(({ onClick, provider }) => (
-  <button onClick={onClick}>Login with {provider}</button>
-))
+const PureSocialButton = SocialLogin(PureButton)
+const SocialButton = SocialLogin(Button)
 
 ReactDOM.render(
   <div>
-    <FBButton provider='facebook' appId='209060642824026' onLoginSuccess={handleSocialLogin} />
+    <PureSocialButton provider='facebook' appId='1724499281174401' onLoginSuccess={handleSocialLogin} />
+    <SocialButton provider='linkedin' appId='1724499281174401' onLoginSuccess={handleSocialLogin} />
   </div>,
   document.getElementById('app')
 )
