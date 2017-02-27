@@ -9,21 +9,20 @@ const load = (appId) => new Promise((resolve, reject) => {
     return resolve()
   }
 
-  ;(function (d, s, id) {
-    let js
-    const fjs = d.getElementsByTagName(s)[0]
+  const firstJS = document.getElementsByTagName('script')[0]
+  let sdk
 
-    if (d.getElementById(id)) {
-      return
-    }
+  if (document.getElementById('facebook-jssdk')) {
+    return resolve()
+  }
 
-    js = d.createElement(s)
+  sdk = document.createElement('script')
 
-    js.id = id
-    js.src = '//connect.facebook.net/en_US/sdk.js'
+  sdk.id = 'facebook-jssdk'
+  sdk.src = '//connect.facebook.net/en_US/sdk.js'
+  // js.addEventListener('load', (err) => console.log(err))
 
-    fjs.parentNode.insertBefore(js, fjs)
-  }(document, 'script', 'facebook-jssdk'))
+  firstJS.parentNode.insertBefore(sdk, firstJS)
 })
 
 const checkLogin = () => new Promise((resolve, reject) => {
@@ -42,7 +41,7 @@ const login = () => new Promise((resolve, reject) => {
   window.FB.login((response) => {
     switch (response.status) {
       case 'connected':
-        getProfile().then((profile) => resolve(Object.assign(profile, response.authResponse)))
+        getProfile().then((profile) => resolve({ ...profile, ...response.authResponse }))
 
         break
       case 'not_authorized':
@@ -53,9 +52,9 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 const getProfile = () => new Promise((resolve, reject) => {
-  window.FB.api('/me', { fields: 'email,name,id,first_name,last_name,picture' }, (profile) => {
-    return resolve(profile)
-  })
+  window.FB.api('/me', {
+    fields: 'email,name,id,first_name,last_name,picture'
+  }, (profile) => resolve(profile))
 })
 
 export default {
