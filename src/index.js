@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 
 import config from './config'
 import sdk from './sdk'
+import { omit } from './utils'
 
 class SocialUser {
   constructor () {
@@ -227,8 +228,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   render () {
+    const originalProps = omit(this.props, ['appId', 'autoLogin', 'onLoginFailure', 'onLoginSuccess', 'provider', 'version'])
+
     return (
-      <WrappedComponent onClick={this.login} {...this.props} />
+      <WrappedComponent onClick={this.login} {...originalProps} />
     )
   }
 }
