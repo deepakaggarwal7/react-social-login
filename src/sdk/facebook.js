@@ -20,7 +20,6 @@ const load = (appId) => new Promise((resolve, reject) => {
 
   sdk.id = 'facebook-jssdk'
   sdk.src = '//connect.facebook.net/en_US/sdk.js'
-  // js.addEventListener('load', (err) => console.log(err))
 
   firstJS.parentNode.insertBefore(sdk, firstJS)
 })
