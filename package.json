@@ -12,6 +12,9 @@
     "build": "npm run lint && webpack",
     "start": "cd demo && webpack-dev-server --progress --colors"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/deepakaggarwal7/react-social-login.git"
@@ -43,6 +46,7 @@
     "eslint-plugin-react": "^6.9.0",
     "eslint-plugin-standard": "^2.0.1",
     "html-webpack-plugin": "^2.28.0",
+    "pre-commit": "^1.2.2",
     "react-dom": "^15.2.0",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"
