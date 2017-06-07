@@ -4,8 +4,11 @@ import ReactDOM from 'react-dom'
 import SocialLogin from '../dist/social-login'
 
 const handleSocialLogin = (user, err) => {
-  console.log(user)
-  console.log(err)
+  if (err) {
+    console.error(err)
+  } else {
+    console.info(user)
+  }
 }
 
 ReactDOM.render(
