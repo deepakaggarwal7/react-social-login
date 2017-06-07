@@ -108,7 +108,6 @@ export default class SocialLogin extends Component {
   handleSocialLoginInvokeSuccess (res) {
     const { callback, provider } = this.props
 
-    console.log(res)
 
     const user = new SocialUser()
     let userProfile
