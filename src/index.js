@@ -106,8 +106,11 @@ export default class SocialLogin extends Component {
   }
 
   handleSocialLoginInvokeSuccess (res) {
-    const { callback, provider } = this.props
+    if (res.error) {
+      return this.handleSocialLoginInvokeFailure(res.error)
+    }
 
+    const { callback, provider } = this.props
 
     const user = new SocialUser()
     let userProfile
