@@ -158,7 +158,7 @@ export default class SocialLogin extends Component {
           profilePicURL: res.values[0].pictureUrl
         }
         token = {
-          accessToken: undefined //Couldn't find a way to fetch token
+          accessToken: undefined // Couldn't find a way to fetch token
         }
 
         const expiresIn = new Date()
