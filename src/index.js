@@ -111,7 +111,6 @@ export default class SocialLogin extends Component {
     }
 
     const { callback, provider } = this.props
-
     const user = new SocialUser()
     let userProfile
     let token
@@ -206,7 +205,7 @@ export default class SocialLogin extends Component {
         })
       }, { scope: 'email' })
     } else if (provider === 'linkedin') {
-      window.IN.User.authorize((data) => {
+        window.IN.User.authorize((data) => {
         window.IN.API.Profile('me').fields([
           'id',
           'firstName',

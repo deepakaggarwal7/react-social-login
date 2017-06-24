@@ -22,7 +22,7 @@ const handleSocialLogin = (user,err) => {
    console.log(err); //or an error
  }
 ```
-Currently supports Google (only) as a provider. Facebook coming soon!
+Currently supports Google, Facebook and LinkedIn as Provider (More to come!!)
 	   
 ## Motivation
 
@@ -58,6 +58,9 @@ __v2.0.0__ [26 Feb 2017]
 * A lot of refactoring done
 * Uses Webpack 2.x
 __Huge  Thanks to  Nicolas Goudry for his generous contribution __
+
+__v2.0.1__ [24 June 2017]
+* fixed #issue6 - Console Log removed from index.js 
 
 
 ## Tests
