@@ -60,8 +60,11 @@ __v2.0.0__ [26 Feb 2017]
 __Huge  Thanks to  Nicolas Goudry for his generous contribution __
 
 __v2.0.1__ [24 June 2017]
-* fixed #issue6 - Console Log removed from index.js 
-
+merged Pull #15  Request  which resolves:
+ * Facebook error
+ * code styling
+ * unnecessary console logs
+ * pre-commit lint
 
 ## Tests
 
