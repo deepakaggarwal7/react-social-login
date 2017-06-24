@@ -1,6 +1,6 @@
 {
   "name": "react-social-login",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "React Component for Login via Social Providers",
   "main": "dist/social-login.js",
   "engines": {
