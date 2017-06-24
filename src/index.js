@@ -106,10 +106,11 @@ export default class SocialLogin extends Component {
   }
 
   handleSocialLoginInvokeSuccess (res) {
+    if (res.error) {
+      return this.handleSocialLoginInvokeFailure(res.error)
+    }
+
     const { callback, provider } = this.props
-
-    //console.log(res)  //uncomment to check response coming from provider in log
-
     const user = new SocialUser()
     let userProfile
     let token
@@ -158,7 +159,7 @@ export default class SocialLogin extends Component {
           profilePicURL: res.values[0].pictureUrl
         }
         token = {
-          accessToken: undefined //Couldn't find a way to fetch token
+          accessToken: undefined // Couldn't find a way to fetch token
         }
 
         const expiresIn = new Date()

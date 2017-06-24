@@ -299,7 +299,7 @@ var SocialUser = function () {
     key: 'provider',
     set: function set(provider) {
       if (_config2.default.providers.indexOf(provider) === -1) {
-        throw new Error('Provider ’' + provider + '’ isn’t supported.');
+        throw new Error('Provider \u2019' + provider + '\u2019 isn\u2019t supported.');
       }
 
       this._provider = provider;
@@ -321,7 +321,7 @@ var SocialUser = function () {
       if (Object.keys(rest).length > 0) {
         var keys = Object.keys(rest).join(', ');
 
-        console.warn('The following keys are not supported and thus won’t be saved: ' + keys);
+        console.warn('The following keys are not supported and thus won\u2019t be saved: ' + keys);
       }
 
       this._profile = {
@@ -346,7 +346,7 @@ var SocialUser = function () {
       if (Object.keys(rest).length > 0) {
         var keys = Object.keys(rest).join(', ');
 
-        console.warn('The following keys are not supported and thus won’t be saved: ' + keys);
+        console.warn('The following keys are not supported and thus won\u2019t be saved: ' + keys);
       }
 
       this._token = {
@@ -381,12 +381,14 @@ var SocialLogin = function (_Component) {
   _createClass(SocialLogin, [{
     key: 'handleSocialLoginInvokeSuccess',
     value: function handleSocialLoginInvokeSuccess(res) {
+      if (res.error) {
+        return this.handleSocialLoginInvokeFailure(res.error);
+      }
+
       var _props = this.props,
           callback = _props.callback,
           provider = _props.provider;
 
-
-      console.log(res);
 
       var user = new SocialUser();
       var userProfile = void 0;
@@ -436,7 +438,7 @@ var SocialLogin = function (_Component) {
             profilePicURL: res.values[0].pictureUrl
           };
           token = {
-            accessToken: undefined //Couldn't find a way to fetch token
+            accessToken: undefined // Couldn't find a way to fetch token
           };
 
           var expiresIn = new Date();
@@ -446,7 +448,7 @@ var SocialLogin = function (_Component) {
 
           break;
         default:
-          throw new Error('Provider ’' + provider + '’ isn’t supported.');
+          throw new Error('Provider \u2019' + provider + '\u2019 isn\u2019t supported.');
       }
 
       user.provider = provider;
