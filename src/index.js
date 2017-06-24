@@ -108,7 +108,7 @@ export default class SocialLogin extends Component {
   handleSocialLoginInvokeSuccess (res) {
     const { callback, provider } = this.props
 
-    console.log(res)
+    //console.log(res)  //uncomment to check response coming from provider in log
 
     const user = new SocialUser()
     let userProfile
@@ -204,7 +204,7 @@ export default class SocialLogin extends Component {
         })
       }, { scope: 'email' })
     } else if (provider === 'linkedin') {
-      window.IN.User.authorize((data) => {
+        window.IN.User.authorize((data) => {
         window.IN.API.Profile('me').fields([
           'id',
           'firstName',
