@@ -12,12 +12,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     autoLogin: PropTypes.bool,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
-    provider: PropTypes.oneOf(config.providers).isRequired,
-    version: PropTypes.string
-  }
-
-  static defaultProps = {
-    version: '2.8'
+    provider: PropTypes.oneOf(config.providers).isRequired
   }
 
   constructor (props) {
