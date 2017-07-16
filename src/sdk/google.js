@@ -50,18 +50,15 @@ const checkLogin = () => new Promise((resolve, reject) => {
  * Trigger Google login process.
  * Requires SDK to be loaded first.
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
- * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthcurrentuserget
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthsignin
  */
 const login = () => new Promise((resolve, reject) => {
-  checkLogin()
-    .then((profile) => resolve(profile))
-    .catch(() => {
-      const GoogleAuth = window.gapi.auth2.getAuthInstance()
+  const GoogleAuth = window.gapi.auth2.getAuthInstance()
 
-      GoogleAuth.signIn().then(
-        () => GoogleAuth.currentUser.get(),
-        () => reject())
-    })
+  GoogleAuth.signIn().then(
+    () => checkLogin().then(resolve, reject),
+    () => reject()
+  )
 })
 
 /**
