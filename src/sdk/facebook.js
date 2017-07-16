@@ -4,6 +4,7 @@
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
 const load = (appId) => new Promise((resolve, reject) => {
+  // @TODO: handle errors
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }

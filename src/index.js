@@ -90,25 +90,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     if (typeof onLoginSuccess === 'function') {
       onLoginSuccess(user)
     }
-
-    // @TODO
-    // SAVE OF LINKEDIN VALUES
-    //
-    //
-    // const expiresAt = new Date()
-    //
-    // userProfile = {
-    //   id: window.IN.ENV.auth.member_id,
-    //   name: `${response.values[0].firstName} ${response.values[0].lastName}`,
-    //   firstName: response.values[0].firstName,
-    //   lastName: response.values[0].lastName,
-    //   email: response.values[0].emailAddress,
-    //   profilePicURL: response.values[0].pictureUrl
-    // }
-    // token = {
-    //   accessToken: undefined, // Couldn't find a way to fetch token
-    //   expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + window.IN.ENV.auth.oauth_expires_in)
-    // }
   }
 
   /**

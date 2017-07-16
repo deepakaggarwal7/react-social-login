@@ -55,6 +55,14 @@ ReactDOM.render(
     >
       Login with Google
     </SocialButton>
+    <SocialButton
+      provider='linkedin'
+      appId='81oplz05qxuccs'
+      onLoginSuccess={handleSocialLogin}
+      onLoginFailure={handleSocialLoginFailure}
+    >
+      Login with LinkedIn
+    </SocialButton>
   </div>,
   document.getElementById('app')
 )
