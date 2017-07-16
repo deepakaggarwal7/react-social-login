@@ -9,7 +9,7 @@ const load = (appId) => new Promise((resolve, reject) => {
     window.FB.init({
       appId,
       xfbml: true,
-      version: 'v2.8'
+      version: 'v2.9'
     })
 
     return resolve()
@@ -52,6 +52,11 @@ const login = () => new Promise((resolve, reject) => {
   })
 })
 
+const getProfile = () => new Promise((resolve, reject) => {
+  window.FB.api('/me', 'GET', {
+    fields: 'email,name,id,first_name,last_name,picture'
+  }, (profile) => resolve(profile))
+})
 const generateUser = (response) => ({
   profile: {
     id: response.id,
@@ -65,12 +70,6 @@ const generateUser = (response) => ({
     accessToken: response.authResponse.accessToken,
     expiresAt: response.authResponse.expiresIn
   }
-})
-
-const getProfile = () => new Promise((resolve, reject) => {
-  window.FB.api('/me', {
-    fields: 'email,name,id,first_name,last_name,picture'
-  }, (profile) => resolve(profile))
 })
 
 export default {
