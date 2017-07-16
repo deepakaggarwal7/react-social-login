@@ -93,9 +93,34 @@ const generateUser = (response) => {
   }
 }
 
+const oldLoad = (appId) => {
+  const id = 'li-client'
+  const fjs = document.getElementsByTagName('script')[0]
+  let js
+
+  if (document.getElementById(id)) {
+    return
+  }
+
+  js = document.createElement('script')
+
+  js.id = id
+  js.src = '//platform.linkedin.com/in.js?async=true'
+
+  js.onload = () => {
+    window.IN.init({
+      api_key: appId,
+      authorize: true
+    })
+  }
+
+  fjs.parentNode.insertBefore(js, fjs)
+}
+
 export default {
   checkLogin,
   generateUser,
   load,
-  login
+  login,
+  oldLoad
 }

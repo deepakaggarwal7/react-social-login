@@ -6,6 +6,8 @@ import sdk from './sdk'
 import SocialUser from './SocialUser'
 import { omit } from './utils'
 
+export { default as OldSocialLogin } from './component'
+
 /**
  * React Higher Order Component handling social login for multiple providers.
  * @param {Element} WrappedComponent

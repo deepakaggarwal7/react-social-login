@@ -105,9 +105,37 @@ const generateUser = (response) => ({
   }
 })
 
+const oldLoad = (appId) => {
+  const id = 'fb-client'
+  const fjs = document.getElementsByTagName('script')[0]
+  let js
+
+  if (document.getElementById(id)) {
+    return
+  }
+
+  js = document.createElement('script')
+
+  js.id = id
+  js.src = '//connect.facebook.net/en_US/all.js'
+
+  js.onLoad = () => {
+    window.fbAsyncInit = function () {
+      window.FB.init({
+        appId: appId,
+        xfbml: true,
+        version: 'v2.8'
+      })
+    }
+  }
+
+  fjs.parentNode.insertBefore(js, fjs)
+}
+
 export default {
   checkLogin,
   generateUser,
   load,
-  login
+  login,
+  oldLoad
 }
