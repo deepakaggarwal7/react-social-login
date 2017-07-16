@@ -1,5 +1,11 @@
 const load = (appId) => new Promise((resolve, reject) => {
-  window.fbAsyncInit = function () {
+  const firstJS = document.getElementsByTagName('script')[0]
+  const js = document.createElement('script')
+
+  js.src = '//connect.facebook.net/en_US/sdk.js'
+  js.id = 'facebook-jssdk'
+
+  window.fbAsyncInit = () => {
     window.FB.init({
       appId,
       xfbml: true,
@@ -9,19 +15,15 @@ const load = (appId) => new Promise((resolve, reject) => {
     return resolve()
   }
 
-  const firstJS = document.getElementsByTagName('script')[0]
-  let sdk
-
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }
 
-  sdk = document.createElement('script')
-
-  sdk.id = 'facebook-jssdk'
-  sdk.src = '//connect.facebook.net/en_US/sdk.js'
-
-  firstJS.parentNode.insertBefore(sdk, firstJS)
+  if (!firstJS) {
+    document.appendChild(js)
+  } else {
+    firstJS.parentNode.appendChild(js)
+  }
 })
 
 const checkLogin = () => new Promise((resolve, reject) => {
