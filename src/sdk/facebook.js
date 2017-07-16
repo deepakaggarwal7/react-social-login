@@ -32,20 +32,32 @@ const load = (appId) => new Promise((resolve, reject) => {
 })
 
 /**
+ * Gets Facebook user profile if connected.
+ * @param {Object} response
+ */
+const handleLoginStatus = (response) => new Promise((resolve, reject) => {
+  switch (response.status) {
+    case 'connected':
+      getProfile().then((profile) => resolve({
+        ...profile,
+        ...response.authResponse
+      }))
+
+      break
+    case 'not_authorized':
+    case 'unknown':
+      return reject()
+  }
+})
+
+/**
  * Checks if user is logged in to app through Facebook.
  * Requires SDK to be loaded first.
  * @see https://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus/
  */
 const checkLogin = () => new Promise((resolve, reject) => {
-  window.FB.getLoginStatus((response) => {
-    switch (response.status) {
-      case 'connected':
-        return resolve(response.authResponse)
-      case 'not_authorized':
-      case 'unknown':
-        return reject()
-    }
-  })
+  window.FB.getLoginStatus((response) => handleLoginStatus(response)
+    .then(resolve, reject))
 })
 
 /**
@@ -54,17 +66,8 @@ const checkLogin = () => new Promise((resolve, reject) => {
  * @see https://developers.facebook.com/docs/reference/javascript/FB.login/v2.9
  */
 const login = () => new Promise((resolve, reject) => {
-  window.FB.login((response) => {
-    switch (response.status) {
-      case 'connected':
-        getProfile().then((profile) => resolve({ ...profile, ...response.authResponse }))
-
-        break
-      case 'not_authorized':
-      case 'unknown':
-        return reject()
-    }
-  })
+  window.FB.login((response) => handleLoginStatus(response)
+    .then(resolve, reject))
 })
 
 /**
@@ -75,7 +78,7 @@ const login = () => new Promise((resolve, reject) => {
 const getProfile = () => new Promise((resolve, reject) => {
   window.FB.api('/me', 'GET', {
     fields: 'email,name,id,first_name,last_name,picture'
-  }, (profile) => resolve(profile))
+  }, resolve)
 })
 
 /**
