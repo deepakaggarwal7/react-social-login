@@ -2,81 +2,8 @@ import React, { Component, PropTypes } from 'react'
 
 import config from './config'
 import sdk from './sdk'
+import SocialUser from './SocialUser'
 import { omit } from './utils'
-
-class SocialUser {
-  constructor () {
-    this._provider = undefined
-
-    this._profile = {
-      id: undefined,
-      name: undefined,
-      firstName: undefined,
-      lastName: undefined,
-      email: undefined,
-      profilePicUrl: undefined
-    }
-
-    this._token = {
-      accessToken: undefined,
-      expiresAt: undefined
-    }
-  }
-
-  set provider (provider) {
-    if (config.providers.indexOf(provider) === -1) {
-      throw new Error(`Provider ’${provider}’ isn’t supported.`)
-    }
-
-    this._provider = provider
-  }
-
-  get provider () {
-    return this._provider
-  }
-
-  set profile (profile) {
-    const { id, firstName, lastName, email, name, profilePicURL, ...rest } = profile
-
-    if (Object.keys(rest).length > 0) {
-      const keys = Object.keys(rest).join(', ')
-
-      console.warn(`The following keys are not supported and thus won’t be saved: ${keys}`)
-    }
-
-    this._profile = {
-      id,
-      name,
-      firstName,
-      lastName,
-      email,
-      profilePicURL
-    }
-  }
-
-  get profile () {
-    return this._profile
-  }
-
-  set token (token) {
-    const { accessToken, expiresAt, ...rest } = token
-
-    if (Object.keys(rest).length > 0) {
-      const keys = Object.keys(rest).join(', ')
-
-      console.warn(`The following keys are not supported and thus won’t be saved: ${keys}`)
-    }
-
-    this._token = {
-      accessToken,
-      expiresAt
-    }
-  }
-
-  get token () {
-    return this._token
-  }
-}
 
 const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   static propTypes = {
