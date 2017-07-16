@@ -12,6 +12,9 @@
     "build": "npm run lint && webpack",
     "start": "cd demo && webpack-dev-server --progress --colors"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/deepakaggarwal7/react-social-login.git"
