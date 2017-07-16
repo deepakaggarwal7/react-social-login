@@ -4,6 +4,10 @@
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
 const load = (appId) => new Promise((resolve, reject) => {
+  if (document.getElementById('facebook-jssdk')) {
+    return resolve()
+  }
+
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
 
@@ -17,10 +21,6 @@ const load = (appId) => new Promise((resolve, reject) => {
       version: 'v2.9'
     })
 
-    return resolve()
-  }
-
-  if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }
 
