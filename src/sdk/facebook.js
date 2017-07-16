@@ -37,6 +37,10 @@ const load = (appId) => new Promise((resolve, reject) => {
  * @param {Object} response
  */
 const handleLoginStatus = (response) => new Promise((resolve, reject) => {
+  if (!response.authResponse) {
+    return reject()
+  }
+
   switch (response.status) {
     case 'connected':
       getProfile().then((profile) => resolve({
