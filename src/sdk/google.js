@@ -10,7 +10,7 @@ const load = (appId) => new Promise((resolve, reject) => {
       if (!window.gapi.auth2.getAuthInstance()) {
         window.gapi.auth2.init({
           client_id: appId
-        })
+        }).then(() => resolve(), () => reject())
       }
     })
   }
