@@ -51,9 +51,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
   onLoginSuccess (response) {
     const { onLoginSuccess, provider } = this.props
-    const user = new SocialUser()
-    let userProfile
-    let token
+    const user = new SocialUser(provider)
+    const socialUserData = this.sdk.generateUser(response)
 
     this.setState((prevState) => ({
       ...prevState,
@@ -61,70 +60,27 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       isConnected: true
     }))
 
-    switch (provider) {
-      case 'google':
-        const profile = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile()
-        const authResponse = window.gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse(true)
-
-        userProfile = {
-          id: profile.getId(),
-          name: profile.getName(),
-          firstName: profile.getGivenName(),
-          lastName: profile.getFamilyName(),
-          email: profile.getEmail(),
-          profilePicURL: profile.getImageUrl()
-        }
-        token = {
-          accessToken: authResponse.access_token,
-          expiresAt: authResponse.expires_at
-        }
-
-        break
-      case 'facebook':
-        userProfile = {
-          id: response.id,
-          name: response.name,
-          firstName: response.first_name,
-          lastName: response.last_name,
-          email: response.email,
-          profilePicURL: response.picture.data.url
-        }
-        token = {
-          accessToken: response.authResponse.accessToken,
-          expiresAt: response.authResponse.expiresIn
-        }
-
-        break
-      case 'linkedin':
-        userProfile = {
-          id: window.IN.ENV.auth.member_id,
-          name: `${response.values[0].firstName} ${response.values[0].lastName}`,
-          firstName: response.values[0].firstName,
-          lastName: response.values[0].lastName,
-          email: response.values[0].emailAddress,
-          profilePicURL: response.values[0].pictureUrl
-        }
-        token = {
-          accessToken: undefined //Couldn't find a way to fetch token
-        }
-
-        const expiresAt = new Date()
-
-        expiresAt.setSeconds(expiresAt.getSeconds() + window.IN.ENV.auth.oauth_expires_in)
-        user.token.expiresAt = expiresAt
-
-        break
-      default:
-        throw new Error(`Provider ’${provider}’ isn’t supported.`)
-    }
-
-    user.provider = provider
-    user.profile = userProfile
-    user.token = token
+    user.profile = socialUserData.profile
+    user.token = socialUserData.token
 
     if (typeof onLoginSuccess === 'function') {
       onLoginSuccess(user)
     }
+
+    // const expiresAt = new Date()
+    //
+    // userProfile = {
+    //   id: window.IN.ENV.auth.member_id,
+    //   name: `${response.values[0].firstName} ${response.values[0].lastName}`,
+    //   firstName: response.values[0].firstName,
+    //   lastName: response.values[0].lastName,
+    //   email: response.values[0].emailAddress,
+    //   profilePicURL: response.values[0].pictureUrl
+    // }
+    // token = {
+    //   accessToken: undefined, // Couldn't find a way to fetch token
+    //   expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + window.IN.ENV.auth.oauth_expires_in)
+    // }
   }
 
   onLoginFailure (err) {

@@ -52,6 +52,21 @@ const login = () => new Promise((resolve, reject) => {
   })
 })
 
+const generateUser = (response) => ({
+  profile: {
+    id: response.id,
+    name: response.name,
+    firstName: response.first_name,
+    lastName: response.last_name,
+    email: response.email,
+    profilePicURL: response.picture.data.url
+  },
+  token: {
+    accessToken: response.authResponse.accessToken,
+    expiresAt: response.authResponse.expiresIn
+  }
+})
+
 const getProfile = () => new Promise((resolve, reject) => {
   window.FB.api('/me', {
     fields: 'email,name,id,first_name,last_name,picture'
@@ -60,6 +75,7 @@ const getProfile = () => new Promise((resolve, reject) => {
 
 export default {
   checkLogin,
+  generateUser,
   load,
   login
 }
