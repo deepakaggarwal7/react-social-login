@@ -111,7 +111,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const originalProps = omit(this.props, ['appId', 'autoLogin', 'onLoginFailure', 'onLoginSuccess', 'provider', 'version'])
 
     return (
-      <WrappedComponent onClick={this.login} {...originalProps} />
+      <WrappedComponent triggerLogin={this.login} {...originalProps} />
     )
   }
 }
