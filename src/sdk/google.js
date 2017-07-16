@@ -96,7 +96,9 @@ const oldLoad = (appId, cid, fn, err) => {
   js.onload = () => {
     window.gapi.load('auth2', () => {
       if (!window.gapi.auth2.getAuthInstance()) {
-        window.gapi.auth2.init({client_id: appId})
+        window.gapi.auth2.init({
+          client_id: appId
+        })
       }
 
       window.gapi.auth2.getAuthInstance().attachClickHandler(cid, {}, fn, err)
