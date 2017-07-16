@@ -66,6 +66,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       this.sdk.login()
         .then((response) => this.onLoginSuccess(response))
         .catch(() => this.onLoginFailure('Login failed'))
+    } else if (this.state.isLoaded && this.state.isConnected) {
+      this.props.onLoginFailure('User already connected')
+    } else {
+      this.props.onLoginFailure('SDK not loaded')
     }
   }
 
