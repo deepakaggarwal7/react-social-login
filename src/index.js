@@ -16,7 +16,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   static defaultProps = {
-    autoLogin: true,
     version: '2.8'
   }
 
