@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/deepakaggarwal7/react-social-login#readme",
   "dependencies": {
+    "prop-types": "^15.5.10",
     "react": "^15.2.0"
   },
   "devDependencies": {
