@@ -1,3 +1,8 @@
+/**
+ * Loads Facebook SDK.
+ * @param {string} appId
+ * @see https://developers.facebook.com/docs/javascript/quickstart
+ */
 const load = (appId) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
@@ -26,6 +31,11 @@ const load = (appId) => new Promise((resolve, reject) => {
   }
 })
 
+/**
+ * Checks if user is logged in to app through Facebook.
+ * Requires SDK to be loaded first.
+ * @see https://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus/
+ */
 const checkLogin = () => new Promise((resolve, reject) => {
   window.FB.getLoginStatus((response) => {
     switch (response.status) {
@@ -38,6 +48,11 @@ const checkLogin = () => new Promise((resolve, reject) => {
   })
 })
 
+/**
+ * Trigger Facebook login popup.
+ * Requires SDK to be loaded first.
+ * @see https://developers.facebook.com/docs/reference/javascript/FB.login/v2.9
+ */
 const login = () => new Promise((resolve, reject) => {
   window.FB.login((response) => {
     switch (response.status) {
@@ -52,11 +67,21 @@ const login = () => new Promise((resolve, reject) => {
   })
 })
 
+/**
+ * Gets currently logged in user profile data.
+ * Requires SDK to be loaded first.
+ * @see https://developers.facebook.com/tools/explorer?method=GET&path=me%3Ffields%3Demail%2Cname%2Cid%2Cfirst_name%2Clast_name%2Cpicture&version=v2.9
+ */
 const getProfile = () => new Promise((resolve, reject) => {
   window.FB.api('/me', 'GET', {
     fields: 'email,name,id,first_name,last_name,picture'
   }, (profile) => resolve(profile))
 })
+
+/**
+ * Helper to generate user account data.
+ * @param {Object} response
+ */
 const generateUser = (response) => ({
   profile: {
     id: response.id,

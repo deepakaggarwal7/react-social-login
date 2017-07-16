@@ -6,6 +6,11 @@ import sdk from './sdk'
 import SocialUser from './SocialUser'
 import { omit } from './utils'
 
+/**
+ * React Higher Order Component handling social login for multiple providers.
+ * @param {Element} WrappedComponent
+ * @constructor
+ */
 const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   static propTypes = {
     appId: PropTypes.string.isRequired,
@@ -23,6 +28,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       isConnected: false,
       isFetching: false
     }
+    // Load required SDK
     this.sdk = sdk[props.provider]
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
@@ -30,6 +36,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.login = this.login.bind(this)
   }
 
+  /**
+   * Loads SDK on componentDidMount and handles auto login.
+   */
   componentDidMount () {
     this.sdk.load(this.props.appId)
       .then(() => this.setState((prevState) => ({
@@ -44,6 +53,26 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       }))
   }
 
+  /**
+   * Triggers loggin process.
+   */
+  login () {
+    if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isFetching: true
+      }))
+
+      this.sdk.login()
+        .then((response) => this.onLoginSuccess(response))
+        .catch(() => this.onLoginFailure('Login failed'))
+    }
+  }
+
+  /**
+   * Create SocialUser on login success and transmit it to onLoginSuccess prop.
+   * @param {Object} response
+   */
   onLoginSuccess (response) {
     const { onLoginSuccess, provider } = this.props
     const user = new SocialUser(provider)
@@ -62,6 +91,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       onLoginSuccess(user)
     }
 
+    // @TODO
+    // SAVE OF LINKEDIN VALUES
+    //
+    //
     // const expiresAt = new Date()
     //
     // userProfile = {
@@ -78,6 +111,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     // }
   }
 
+  /**
+   * Handles login failure.
+   * @param err
+   */
   onLoginFailure (err) {
     this.setState((prevState) => ({
       ...prevState,
@@ -90,20 +127,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     }
   }
 
-  login () {
-    if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
-      this.setState((prevState) => ({
-        ...prevState,
-        isFetching: true
-      }))
-
-      this.sdk.login()
-        .then((response) => this.onLoginSuccess(response))
-        .catch(() => this.onLoginFailure('Login failed'))
-    }
-  }
-
   render () {
+    // Don’t forward unneeded props
     const originalProps = omit(this.props, ['appId', 'autoLogin', 'onLoginFailure', 'onLoginSuccess', 'provider', 'version'])
 
     return (

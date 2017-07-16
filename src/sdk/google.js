@@ -1,3 +1,10 @@
+/**
+ * Loads Google SDK.
+ * @param {string} appId
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiclientloadname--------version--------callback
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2initparams
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
+ */
 const load = (appId) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
@@ -22,6 +29,13 @@ const load = (appId) => new Promise((resolve, reject) => {
   }
 })
 
+/**
+ * Checks if user is logged in to app through Google.
+ * Requires SDK to be loaded first.
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthissignedinget
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthcurrentuserget
+ */
 const checkLogin = () => new Promise((resolve, reject) => {
   const GoogleAuth = window.gapi.auth2.getAuthInstance()
 
@@ -32,6 +46,12 @@ const checkLogin = () => new Promise((resolve, reject) => {
   return resolve(GoogleAuth.currentUser.get())
 })
 
+/**
+ * Trigger Google login process.
+ * Requires SDK to be loaded first.
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthcurrentuserget
+ */
 const login = () => new Promise((resolve, reject) => {
   checkLogin()
     .then((profile) => resolve(profile))
@@ -44,6 +64,12 @@ const login = () => new Promise((resolve, reject) => {
     })
 })
 
+/**
+ * Helper to generate user account data.
+ * @param {Object} response
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleusergetbasicprofile
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleusergetauthresponseincludeauthorizationdata
+ */
 const generateUser = (response) => {
   const profile = response.getBasicProfile()
   const authResponse = response.getAuthResponse(true)
