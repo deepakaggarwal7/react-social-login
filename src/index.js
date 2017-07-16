@@ -56,7 +56,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   /**
-   * Triggers loggin process.
+   * Triggers login process.
    */
   login () {
     if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
