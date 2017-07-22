@@ -11,3 +11,18 @@ export const omit = (obj, arr) => Object.keys(obj).reduce((res, key) => {
 
   return res
 }, {})
+
+export const getQueryStringValue = (key) => {
+  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'))
+}
+
+/**
+ * Get key value from location hash
+ * @param {string} key Key to get value from
+ * @returns {string|null}
+ */
+export const getHashValue = (key) => {
+  const matches = window.location.hash.match(new RegExp(`${key}=([^&]*)`))
+
+  return matches ? matches[1] : null
+}
