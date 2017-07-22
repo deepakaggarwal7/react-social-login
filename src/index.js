@@ -64,7 +64,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       }
     }
 
-    this.sdk.load(appId)
+    this.sdk.load(appId, redirect)
       .then(() => this.setState((prevState) => ({
         ...prevState,
         isLoaded: true
@@ -94,7 +94,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       let login = this.sdk.login
 
       if (this.props.provider === 'instagram') {
-        login = this.sdk.login.bind(this, this.props.appId, this.props.redirect, this.accessToken)
+        login = this.sdk.login.bind(this, this.accessToken)
       }
 
       login()

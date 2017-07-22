@@ -1,16 +1,21 @@
 const INSTAGRAM_API = 'https://api.instagram.com/v1'
+let INSTAGRAM_AUTH = 'https://api.instagram.com/oauth/authorize/?response_type=token'
 let windowRef = null
 
 /**
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
-const load = () => Promise.resolve()
+const load = (appId, redirect) => new Promise((resolve) => {
+  INSTAGRAM_AUTH = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&redirect_uri=${redirect}%3Frsl%3Dinstagram&response_type=token`
+
+  return resolve()
+})
 
 /**
  * Checks if user is logged in to app through Instagram.
  * @see https://www.instagram.com/developer/endpoints/users/#get_users_self
  */
-const checkLogin = (accessToken, autoLogin = false) => new Promise((resolve, reject) => {
+const checkLogin = (accessToken) => new Promise((resolve, reject) => {
   window.fetch(`${INSTAGRAM_API}/users/self/?access_token=${accessToken}`)
     .then((response) => response.json())
     .then((json) => {
@@ -27,12 +32,12 @@ const checkLogin = (accessToken, autoLogin = false) => new Promise((resolve, rej
  * This code only triggers login request, response is handled by a callback so it’s RSL itself which handles it.
  * @see https://www.instagram.com/developer/authentication/
  */
-const login = (appId, redirectUri, accessToken) => new Promise((resolve) => {
+const login = (accessToken) => new Promise((resolve) => {
   checkLogin(accessToken)
     .then((response) => resolve(response))
     .catch(() => {
       if (windowRef === null || windowRef.closed) {
-        windowRef = window.open(`https://api.instagram.com/oauth/authorize/?client_id=${appId}&redirect_uri=${redirectUri}%3Frsl%3Dinstagram&response_type=token`, '_self')
+        windowRef = window.open(INSTAGRAM_AUTH, '_self')
       } else {
         windowRef.focus()
       }
