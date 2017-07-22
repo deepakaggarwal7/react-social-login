@@ -23,7 +23,7 @@ const checkLogin = (accessToken) => new Promise((resolve, reject) => {
         return reject(`${json.meta.error_type}: ${json.meta.error_message}`)
       }
 
-      return resolve(generateUser(json.data, accessToken))
+      return resolve({ data: json.data, accessToken })
     }).catch((err) => reject('Failed to parse Instagram API response', err))
 })
 
@@ -48,20 +48,19 @@ const login = (accessToken) => new Promise((resolve) => {
 
 /**
  * Helper to generate user account data.
- * @param {Object} response
- * @param {string} accessToken
+ * @param {Object} data
  */
-const generateUser = (response, accessToken) => ({
+const generateUser = (data) => ({
   profile: {
-    id: response.id,
-    name: response.full_name,
-    firstName: response.full_name,
-    lastName: response.full_name,
+    id: data.data.id,
+    name: data.data.full_name,
+    firstName: data.data.full_name,
+    lastName: data.data.full_name,
     email: undefined, // Instagram API doesn’t provide email (see https://www.instagram.com/developer/endpoints/users/#get_users_self)
-    profilePicURL: response.profile_picture
+    profilePicURL: data.data.profile_picture
   },
   token: {
-    accessToken,
+    accessToken: data.accessToken,
     expiresAt: Infinity
   }
 })
