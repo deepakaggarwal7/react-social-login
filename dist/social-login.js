@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("react")) : factory(root["react"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_10__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_11__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -995,19 +995,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _facebook = __webpack_require__(13);
+var _facebook = __webpack_require__(14);
 
 var _facebook2 = _interopRequireDefault(_facebook);
 
-var _google = __webpack_require__(14);
+var _google = __webpack_require__(15);
 
 var _google2 = _interopRequireDefault(_google);
 
-var _instagram = __webpack_require__(15);
+var _instagram = __webpack_require__(16);
 
 var _instagram2 = _interopRequireDefault(_instagram);
 
-var _linkedin = __webpack_require__(16);
+var _linkedin = __webpack_require__(17);
 
 var _linkedin2 = _interopRequireDefault(_linkedin);
 
@@ -1022,6 +1022,47 @@ exports.default = {
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Create a copy of an object, omitting provided keys.
+ * @param {Object} obj Object to copy
+ * @param {Array} arr Keys to omit
+ * @returns {Object}
+ */
+var omit = exports.omit = function omit(obj, arr) {
+  return Object.keys(obj).reduce(function (res, key) {
+    if (arr.indexOf(key) === -1) {
+      res[key] = obj[key];
+    }
+
+    return res;
+  }, {});
+};
+
+var getQueryStringValue = exports.getQueryStringValue = function getQueryStringValue(key) {
+  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
+};
+
+/**
+ * Get key value from location hash
+ * @param {string} key Key to get value from
+ * @returns {string|null}
+ */
+var getHashValue = exports.getHashValue = function getHashValue(key) {
+  var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
+
+  return matches ? matches[1] : null;
+};
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1094,7 +1135,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1131,13 +1172,13 @@ if (process.env.NODE_ENV !== 'production') {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_10__;
+module.exports = __WEBPACK_EXTERNAL_MODULE_11__;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1152,7 +1193,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _component = __webpack_require__(12);
+var _component = __webpack_require__(13);
 
 Object.defineProperty(exports, 'OldSocialLogin', {
   enumerable: true,
@@ -1161,11 +1202,11 @@ Object.defineProperty(exports, 'OldSocialLogin', {
   }
 });
 
-var _propTypes = __webpack_require__(9);
+var _propTypes = __webpack_require__(10);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _react = __webpack_require__(10);
+var _react = __webpack_require__(11);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -1181,7 +1222,7 @@ var _SocialUser = __webpack_require__(5);
 
 var _SocialUser2 = _interopRequireDefault(_SocialUser);
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(8);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1190,11 +1231,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// Load fetch polyfill for browsers not supporting fetch API
-if (!window.fetch) {
-  __webpack_require__(4);
-}
 
 /**
  * React Higher Order Component handling social login for multiple providers.
@@ -1220,6 +1256,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
         // Load required SDK
       };_this.sdk = _sdk2.default[props.provider];
       _this.accessToken = null;
+      _this.axiosProvider = props.provider === 'instagram' || props.provider === 'linkedin';
 
       _this.onLoginSuccess = _this.onLoginSuccess.bind(_this);
       _this.onLoginFailure = _this.onLoginFailure.bind(_this);
@@ -1240,29 +1277,24 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
         var _props = this.props,
             appId = _props.appId,
             autoLogin = _props.autoLogin,
-            provider = _props.provider,
             redirect = _props.redirect;
 
 
-        if (provider === 'instagram' && (0, _utils.getQueryStringValue)('rsl') === 'instagram') {
-          if ((0, _utils.getQueryStringValue)('error')) {
-            this.onLoginFailure((0, _utils.getQueryStringValue)('error_reason') + ': ' + (0, _utils.getQueryStringValue)('error_description'));
-          } else {
-            this.accessToken = (0, _utils.getHashValue)('access_token');
+        this.sdk.load(appId, redirect).then(function (accessToken) {
+          if (accessToken) {
+            _this2.accessToken = accessToken;
           }
-        }
 
-        this.sdk.load(appId, redirect).then(function () {
-          return _this2.setState(function (prevState) {
+          _this2.setState(function (prevState) {
             return _extends({}, prevState, {
               isLoaded: true
             });
           }, function () {
             if (autoLogin || _this2.accessToken) {
-              if (provider === 'instagram' && !_this2.accessToken) {
+              if (_this2.axiosProvider && !_this2.accessToken) {
                 _this2.sdk.login(appId, redirect);
               } else {
-                _this2.sdk.checkLogin(_this2.accessToken).then(function (authResponse) {
+                _this2.sdk.checkLogin(true).then(function (authResponse) {
                   _this2.onLoginSuccess(authResponse);
                 });
               }
@@ -1287,13 +1319,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
             });
           });
 
-          var login = this.sdk.login;
-
-          if (this.props.provider === 'instagram') {
-            login = this.sdk.login.bind(this, this.accessToken);
-          }
-
-          login().then(function (response) {
+          this.sdk.login().then(function (response) {
             return _this3.onLoginSuccess(response);
           }).catch(function () {
             return _this3.onLoginFailure('Login failed');
@@ -1382,7 +1408,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
 exports.default = SocialLogin;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1394,11 +1420,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _propTypes = __webpack_require__(9);
+var _propTypes = __webpack_require__(10);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _react = __webpack_require__(10);
+var _react = __webpack_require__(11);
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -1605,7 +1631,7 @@ SocialLogin.defaultProps = {
 exports.default = SocialLogin;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1773,7 +1799,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1916,7 +1942,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1925,18 +1951,39 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _utils = __webpack_require__(8);
+
 var INSTAGRAM_API = 'https://api.instagram.com/v1';
-var INSTAGRAM_AUTH = 'https://api.instagram.com/oauth/authorize/?response_type=token';
-var windowRef = null;
+
+var instagramAuth = 'https://api.instagram.com/oauth/authorize/?response_type=token';
+var instagramAppId = void 0;
+var instagramRedirect = void 0;
+var instagramAccessToken = void 0;
+
+// Load fetch polyfill for browsers not supporting fetch API
+if (!window.fetch) {
+  __webpack_require__(4);
+}
 
 /**
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
 var load = function load(appId, redirect) {
-  return new Promise(function (resolve) {
-    INSTAGRAM_AUTH = 'https://api.instagram.com/oauth/authorize/?client_id=' + appId + '&redirect_uri=' + redirect + '%3Frsl%3Dinstagram&response_type=token';
+  return new Promise(function (resolve, reject) {
+    instagramAppId = appId;
+    instagramRedirect = redirect;
+    instagramAuth = 'https://api.instagram.com/oauth/authorize/?client_id=' + instagramAppId + '&redirect_uri=' + instagramRedirect + '%3FrslCallback%3Dinstagram&response_type=token';
 
-    return resolve();
+    if ((0, _utils.getQueryStringValue)('rslCallback') === 'instagram') {
+      if ((0, _utils.getQueryStringValue)('error')) {
+        return reject((0, _utils.getQueryStringValue)('error_reason') + ': ' + (0, _utils.getQueryStringValue)('error_description'));
+      } else {
+        instagramAccessToken = (0, _utils.getHashValue)('access_token');
+      }
+    }
+
+    return resolve(instagramAccessToken);
   });
 };
 
@@ -1944,16 +1991,22 @@ var load = function load(appId, redirect) {
  * Checks if user is logged in to app through Instagram.
  * @see https://www.instagram.com/developer/endpoints/users/#get_users_self
  */
-var checkLogin = function checkLogin(accessToken) {
+var checkLogin = function checkLogin() {
+  var autoLogin = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+  if (autoLogin) {
+    return login();
+  }
+
   return new Promise(function (resolve, reject) {
-    window.fetch(INSTAGRAM_API + '/users/self/?access_token=' + accessToken).then(function (response) {
+    window.fetch(INSTAGRAM_API + '/users/self/?access_token=' + instagramAccessToken).then(function (response) {
       return response.json();
     }).then(function (json) {
       if (json.meta.code !== 200) {
         return reject(json.meta.error_type + ': ' + json.meta.error_message);
       }
 
-      return resolve({ data: json.data, accessToken: accessToken });
+      return resolve({ data: json.data, accessToken: instagramAccessToken });
     }).catch(function (err) {
       return reject('Failed to parse Instagram API response', err);
     });
@@ -1965,18 +2018,12 @@ var checkLogin = function checkLogin(accessToken) {
  * This code only triggers login request, response is handled by a callback so it’s RSL itself which handles it.
  * @see https://www.instagram.com/developer/authentication/
  */
-var login = function login(accessToken) {
+var login = function login() {
   return new Promise(function (resolve) {
-    checkLogin(accessToken).then(function (response) {
+    checkLogin().then(function (response) {
       return resolve(response);
     }).catch(function () {
-      if (windowRef === null || windowRef.closed) {
-        windowRef = window.open(INSTAGRAM_AUTH, '_self');
-      } else {
-        windowRef.focus();
-      }
-
-      return resolve();
+      window.open(instagramAuth, '_self');
     });
   });
 };
@@ -2010,7 +2057,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2147,47 +2194,6 @@ exports.default = {
 };
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Create a copy of an object, omitting provided keys.
- * @param {Object} obj Object to copy
- * @param {Array} arr Keys to omit
- * @returns {Object}
- */
-var omit = exports.omit = function omit(obj, arr) {
-  return Object.keys(obj).reduce(function (res, key) {
-    if (arr.indexOf(key) === -1) {
-      res[key] = obj[key];
-    }
-
-    return res;
-  }, {});
-};
-
-var getQueryStringValue = exports.getQueryStringValue = function getQueryStringValue(key) {
-  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
-};
-
-/**
- * Get key value from location hash
- * @param {string} key Key to get value from
- * @returns {string|null}
- */
-var getHashValue = exports.getHashValue = function getHashValue(key) {
-  var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
-
-  return matches ? matches[1] : null;
-};
-
-/***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2205,7 +2211,7 @@ var getHashValue = exports.getHashValue = function getHashValue(key) {
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(2);
-  var warning = __webpack_require__(8);
+  var warning = __webpack_require__(9);
   var ReactPropTypesSecret = __webpack_require__(3);
   var loggedTypeFailures = {};
 }
@@ -2340,7 +2346,7 @@ module.exports = function() {
 
 var emptyFunction = __webpack_require__(1);
 var invariant = __webpack_require__(2);
-var warning = __webpack_require__(8);
+var warning = __webpack_require__(9);
 
 var ReactPropTypesSecret = __webpack_require__(3);
 var checkPropTypes = __webpack_require__(18);
@@ -2847,7 +2853,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(4);
-module.exports = __webpack_require__(11);
+module.exports = __webpack_require__(12);
 
 
 /***/ })
