@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("react")) : factory(root["react"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_8__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_10__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 21);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -395,6 +395,473 @@ module.exports = ReactPropTypesSecret;
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+(function(self) {
+  'use strict';
+
+  if (self.fetch) {
+    return
+  }
+
+  var support = {
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob()
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
+  if (support.arrayBuffer) {
+    var viewClasses = [
+      '[object Int8Array]',
+      '[object Uint8Array]',
+      '[object Uint8ClampedArray]',
+      '[object Int16Array]',
+      '[object Uint16Array]',
+      '[object Int32Array]',
+      '[object Uint32Array]',
+      '[object Float32Array]',
+      '[object Float64Array]'
+    ]
+
+    var isDataView = function(obj) {
+      return obj && DataView.prototype.isPrototypeOf(obj)
+    }
+
+    var isArrayBufferView = ArrayBuffer.isView || function(obj) {
+      return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+    }
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name)
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value)
+    }
+    return value
+  }
+
+  // Build a destructive iterator for the value list
+  function iteratorFor(items) {
+    var iterator = {
+      next: function() {
+        var value = items.shift()
+        return {done: value === undefined, value: value}
+      }
+    }
+
+    if (support.iterable) {
+      iterator[Symbol.iterator] = function() {
+        return iterator
+      }
+    }
+
+    return iterator
+  }
+
+  function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value)
+      }, this)
+    } else if (Array.isArray(headers)) {
+      headers.forEach(function(header) {
+        this.append(header[0], header[1])
+      }, this)
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name])
+      }, this)
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var oldValue = this.map[name]
+    this.map[name] = oldValue ? oldValue+','+value : value
+  }
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)]
+  }
+
+  Headers.prototype.get = function(name) {
+    name = normalizeName(name)
+    return this.has(name) ? this.map[name] : null
+  }
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  }
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = normalizeValue(value)
+  }
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    for (var name in this.map) {
+      if (this.map.hasOwnProperty(name)) {
+        callback.call(thisArg, this.map[name], name, this)
+      }
+    }
+  }
+
+  Headers.prototype.keys = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push(name) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.values = function() {
+    var items = []
+    this.forEach(function(value) { items.push(value) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.entries = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push([name, value]) })
+    return iteratorFor(items)
+  }
+
+  if (support.iterable) {
+    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result)
+      }
+      reader.onerror = function() {
+        reject(reader.error)
+      }
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsArrayBuffer(blob)
+    return promise
+  }
+
+  function readBlobAsText(blob) {
+    var reader = new FileReader()
+    var promise = fileReaderReady(reader)
+    reader.readAsText(blob)
+    return promise
+  }
+
+  function readArrayBufferAsText(buf) {
+    var view = new Uint8Array(buf)
+    var chars = new Array(view.length)
+
+    for (var i = 0; i < view.length; i++) {
+      chars[i] = String.fromCharCode(view[i])
+    }
+    return chars.join('')
+  }
+
+  function bufferClone(buf) {
+    if (buf.slice) {
+      return buf.slice(0)
+    } else {
+      var view = new Uint8Array(buf.byteLength)
+      view.set(new Uint8Array(buf))
+      return view.buffer
+    }
+  }
+
+  function Body() {
+    this.bodyUsed = false
+
+    this._initBody = function(body) {
+      this._bodyInit = body
+      if (!body) {
+        this._bodyText = ''
+      } else if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this._bodyText = body.toString()
+      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+        this._bodyArrayBuffer = bufferClone(body.buffer)
+        // IE 10-11 can't handle a DataView body.
+        this._bodyInit = new Blob([this._bodyArrayBuffer])
+      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+        this._bodyArrayBuffer = bufferClone(body)
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+
+      if (!this.headers.get('content-type')) {
+        if (typeof body === 'string') {
+          this.headers.set('content-type', 'text/plain;charset=UTF-8')
+        } else if (this._bodyBlob && this._bodyBlob.type) {
+          this.headers.set('content-type', this._bodyBlob.type)
+        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+        }
+      }
+    }
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyArrayBuffer) {
+          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      }
+
+      this.arrayBuffer = function() {
+        if (this._bodyArrayBuffer) {
+          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
+        } else {
+          return this.blob().then(readBlobAsArrayBuffer)
+        }
+      }
+    }
+
+    this.text = function() {
+      var rejected = consumed(this)
+      if (rejected) {
+        return rejected
+      }
+
+      if (this._bodyBlob) {
+        return readBlobAsText(this._bodyBlob)
+      } else if (this._bodyArrayBuffer) {
+        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+      } else if (this._bodyFormData) {
+        throw new Error('could not read FormData body as text')
+      } else {
+        return Promise.resolve(this._bodyText)
+      }
+    }
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      }
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    }
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {}
+    var body = options.body
+
+    if (input instanceof Request) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url
+      this.credentials = input.credentials
+      if (!options.headers) {
+        this.headers = new Headers(input.headers)
+      }
+      this.method = input.method
+      this.mode = input.mode
+      if (!body && input._bodyInit != null) {
+        body = input._bodyInit
+        input.bodyUsed = true
+      }
+    } else {
+      this.url = String(input)
+    }
+
+    this.credentials = options.credentials || this.credentials || 'omit'
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers)
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET')
+    this.mode = options.mode || this.mode || null
+    this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body)
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this, { body: this._bodyInit })
+  }
+
+  function decode(body) {
+    var form = new FormData()
+    body.trim().split('&').forEach(function(bytes) {
+      if (bytes) {
+        var split = bytes.split('=')
+        var name = split.shift().replace(/\+/g, ' ')
+        var value = split.join('=').replace(/\+/g, ' ')
+        form.append(decodeURIComponent(name), decodeURIComponent(value))
+      }
+    })
+    return form
+  }
+
+  function parseHeaders(rawHeaders) {
+    var headers = new Headers()
+    rawHeaders.split(/\r?\n/).forEach(function(line) {
+      var parts = line.split(':')
+      var key = parts.shift().trim()
+      if (key) {
+        var value = parts.join(':').trim()
+        headers.append(key, value)
+      }
+    })
+    return headers
+  }
+
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this.type = 'default'
+    this.status = 'status' in options ? options.status : 200
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = 'statusText' in options ? options.statusText : 'OK'
+    this.headers = new Headers(options.headers)
+    this.url = options.url || ''
+    this._initBody(bodyInit)
+  }
+
+  Body.call(Response.prototype)
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  }
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''})
+    response.type = 'error'
+    return response
+  }
+
+  var redirectStatuses = [301, 302, 303, 307, 308]
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  }
+
+  self.Headers = Headers
+  self.Request = Request
+  self.Response = Response
+
+  self.fetch = function(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request = new Request(input, init)
+      var xhr = new XMLHttpRequest()
+
+      xhr.onload = function() {
+        var options = {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
+        }
+        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
+        var body = 'response' in xhr ? xhr.response : xhr.responseText
+        resolve(new Response(body, options))
+      }
+
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.ontimeout = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.open(request.method, request.url, true)
+
+      if (request.credentials === 'include') {
+        xhr.withCredentials = true
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob'
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value)
+      })
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    })
+  }
+  self.fetch.polyfill = true
+})(typeof self !== 'undefined' ? self : this);
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -502,7 +969,7 @@ var SocialUser = function () {
 exports.default = SocialUser;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -512,13 +979,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var config = {
-  providers: ['facebook', 'google', 'linkedin']
+  providers: ['facebook', 'google', 'instagram', 'linkedin']
 };
 
 exports.default = config;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -536,7 +1003,11 @@ var _google = __webpack_require__(14);
 
 var _google2 = _interopRequireDefault(_google);
 
-var _linkedin = __webpack_require__(15);
+var _instagram = __webpack_require__(15);
+
+var _instagram2 = _interopRequireDefault(_instagram);
+
+var _linkedin = __webpack_require__(16);
 
 var _linkedin2 = _interopRequireDefault(_linkedin);
 
@@ -545,54 +1016,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = {
   google: _google2.default,
   facebook: _facebook2.default,
+  instagram: _instagram2.default,
   linkedin: _linkedin2.default
 };
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-if (process.env.NODE_ENV !== 'production') {
-  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
-    Symbol.for &&
-    Symbol.for('react.element')) ||
-    0xeac7;
-
-  var isValidElement = function(object) {
-    return typeof object === 'object' &&
-      object !== null &&
-      object.$$typeof === REACT_ELEMENT_TYPE;
-  };
-
-  // By explicitly using `prop-types` you are opting into new development behavior.
-  // http://fb.me/prop-types-in-prod
-  var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(18)(isValidElement, throwOnDirectAccess);
-} else {
-  // By explicitly using `prop-types` you are opting into new production behavior.
-  // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(17)();
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
 /* 8 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_8__;
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -665,7 +1094,295 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+if (process.env.NODE_ENV !== 'production') {
+  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
+    Symbol.for &&
+    Symbol.for('react.element')) ||
+    0xeac7;
+
+  var isValidElement = function(object) {
+    return typeof object === 'object' &&
+      object !== null &&
+      object.$$typeof === REACT_ELEMENT_TYPE;
+  };
+
+  // By explicitly using `prop-types` you are opting into new development behavior.
+  // http://fb.me/prop-types-in-prod
+  var throwOnDirectAccess = true;
+  module.exports = __webpack_require__(20)(isValidElement, throwOnDirectAccess);
+} else {
+  // By explicitly using `prop-types` you are opting into new production behavior.
+  // http://fb.me/prop-types-in-prod
+  module.exports = __webpack_require__(19)();
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
 /* 10 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_10__;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OldSocialLogin = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _component = __webpack_require__(12);
+
+Object.defineProperty(exports, 'OldSocialLogin', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_component).default;
+  }
+});
+
+var _propTypes = __webpack_require__(9);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _react = __webpack_require__(10);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _config = __webpack_require__(6);
+
+var _config2 = _interopRequireDefault(_config);
+
+var _sdk = __webpack_require__(7);
+
+var _sdk2 = _interopRequireDefault(_sdk);
+
+var _SocialUser = __webpack_require__(5);
+
+var _SocialUser2 = _interopRequireDefault(_SocialUser);
+
+var _utils = __webpack_require__(17);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// Load fetch polyfill for browsers not supporting fetch API
+if (!window.fetch) {
+  __webpack_require__(4);
+}
+
+/**
+ * React Higher Order Component handling social login for multiple providers.
+ * @param {Element} WrappedComponent
+ * @constructor
+ */
+var SocialLogin = function SocialLogin(WrappedComponent) {
+  var _class, _temp;
+
+  return _temp = _class = function (_Component) {
+    _inherits(SocialLogin, _Component);
+
+    function SocialLogin(props) {
+      _classCallCheck(this, SocialLogin);
+
+      var _this = _possibleConstructorReturn(this, (SocialLogin.__proto__ || Object.getPrototypeOf(SocialLogin)).call(this, props));
+
+      _this.state = {
+        isLoaded: false,
+        isConnected: false,
+        isFetching: false
+
+        // Load required SDK
+      };_this.sdk = _sdk2.default[props.provider];
+      _this.accessToken = null;
+
+      _this.onLoginSuccess = _this.onLoginSuccess.bind(_this);
+      _this.onLoginFailure = _this.onLoginFailure.bind(_this);
+      _this.login = _this.login.bind(_this);
+      return _this;
+    }
+
+    /**
+     * Loads SDK on componentDidMount and handles auto login.
+     */
+
+
+    _createClass(SocialLogin, [{
+      key: 'componentDidMount',
+      value: function componentDidMount() {
+        var _this2 = this;
+
+        var _props = this.props,
+            appId = _props.appId,
+            autoLogin = _props.autoLogin,
+            provider = _props.provider,
+            redirect = _props.redirect;
+
+
+        if (provider === 'instagram' && (0, _utils.getQueryStringValue)('rsl') === 'instagram') {
+          if ((0, _utils.getQueryStringValue)('error')) {
+            this.onLoginFailure((0, _utils.getQueryStringValue)('error_reason') + ': ' + (0, _utils.getQueryStringValue)('error_description'));
+          } else {
+            this.accessToken = (0, _utils.getHashValue)('access_token');
+          }
+        }
+
+        this.sdk.load(appId).then(function () {
+          return _this2.setState(function (prevState) {
+            return _extends({}, prevState, {
+              isLoaded: true
+            });
+          }, function () {
+            if (autoLogin || _this2.accessToken) {
+              if (provider === 'instagram' && !_this2.accessToken) {
+                _this2.sdk.login(appId, redirect);
+              } else {
+                _this2.sdk.checkLogin(_this2.accessToken).then(function (authResponse) {
+                  _this2.onLoginSuccess(authResponse);
+                });
+              }
+            }
+          });
+        });
+      }
+
+      /**
+       * Triggers login process.
+       */
+
+    }, {
+      key: 'login',
+      value: function login() {
+        var _this3 = this;
+
+        if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
+          this.setState(function (prevState) {
+            return _extends({}, prevState, {
+              isFetching: true
+            });
+          });
+
+          var login = this.sdk.login;
+
+          if (this.props.provider === 'instagram') {
+            login = this.sdk.login.bind(this, this.props.appId, this.props.redirect, this.accessToken);
+          }
+
+          login().then(function (response) {
+            return _this3.onLoginSuccess(response);
+          }).catch(function () {
+            return _this3.onLoginFailure('Login failed');
+          });
+        } else if (this.state.isLoaded && this.state.isConnected) {
+          this.props.onLoginFailure('User already connected');
+        } else {
+          this.props.onLoginFailure('SDK not loaded');
+        }
+      }
+
+      /**
+       * Create SocialUser on login success and transmit it to onLoginSuccess prop.
+       * @param {Object} response
+       */
+
+    }, {
+      key: 'onLoginSuccess',
+      value: function onLoginSuccess(response) {
+        var _props2 = this.props,
+            onLoginSuccess = _props2.onLoginSuccess,
+            provider = _props2.provider;
+
+        var user = new _SocialUser2.default(provider);
+        var socialUserData = this.sdk.generateUser(response);
+
+        this.setState(function (prevState) {
+          return _extends({}, prevState, {
+            isFetching: false,
+            isConnected: true
+          });
+        });
+
+        user.profile = socialUserData.profile;
+        user.token = socialUserData.token;
+
+        if (typeof onLoginSuccess === 'function') {
+          onLoginSuccess(user);
+        }
+      }
+
+      /**
+       * Handles login failure.
+       * @param err
+       */
+
+    }, {
+      key: 'onLoginFailure',
+      value: function onLoginFailure(err) {
+        this.setState(function (prevState) {
+          return _extends({}, prevState, {
+            isFetching: false,
+            isConnected: false
+          });
+        });
+
+        if (typeof this.props.onLoginFailure === 'function') {
+          this.props.onLoginFailure(err);
+        }
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        // Don’t forward unneeded props
+        var originalProps = (0, _utils.omit)(this.props, ['appId', 'autoLogin', 'onLoginFailure', 'onLoginSuccess', 'provider']);
+
+        return _react2.default.createElement(WrappedComponent, _extends({ triggerLogin: this.login }, originalProps));
+      }
+    }]);
+
+    return SocialLogin;
+  }(_react.Component), _class.propTypes = {
+    appId: _propTypes2.default.string.isRequired,
+    autoLogin: _propTypes2.default.bool,
+    onLoginFailure: _propTypes2.default.func,
+    onLoginSuccess: _propTypes2.default.func,
+    provider: _propTypes2.default.oneOf(_config2.default.providers).isRequired,
+    redirect: function redirect(props, propName, componentName) {
+      if (props.provider === 'instagram' && !props[propName] && typeof props[propName] !== 'string') {
+        return new Error('Invalid prop `' + propName + '` supplied to ' + componentName + '. Validation failed.');
+      }
+    }
+  }, _temp;
+};
+
+exports.default = SocialLogin;
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -677,23 +1394,23 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _propTypes = __webpack_require__(7);
+var _propTypes = __webpack_require__(9);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _react = __webpack_require__(8);
+var _react = __webpack_require__(10);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _config = __webpack_require__(5);
+var _config = __webpack_require__(6);
 
 var _config2 = _interopRequireDefault(_config);
 
-var _sdk = __webpack_require__(6);
+var _sdk = __webpack_require__(7);
 
 var _sdk2 = _interopRequireDefault(_sdk);
 
-var _SocialUser = __webpack_require__(4);
+var _SocialUser = __webpack_require__(5);
 
 var _SocialUser2 = _interopRequireDefault(_SocialUser);
 
@@ -885,240 +1602,6 @@ SocialLogin.propTypes = {
 SocialLogin.defaultProps = {
   version: '2.8'
 };
-exports.default = SocialLogin;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Create a copy of an object, omitting provided keys.
- * @param {Object} obj Object to copy
- * @param {Array} arr Keys to omit
- * @returns {Object}
- */
-var omit = exports.omit = function omit(obj, arr) {
-  return Object.keys(obj).reduce(function (res, key) {
-    if (arr.indexOf(key) === -1) {
-      res[key] = obj[key];
-    }
-
-    return res;
-  }, {});
-};
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.OldSocialLogin = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _component = __webpack_require__(10);
-
-Object.defineProperty(exports, 'OldSocialLogin', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_component).default;
-  }
-});
-
-var _propTypes = __webpack_require__(7);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _react = __webpack_require__(8);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _config = __webpack_require__(5);
-
-var _config2 = _interopRequireDefault(_config);
-
-var _sdk = __webpack_require__(6);
-
-var _sdk2 = _interopRequireDefault(_sdk);
-
-var _SocialUser = __webpack_require__(4);
-
-var _SocialUser2 = _interopRequireDefault(_SocialUser);
-
-var _utils = __webpack_require__(11);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * React Higher Order Component handling social login for multiple providers.
- * @param {Element} WrappedComponent
- * @constructor
- */
-var SocialLogin = function SocialLogin(WrappedComponent) {
-  var _class, _temp;
-
-  return _temp = _class = function (_Component) {
-    _inherits(SocialLogin, _Component);
-
-    function SocialLogin(props) {
-      _classCallCheck(this, SocialLogin);
-
-      var _this = _possibleConstructorReturn(this, (SocialLogin.__proto__ || Object.getPrototypeOf(SocialLogin)).call(this, props));
-
-      _this.state = {
-        isLoaded: false,
-        isConnected: false,
-        isFetching: false
-        // Load required SDK
-      };_this.sdk = _sdk2.default[props.provider];
-
-      _this.onLoginSuccess = _this.onLoginSuccess.bind(_this);
-      _this.onLoginFailure = _this.onLoginFailure.bind(_this);
-      _this.login = _this.login.bind(_this);
-      return _this;
-    }
-
-    /**
-     * Loads SDK on componentDidMount and handles auto login.
-     */
-
-
-    _createClass(SocialLogin, [{
-      key: 'componentDidMount',
-      value: function componentDidMount() {
-        var _this2 = this;
-
-        this.sdk.load(this.props.appId).then(function () {
-          return _this2.setState(function (prevState) {
-            return _extends({}, prevState, {
-              isLoaded: true
-            });
-          }, function () {
-            if (_this2.props.autoLogin) {
-              _this2.sdk.checkLogin().then(function (authResponse) {
-                _this2.onLoginSuccess(authResponse);
-              });
-            }
-          });
-        });
-      }
-
-      /**
-       * Triggers login process.
-       */
-
-    }, {
-      key: 'login',
-      value: function login() {
-        var _this3 = this;
-
-        if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
-          this.setState(function (prevState) {
-            return _extends({}, prevState, {
-              isFetching: true
-            });
-          });
-
-          this.sdk.login().then(function (response) {
-            return _this3.onLoginSuccess(response);
-          }).catch(function () {
-            return _this3.onLoginFailure('Login failed');
-          });
-        } else if (this.state.isLoaded && this.state.isConnected) {
-          this.props.onLoginFailure('User already connected');
-        } else {
-          this.props.onLoginFailure('SDK not loaded');
-        }
-      }
-
-      /**
-       * Create SocialUser on login success and transmit it to onLoginSuccess prop.
-       * @param {Object} response
-       */
-
-    }, {
-      key: 'onLoginSuccess',
-      value: function onLoginSuccess(response) {
-        var _props = this.props,
-            onLoginSuccess = _props.onLoginSuccess,
-            provider = _props.provider;
-
-        var user = new _SocialUser2.default(provider);
-        var socialUserData = this.sdk.generateUser(response);
-
-        this.setState(function (prevState) {
-          return _extends({}, prevState, {
-            isFetching: false,
-            isConnected: true
-          });
-        });
-
-        user.profile = socialUserData.profile;
-        user.token = socialUserData.token;
-
-        if (typeof onLoginSuccess === 'function') {
-          onLoginSuccess(user);
-        }
-      }
-
-      /**
-       * Handles login failure.
-       * @param err
-       */
-
-    }, {
-      key: 'onLoginFailure',
-      value: function onLoginFailure(err) {
-        this.setState(function (prevState) {
-          return _extends({}, prevState, {
-            isFetching: false,
-            isConnected: false
-          });
-        });
-
-        if (typeof this.props.onLoginFailure === 'function') {
-          this.props.onLoginFailure(err);
-        }
-      }
-    }, {
-      key: 'render',
-      value: function render() {
-        // Don’t forward unneeded props
-        var originalProps = (0, _utils.omit)(this.props, ['appId', 'autoLogin', 'onLoginFailure', 'onLoginSuccess', 'provider']);
-
-        return _react2.default.createElement(WrappedComponent, _extends({ triggerLogin: this.login }, originalProps));
-      }
-    }]);
-
-    return SocialLogin;
-  }(_react.Component), _class.propTypes = {
-    appId: _propTypes2.default.string.isRequired,
-    autoLogin: _propTypes2.default.bool,
-    onLoginFailure: _propTypes2.default.func,
-    onLoginSuccess: _propTypes2.default.func,
-    provider: _propTypes2.default.oneOf(_config2.default.providers).isRequired
-  }, _temp;
-};
-
 exports.default = SocialLogin;
 
 /***/ }),
@@ -1442,6 +1925,97 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var INSTAGRAM_API = 'https://api.instagram.com/v1';
+var windowRef = null;
+
+/**
+ * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
+ */
+var load = function load() {
+  return Promise.resolve();
+};
+
+/**
+ * Checks if user is logged in to app through Instagram.
+ * @see https://www.instagram.com/developer/endpoints/users/#get_users_self
+ */
+var checkLogin = function checkLogin(accessToken) {
+  var autoLogin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  return new Promise(function (resolve, reject) {
+    window.fetch(INSTAGRAM_API + '/users/self/?access_token=' + accessToken).then(function (response) {
+      return response.json();
+    }).then(function (json) {
+      if (json.meta.code !== 200) {
+        return reject(json.meta.error_type + ': ' + json.meta.error_message);
+      }
+
+      return resolve(generateUser(json.data, accessToken));
+    }).catch(function (err) {
+      return reject('Failed to parse Instagram API response', err);
+    });
+  });
+};
+
+/**
+ * Trigger Instagram login process.
+ * This code only triggers login request, response is handled by a callback so it’s RSL itself which handles it.
+ * @see https://www.instagram.com/developer/authentication/
+ */
+var login = function login(appId, redirectUri, accessToken) {
+  return new Promise(function (resolve) {
+    checkLogin(accessToken).then(function (response) {
+      return resolve(response);
+    }).catch(function () {
+      if (windowRef === null || windowRef.closed) {
+        windowRef = window.open('https://api.instagram.com/oauth/authorize/?client_id=' + appId + '&redirect_uri=' + redirectUri + '%3Frsl%3Dinstagram&response_type=token', '_self');
+      } else {
+        windowRef.focus();
+      }
+
+      return resolve();
+    });
+  });
+};
+
+/**
+ * Helper to generate user account data.
+ * @param {Object} response
+ * @param {string} accessToken
+ */
+var generateUser = function generateUser(response, accessToken) {
+  return {
+    profile: {
+      id: response.id,
+      name: response.full_name,
+      firstName: response.full_name,
+      lastName: response.full_name,
+      email: undefined, // Instagram API doesn’t provide email (see https://www.instagram.com/developer/endpoints/users/#get_users_self)
+      profilePicURL: response.profile_picture
+    },
+    token: {
+      accessToken: accessToken,
+      expiresAt: Infinity
+    }
+  };
+};
+
+exports.default = {
+  checkLogin: checkLogin,
+  generateUser: generateUser,
+  load: load,
+  login: login
+};
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 /**
  * Loads LinkedIn SDK.
  * @param {string} appId
@@ -1570,7 +2144,48 @@ exports.default = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Create a copy of an object, omitting provided keys.
+ * @param {Object} obj Object to copy
+ * @param {Array} arr Keys to omit
+ * @returns {Object}
+ */
+var omit = exports.omit = function omit(obj, arr) {
+  return Object.keys(obj).reduce(function (res, key) {
+    if (arr.indexOf(key) === -1) {
+      res[key] = obj[key];
+    }
+
+    return res;
+  }, {});
+};
+
+var getQueryStringValue = exports.getQueryStringValue = function getQueryStringValue(key) {
+  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
+};
+
+/**
+ * Get key value from location hash
+ * @param {string} key Key to get value from
+ * @returns {string|null}
+ */
+var getHashValue = exports.getHashValue = function getHashValue(key) {
+  var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
+
+  return matches ? matches[1] : null;
+};
+
+/***/ }),
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1587,7 +2202,7 @@ exports.default = {
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(2);
-  var warning = __webpack_require__(9);
+  var warning = __webpack_require__(8);
   var ReactPropTypesSecret = __webpack_require__(3);
   var loggedTypeFailures = {};
 }
@@ -1639,7 +2254,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1705,7 +2320,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1722,10 +2337,10 @@ module.exports = function() {
 
 var emptyFunction = __webpack_require__(1);
 var invariant = __webpack_require__(2);
-var warning = __webpack_require__(9);
+var warning = __webpack_require__(8);
 
 var ReactPropTypesSecret = __webpack_require__(3);
-var checkPropTypes = __webpack_require__(16);
+var checkPropTypes = __webpack_require__(18);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -2223,6 +2838,14 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 };
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(4);
+module.exports = __webpack_require__(11);
+
 
 /***/ })
 /******/ ]);
