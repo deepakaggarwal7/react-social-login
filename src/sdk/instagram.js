@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import { getHashValue, getQueryStringValue } from '../utils'
 
 const INSTAGRAM_API = 'https://api.instagram.com/v1'
@@ -8,6 +6,11 @@ let instagramAuth = 'https://api.instagram.com/oauth/authorize/?response_type=to
 let instagramAppId
 let instagramRedirect
 let instagramAccessToken
+
+// Load fetch polyfill for browsers not supporting fetch API
+if (!window.fetch) {
+  require('whatwg-fetch')
+}
 
 /**
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
@@ -38,15 +41,14 @@ const checkLogin = (autoLogin = false) => {
   }
 
   return new Promise((resolve, reject) => {
-    axios.get(`${INSTAGRAM_API}/users/self/?access_token=${instagramAccessToken}`)
-      .then(({ data, status, statusText }) => {
-        if (data.meta.code !== 200) {
-          return reject(`${data.meta.error_type}: ${data.meta.error_message}`)
-        } else if (status !== 200) {
-          return reject(`HTTP error: ${statusText}`)
+    window.fetch(`${INSTAGRAM_API}/users/self/?access_token=${instagramAccessToken}`)
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.meta.code !== 200) {
+          return reject(`${json.meta.error_type}: ${json.meta.error_message}`)
         }
 
-        return resolve({ data: data.data, accessToken: instagramAccessToken })
+        return resolve({ data: json.data, accessToken: instagramAccessToken })
       }).catch((err) => reject('Failed to parse Instagram API response', err)
     )
   })
