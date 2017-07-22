@@ -4,9 +4,14 @@ import React, { Component } from 'react'
 import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
-import { omit } from './utils'
+import { getHashValue, getQueryStringValue, omit } from './utils'
 
 export { default as OldSocialLogin } from './component'
+
+// Load fetch polyfill for browsers not supporting fetch API
+if (!window.fetch) {
+  require('whatwg-fetch')
+}
 
 /**
  * React Higher Order Component handling social login for multiple providers.
@@ -19,7 +24,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     autoLogin: PropTypes.bool,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
-    provider: PropTypes.oneOf(config.providers).isRequired
+    provider: PropTypes.oneOf(config.providers).isRequired,
+    redirect: (props, propName, componentName) => {
+      if (props.provider === 'instagram' && !props[propName] && typeof props[propName] !== 'string') {
+        return new Error(`Invalid prop \`${propName}\` supplied to ${componentName}. Validation failed.`)
+      }
+    }
   }
 
   constructor (props) {
@@ -30,8 +40,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       isConnected: false,
       isFetching: false
     }
+
     // Load required SDK
     this.sdk = sdk[props.provider]
+    this.accessToken = null
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
@@ -42,15 +54,29 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    this.sdk.load(this.props.appId)
+    const { appId, autoLogin, provider, redirect } = this.props
+
+    if (provider === 'instagram' && getQueryStringValue('rsl') === 'instagram') {
+      if (getQueryStringValue('error')) {
+        this.onLoginFailure(`${getQueryStringValue('error_reason')}: ${getQueryStringValue('error_description')}`)
+      } else {
+        this.accessToken = getHashValue('access_token')
+      }
+    }
+
+    this.sdk.load(appId)
       .then(() => this.setState((prevState) => ({
         ...prevState,
         isLoaded: true
       }), () => {
-        if (this.props.autoLogin) {
-          this.sdk.checkLogin().then((authResponse) => {
-            this.onLoginSuccess(authResponse)
-          })
+        if (autoLogin || this.accessToken) {
+          if (provider === 'instagram' && !this.accessToken) {
+            this.sdk.login(appId, redirect)
+          } else {
+            this.sdk.checkLogin(this.accessToken).then((authResponse) => {
+              this.onLoginSuccess(authResponse)
+            })
+          }
         }
       }))
   }
@@ -65,7 +91,13 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         isFetching: true
       }))
 
-      this.sdk.login()
+      let login = this.sdk.login
+
+      if (this.props.provider === 'instagram') {
+        login = this.sdk.login.bind(this, this.props.appId, this.props.redirect, this.accessToken)
+      }
+
+      login()
         .then((response) => this.onLoginSuccess(response))
         .catch(() => this.onLoginFailure('Login failed'))
     } else if (this.state.isLoaded && this.state.isConnected) {
