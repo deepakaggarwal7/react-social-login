@@ -1252,7 +1252,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
           }
         }
 
-        this.sdk.load(appId).then(function () {
+        this.sdk.load(appId, redirect).then(function () {
           return _this2.setState(function (prevState) {
             return _extends({}, prevState, {
               isLoaded: true
@@ -1290,7 +1290,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
           var login = this.sdk.login;
 
           if (this.props.provider === 'instagram') {
-            login = this.sdk.login.bind(this, this.props.appId, this.props.redirect, this.accessToken);
+            login = this.sdk.login.bind(this, this.accessToken);
           }
 
           login().then(function (response) {
@@ -1926,13 +1926,18 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var INSTAGRAM_API = 'https://api.instagram.com/v1';
+var INSTAGRAM_AUTH = 'https://api.instagram.com/oauth/authorize/?response_type=token';
 var windowRef = null;
 
 /**
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
-var load = function load() {
-  return Promise.resolve();
+var load = function load(appId, redirect) {
+  return new Promise(function (resolve) {
+    INSTAGRAM_AUTH = 'https://api.instagram.com/oauth/authorize/?client_id=' + appId + '&redirect_uri=' + redirect + '%3Frsl%3Dinstagram&response_type=token';
+
+    return resolve();
+  });
 };
 
 /**
@@ -1940,7 +1945,6 @@ var load = function load() {
  * @see https://www.instagram.com/developer/endpoints/users/#get_users_self
  */
 var checkLogin = function checkLogin(accessToken) {
-  var autoLogin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   return new Promise(function (resolve, reject) {
     window.fetch(INSTAGRAM_API + '/users/self/?access_token=' + accessToken).then(function (response) {
       return response.json();
@@ -1949,7 +1953,7 @@ var checkLogin = function checkLogin(accessToken) {
         return reject(json.meta.error_type + ': ' + json.meta.error_message);
       }
 
-      return resolve(generateUser(json.data, accessToken));
+      return resolve({ data: json.data, accessToken: accessToken });
     }).catch(function (err) {
       return reject('Failed to parse Instagram API response', err);
     });
@@ -1961,13 +1965,13 @@ var checkLogin = function checkLogin(accessToken) {
  * This code only triggers login request, response is handled by a callback so it’s RSL itself which handles it.
  * @see https://www.instagram.com/developer/authentication/
  */
-var login = function login(appId, redirectUri, accessToken) {
+var login = function login(accessToken) {
   return new Promise(function (resolve) {
     checkLogin(accessToken).then(function (response) {
       return resolve(response);
     }).catch(function () {
       if (windowRef === null || windowRef.closed) {
-        windowRef = window.open('https://api.instagram.com/oauth/authorize/?client_id=' + appId + '&redirect_uri=' + redirectUri + '%3Frsl%3Dinstagram&response_type=token', '_self');
+        windowRef = window.open(INSTAGRAM_AUTH, '_self');
       } else {
         windowRef.focus();
       }
@@ -1979,21 +1983,20 @@ var login = function login(appId, redirectUri, accessToken) {
 
 /**
  * Helper to generate user account data.
- * @param {Object} response
- * @param {string} accessToken
+ * @param {Object} data
  */
-var generateUser = function generateUser(response, accessToken) {
+var generateUser = function generateUser(data) {
   return {
     profile: {
-      id: response.id,
-      name: response.full_name,
-      firstName: response.full_name,
-      lastName: response.full_name,
+      id: data.data.id,
+      name: data.data.full_name,
+      firstName: data.data.full_name,
+      lastName: data.data.full_name,
       email: undefined, // Instagram API doesn’t provide email (see https://www.instagram.com/developer/endpoints/users/#get_users_self)
-      profilePicURL: response.profile_picture
+      profilePicURL: data.data.profile_picture
     },
     token: {
-      accessToken: accessToken,
+      accessToken: data.accessToken,
       expiresAt: Infinity
     }
   };
