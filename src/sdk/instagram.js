@@ -1,48 +1,67 @@
+import axios from 'axios'
+
+import { getHashValue, getQueryStringValue } from '../utils'
+
 const INSTAGRAM_API = 'https://api.instagram.com/v1'
-let INSTAGRAM_AUTH = 'https://api.instagram.com/oauth/authorize/?response_type=token'
-let windowRef = null
+
+let instagramAuth = 'https://api.instagram.com/oauth/authorize/?response_type=token'
+let instagramAppId
+let instagramRedirect
+let instagramAccessToken
 
 /**
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
-const load = (appId, redirect) => new Promise((resolve) => {
-  INSTAGRAM_AUTH = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&redirect_uri=${redirect}%3Frsl%3Dinstagram&response_type=token`
+const load = (appId, redirect) => new Promise((resolve, reject) => {
+  instagramAppId = appId
+  instagramRedirect = redirect
+  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${instagramAppId}&redirect_uri=${instagramRedirect}%3FrslCallback%3Dinstagram&response_type=token`
 
-  return resolve()
+  if (getQueryStringValue('rslCallback') === 'instagram') {
+    if (getQueryStringValue('error')) {
+      return reject(`${getQueryStringValue('error_reason')}: ${getQueryStringValue('error_description')}`)
+    } else {
+      instagramAccessToken = getHashValue('access_token')
+    }
+  }
+
+  return resolve(instagramAccessToken)
 })
 
 /**
  * Checks if user is logged in to app through Instagram.
  * @see https://www.instagram.com/developer/endpoints/users/#get_users_self
  */
-const checkLogin = (accessToken) => new Promise((resolve, reject) => {
-  window.fetch(`${INSTAGRAM_API}/users/self/?access_token=${accessToken}`)
-    .then((response) => response.json())
-    .then((json) => {
-      if (json.meta.code !== 200) {
-        return reject(`${json.meta.error_type}: ${json.meta.error_message}`)
-      }
+const checkLogin = (autoLogin = false) => {
+  if (autoLogin) {
+    return login()
+  }
 
-      return resolve({ data: json.data, accessToken })
-    }).catch((err) => reject('Failed to parse Instagram API response', err))
-})
+  return new Promise((resolve, reject) => {
+    axios.get(`${INSTAGRAM_API}/users/self/?access_token=${instagramAccessToken}`)
+      .then(({ data, status, statusText }) => {
+        if (data.meta.code !== 200) {
+          return reject(`${data.meta.error_type}: ${data.meta.error_message}`)
+        } else if (status !== 200) {
+          return reject(`HTTP error: ${statusText}`)
+        }
+
+        return resolve({ data: data.data, accessToken: instagramAccessToken })
+      }).catch((err) => reject('Failed to parse Instagram API response', err)
+    )
+  })
+}
 
 /**
  * Trigger Instagram login process.
  * This code only triggers login request, response is handled by a callback so it’s RSL itself which handles it.
  * @see https://www.instagram.com/developer/authentication/
  */
-const login = (accessToken) => new Promise((resolve) => {
-  checkLogin(accessToken)
+const login = () => new Promise((resolve) => {
+  checkLogin()
     .then((response) => resolve(response))
     .catch(() => {
-      if (windowRef === null || windowRef.closed) {
-        windowRef = window.open(INSTAGRAM_AUTH, '_self')
-      } else {
-        windowRef.focus()
-      }
-
-      return resolve()
+      window.open(instagramAuth, '_self')
     })
 })
 

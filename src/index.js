@@ -4,14 +4,9 @@ import React, { Component } from 'react'
 import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
-import { getHashValue, getQueryStringValue, omit } from './utils'
+import { omit } from './utils'
 
 export { default as OldSocialLogin } from './component'
-
-// Load fetch polyfill for browsers not supporting fetch API
-if (!window.fetch) {
-  require('whatwg-fetch')
-}
 
 /**
  * React Higher Order Component handling social login for multiple providers.
@@ -44,6 +39,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     // Load required SDK
     this.sdk = sdk[props.provider]
     this.accessToken = null
+    this.axiosProvider = props.provider === 'instagram' || props.provider === 'linkedin'
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
@@ -54,31 +50,29 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoLogin, provider, redirect } = this.props
-
-    if (provider === 'instagram' && getQueryStringValue('rsl') === 'instagram') {
-      if (getQueryStringValue('error')) {
-        this.onLoginFailure(`${getQueryStringValue('error_reason')}: ${getQueryStringValue('error_description')}`)
-      } else {
-        this.accessToken = getHashValue('access_token')
-      }
-    }
+    const { appId, autoLogin, redirect } = this.props
 
     this.sdk.load(appId, redirect)
-      .then(() => this.setState((prevState) => ({
-        ...prevState,
-        isLoaded: true
-      }), () => {
-        if (autoLogin || this.accessToken) {
-          if (provider === 'instagram' && !this.accessToken) {
-            this.sdk.login(appId, redirect)
-          } else {
-            this.sdk.checkLogin(this.accessToken).then((authResponse) => {
-              this.onLoginSuccess(authResponse)
-            })
-          }
+      .then((accessToken) => {
+        if (accessToken) {
+          this.accessToken = accessToken
         }
-      }))
+
+        this.setState((prevState) => ({
+          ...prevState,
+          isLoaded: true
+        }), () => {
+          if (autoLogin || this.accessToken) {
+            if (this.axiosProvider && !this.accessToken) {
+              this.sdk.login(appId, redirect)
+            } else {
+              this.sdk.checkLogin(true).then((authResponse) => {
+                this.onLoginSuccess(authResponse)
+              })
+            }
+          }
+        })
+      })
   }
 
   /**
@@ -91,13 +85,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         isFetching: true
       }))
 
-      let login = this.sdk.login
-
-      if (this.props.provider === 'instagram') {
-        login = this.sdk.login.bind(this, this.accessToken)
-      }
-
-      login()
+      this.sdk.login()
         .then((response) => this.onLoginSuccess(response))
         .catch(() => this.onLoginFailure('Login failed'))
     } else if (this.state.isLoaded && this.state.isConnected) {
