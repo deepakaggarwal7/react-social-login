@@ -13,7 +13,7 @@ ReactDOM.render(
     <SocialLogin provider='google' appId='1085669919173-lslfngv7lb6j9sr7eostmtk54mrdmhc5.apps.googleusercontent.com' callback={handleSocialLogin}>
       <button>Login with Google</button>
     </SocialLogin>
-    <SocialLogin provider='facebook' appId='1688338261458536' callback={handleSocialLogin}>
+    <SocialLogin provider='facebook' appId='309479849514684' callback={handleSocialLogin}>
       <button>Login with Facebook</button>
     </SocialLogin>
     <SocialLogin provider='linkedin' appId='81oplz05qxuccs' callback={handleSocialLogin}>

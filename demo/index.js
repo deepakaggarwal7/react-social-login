@@ -41,7 +41,7 @@ ReactDOM.render(
   <div>
     <SocialButton
       provider='facebook'
-      appId='1688338261458536'
+      appId='309479849514684'
       onLoginSuccess={handleSocialLogin}
       onLoginFailure={handleSocialLoginFailure}
     >
