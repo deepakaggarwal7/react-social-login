@@ -1,24 +1,68 @@
-import React from 'react'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 
-import SocialLogin from '../dist/social-login'
+import SocialLogin from '../src'
 
-const handleSocialLogin = (user, err) => {
+const handleSocialLogin = (user) => {
   console.log(user)
-  console.log(err)
 }
+
+const handleSocialLoginFailure = (err) => {
+  console.error(err)
+}
+
+class Button extends Component {
+  static propTypes = {
+    triggerLogin: PropTypes.func.isRequired
+  }
+
+  render () {
+    const style = {
+      background: '#eee',
+      border: '1px solid black',
+      borderRadius: '3px',
+      display: 'inline-block',
+      margin: '5px',
+      padding: '10px 20px'
+    }
+
+    return (
+      <div onClick={this.props.triggerLogin} style={style}>
+        { this.props.children }
+      </div>
+    )
+  }
+}
+
+const SocialButton = SocialLogin(Button)
 
 ReactDOM.render(
   <div>
-    <SocialLogin provider='google' appId='1085669919173-lslfngv7lb6j9sr7eostmtk54mrdmhc5.apps.googleusercontent.com' callback={handleSocialLogin}>
-    	 <button>Login with Google</button>
-     </SocialLogin> 
-    <SocialLogin provider='facebook' appId='1688338261458536' callback={handleSocialLogin}>
-      	<button>Login with Facebook</button>
-    </SocialLogin>
-    <SocialLogin provider='linkedin' appId='81oplz05qxuccs' callback={handleSocialLogin}>
-      	<button>Login with LinkedIn</button>
-    </SocialLogin>
+    <SocialButton
+      provider='facebook'
+      appId='1688338261458536'
+      onLoginSuccess={handleSocialLogin}
+      onLoginFailure={handleSocialLoginFailure}
+    >
+      Login with Facebook
+    </SocialButton>
+    <SocialButton
+      provider='google'
+      appId='1085669919173-lslfngv7lb6j9sr7eostmtk54mrdmhc5.apps.googleusercontent.com'
+      onLoginSuccess={handleSocialLogin}
+      onLoginFailure={handleSocialLoginFailure}
+    >
+      Login with Google
+    </SocialButton>
+    <SocialButton
+      provider='linkedin'
+      appId='81oplz05qxuccs'
+      onLoginSuccess={handleSocialLogin}
+      onLoginFailure={handleSocialLoginFailure}
+    >
+      Login with LinkedIn
+    </SocialButton>
   </div>,
   document.getElementById('app')
 )
