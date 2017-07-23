@@ -1381,8 +1381,8 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
 
           this.sdk.login().then(function (response) {
             return _this3.onLoginSuccess(response);
-          }).catch(function () {
-            return _this3.onLoginFailure('Login failed');
+          }).catch(function (err) {
+            return _this3.onLoginFailure(err);
           });
         } else if (this.state.isLoaded && this.state.isConnected) {
           this.props.onLoginFailure('User already connected');
@@ -1805,7 +1805,7 @@ var login = function login() {
   return new Promise(function (resolve, reject) {
     window.FB.login(function (response) {
       return handleLoginStatus(response).then(resolve, reject);
-    });
+    }, { scope: 'public_profile,email' });
   });
 };
 
@@ -1815,7 +1815,7 @@ var login = function login() {
  * @see https://developers.facebook.com/tools/explorer?method=GET&path=me%3Ffields%3Demail%2Cname%2Cid%2Cfirst_name%2Clast_name%2Cpicture&version=v2.9
  */
 var getProfile = function getProfile() {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     window.FB.api('/me', 'GET', {
       fields: 'email,name,id,first_name,last_name,picture'
     }, resolve);
@@ -1827,6 +1827,8 @@ var getProfile = function getProfile() {
  * @param {Object} response
  */
 var generateUser = function generateUser(response) {
+  var expiresAt = new Date();
+
   return {
     profile: {
       id: response.id,
@@ -1837,8 +1839,8 @@ var generateUser = function generateUser(response) {
       profilePicURL: response.picture.data.url
     },
     token: {
-      accessToken: response.authResponse.accessToken,
-      expiresAt: response.authResponse.expiresIn
+      accessToken: response.accessToken,
+      expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + response.expiresIn)
     }
   };
 };
