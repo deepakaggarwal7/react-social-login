@@ -64,6 +64,7 @@ ReactDOM.render(
       Login with LinkedIn
     </SocialButton>
     <SocialButton
+      autoCleanUri
       provider='instagram'
       appId='afdf675d26214280ac9a792afea5651c'
       redirect='http://localhost:8080'
@@ -71,6 +72,17 @@ ReactDOM.render(
       onLoginFailure={handleSocialLoginFailure}
     >
       Login with Instagram
+    </SocialButton>
+    <SocialButton
+      autoCleanUri
+      provider='github'
+      appId='8a7c2edb2e602d969839'
+      appSecret='6b9376025f232f4957403d7480e218128bdfc7d6'
+      redirect='http://localhost:8080'
+      onLoginSuccess={handleSocialLogin}
+      onLoginFailure={handleSocialLoginFailure}
+    >
+      Login with GitHub
     </SocialButton>
   </div>,
   document.getElementById('app')
