@@ -63,6 +63,15 @@ ReactDOM.render(
     >
       Login with LinkedIn
     </SocialButton>
+    <SocialButton
+      provider='instagram'
+      appId='afdf675d26214280ac9a792afea5651c'
+      redirect='http://localhost:8080'
+      onLoginSuccess={handleSocialLogin}
+      onLoginFailure={handleSocialLoginFailure}
+    >
+      Login with Instagram
+    </SocialButton>
   </div>,
   document.getElementById('app')
 )

@@ -1,7 +1,10 @@
 const path = require('path')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: [
+    'whatwg-fetch',
+    './src/index.js'
+  ],
   externals: {
     react: 'umd react'
   },

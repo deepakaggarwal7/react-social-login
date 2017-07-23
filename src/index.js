@@ -19,7 +19,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     autoLogin: PropTypes.bool,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
-    provider: PropTypes.oneOf(config.providers).isRequired
+    provider: PropTypes.oneOf(config.providers).isRequired,
+    redirect: (props, propName, componentName) => {
+      if (props.provider === 'instagram' && !props[propName] && typeof props[propName] !== 'string') {
+        return new Error(`Missing required \`${propName}\` prop on ${componentName}.`)
+      }
+    }
   }
 
   constructor (props) {
@@ -30,8 +35,11 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       isConnected: false,
       isFetching: false
     }
+
     // Load required SDK
     this.sdk = sdk[props.provider]
+    this.accessToken = null
+    this.axiosProvider = props.provider === 'instagram' || props.provider === 'linkedin'
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
@@ -42,17 +50,29 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    this.sdk.load(this.props.appId)
-      .then(() => this.setState((prevState) => ({
-        ...prevState,
-        isLoaded: true
-      }), () => {
-        if (this.props.autoLogin) {
-          this.sdk.checkLogin().then((authResponse) => {
-            this.onLoginSuccess(authResponse)
-          })
+    const { appId, autoLogin, redirect } = this.props
+
+    this.sdk.load(appId, redirect)
+      .then((accessToken) => {
+        if (accessToken) {
+          this.accessToken = accessToken
         }
-      }))
+
+        this.setState((prevState) => ({
+          ...prevState,
+          isLoaded: true
+        }), () => {
+          if (autoLogin || this.accessToken) {
+            if (this.axiosProvider && !this.accessToken) {
+              this.sdk.login(appId, redirect)
+            } else {
+              this.sdk.checkLogin(true).then((authResponse) => {
+                this.onLoginSuccess(authResponse)
+              })
+            }
+          }
+        })
+      })
   }
 
   /**
