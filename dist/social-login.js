@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("react")) : factory(root["react"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(this, function(__WEBPACK_EXTERNAL_MODULE_11__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_10__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 21);
+/******/ 	return __webpack_require__(__webpack_require__.s = 25);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -268,133 +268,6 @@ process.umask = function() { return 0; };
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-module.exports = emptyFunction;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-if (process.env.NODE_ENV !== 'production') {
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-
-
-var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
-
-module.exports = ReactPropTypesSecret;
-
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -861,7 +734,240 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+/**
+ * Create a copy of an object, omitting provided keys.
+ * @param {Object} obj Object to copy
+ * @param {Array} arr Keys to omit
+ * @returns {Object}
+ */
+var omit = exports.omit = function omit(obj, arr) {
+  return Object.keys(obj).reduce(function (res, key) {
+    if (arr.indexOf(key) === -1) {
+      res[key] = obj[key];
+    }
+
+    return res;
+  }, {});
+};
+
+/**
+ * Get key value from url query strings
+ * @param {string} key Key to get value from
+ * @returns {string}
+ */
+var getQueryStringValue = exports.getQueryStringValue = function getQueryStringValue(key) {
+  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
+};
+
+/**
+ * Get key value from location hash
+ * @param {string} key Key to get value from
+ * @returns {string|null}
+ */
+var getHashValue = exports.getHashValue = function getHashValue(key) {
+  var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
+
+  return matches ? matches[1] : null;
+};
+
+var responseTextToObject = exports.responseTextToObject = function responseTextToObject(text, key) {
+  var keyValuePairs = text.split('&');
+
+  if (!keyValuePairs || keyValuePairs.length === 0) {
+    return {};
+  }
+
+  return keyValuePairs.reduce(function (result, pair) {
+    var _pair$split = pair.split('='),
+        _pair$split2 = _slicedToArray(_pair$split, 2),
+        key = _pair$split2[0],
+        value = _pair$split2[1];
+
+    result[key] = decodeURIComponent(value);
+
+    return result;
+  }, {});
+};
+
+var cleanLocation = exports.cleanLocation = function cleanLocation() {
+  if (!window.history || !window.history.pushState) {
+    return;
+  }
+
+  var _window$location = window.location,
+      protocol = _window$location.protocol,
+      host = _window$location.host,
+      pathname = _window$location.pathname,
+      search = _window$location.search,
+      hash = _window$location.hash;
+
+
+  var cleanedHash = /access_token/.test(hash) ? '' : hash ? '#' + hash : '';
+  var cleanedSearch = search.split('&').reduce(function (acc, keyval, i) {
+    var del = /rslCallback=/.test(keyval) || /code=/.test(keyval) || /state=/.test(keyval) || /error=/.test(keyval) || /error_reason=/.test(keyval);
+
+    if (i === 0 && del) {
+      return '?';
+    } else if (i === 0) {
+      return keyval;
+    } else if (del) {
+      return acc;
+    }
+
+    return acc + '&' + keyval;
+  }, '');
+
+  cleanedSearch = cleanedSearch === '?' ? '' : cleanedSearch;
+
+  window.history.pushState({
+    html: document.body.innerHTML,
+    pageTitle: document.title
+  }, '', protocol + '//' + host + pathname + cleanedSearch + cleanedHash);
+
+  return true;
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * 
+ */
+
+function makeEmptyFunction(arg) {
+  return function () {
+    return arg;
+  };
+}
+
+/**
+ * This function accepts and discards inputs; it has no side effects. This is
+ * primarily useful idiomatically for overridable function endpoints which
+ * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
+ */
+var emptyFunction = function emptyFunction() {};
+
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
+  return this;
+};
+emptyFunction.thatReturnsArgument = function (arg) {
+  return arg;
+};
+
+module.exports = emptyFunction;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
+
+
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var validateFormat = function validateFormat(format) {};
+
+if (process.env.NODE_ENV !== 'production') {
+  validateFormat = function validateFormat(format) {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  };
+}
+
+function invariant(condition, format, a, b, c, d, e, f) {
+  validateFormat(format);
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(format.replace(/%s/g, function () {
+        return args[argIndex++];
+      }));
+      error.name = 'Invariant Violation';
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+}
+
+module.exports = invariant;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+
+
+var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+
+module.exports = ReactPropTypesSecret;
+
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -969,22 +1075,6 @@ var SocialUser = function () {
 exports.default = SocialUser;
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var config = {
-  providers: ['facebook', 'google', 'instagram', 'linkedin']
-};
-
-exports.default = config;
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -999,21 +1089,26 @@ var _facebook = __webpack_require__(14);
 
 var _facebook2 = _interopRequireDefault(_facebook);
 
-var _google = __webpack_require__(15);
+var _github = __webpack_require__(15);
+
+var _github2 = _interopRequireDefault(_github);
+
+var _google = __webpack_require__(16);
 
 var _google2 = _interopRequireDefault(_google);
 
-var _instagram = __webpack_require__(16);
+var _instagram = __webpack_require__(17);
 
 var _instagram2 = _interopRequireDefault(_instagram);
 
-var _linkedin = __webpack_require__(17);
+var _linkedin = __webpack_require__(18);
 
 var _linkedin2 = _interopRequireDefault(_linkedin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+  github: _github2.default,
   google: _google2.default,
   facebook: _facebook2.default,
   instagram: _instagram2.default,
@@ -1022,47 +1117,6 @@ exports.default = {
 
 /***/ }),
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Create a copy of an object, omitting provided keys.
- * @param {Object} obj Object to copy
- * @param {Array} arr Keys to omit
- * @returns {Object}
- */
-var omit = exports.omit = function omit(obj, arr) {
-  return Object.keys(obj).reduce(function (res, key) {
-    if (arr.indexOf(key) === -1) {
-      res[key] = obj[key];
-    }
-
-    return res;
-  }, {});
-};
-
-var getQueryStringValue = exports.getQueryStringValue = function getQueryStringValue(key) {
-  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
-};
-
-/**
- * Get key value from location hash
- * @param {string} key Key to get value from
- * @returns {string|null}
- */
-var getHashValue = exports.getHashValue = function getHashValue(key) {
-  var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
-
-  return matches ? matches[1] : null;
-};
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1078,7 +1132,7 @@ var getHashValue = exports.getHashValue = function getHashValue(key) {
 
 
 
-var emptyFunction = __webpack_require__(1);
+var emptyFunction = __webpack_require__(3);
 
 /**
  * Similar to invariant but only logs a warning if the condition is not met.
@@ -1135,7 +1189,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1162,23 +1216,23 @@ if (process.env.NODE_ENV !== 'production') {
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
   var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(20)(isValidElement, throwOnDirectAccess);
+  module.exports = __webpack_require__(21)(isValidElement, throwOnDirectAccess);
 } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(19)();
+  module.exports = __webpack_require__(20)();
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_11__;
+module.exports = __WEBPACK_EXTERNAL_MODULE_10__;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1193,7 +1247,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _component = __webpack_require__(13);
+var _component = __webpack_require__(12);
 
 Object.defineProperty(exports, 'OldSocialLogin', {
   enumerable: true,
@@ -1202,15 +1256,15 @@ Object.defineProperty(exports, 'OldSocialLogin', {
   }
 });
 
-var _propTypes = __webpack_require__(10);
+var _propTypes = __webpack_require__(9);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _react = __webpack_require__(11);
+var _react = __webpack_require__(10);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _config = __webpack_require__(6);
+var _config = __webpack_require__(13);
 
 var _config2 = _interopRequireDefault(_config);
 
@@ -1218,11 +1272,11 @@ var _sdk = __webpack_require__(7);
 
 var _sdk2 = _interopRequireDefault(_sdk);
 
-var _SocialUser = __webpack_require__(5);
+var _SocialUser = __webpack_require__(6);
 
 var _SocialUser2 = _interopRequireDefault(_SocialUser);
 
-var _utils = __webpack_require__(8);
+var _utils = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1256,7 +1310,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
         // Load required SDK
       };_this.sdk = _sdk2.default[props.provider];
       _this.accessToken = null;
-      _this.axiosProvider = props.provider === 'instagram' || props.provider === 'linkedin';
+      _this.fetchProvider = props.provider === 'instagram' || props.provider === 'github';
 
       _this.onLoginSuccess = _this.onLoginSuccess.bind(_this);
       _this.onLoginFailure = _this.onLoginFailure.bind(_this);
@@ -1276,11 +1330,17 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
 
         var _props = this.props,
             appId = _props.appId,
+            appSecret = _props.appSecret,
+            autoCleanUri = _props.autoCleanUri,
             autoLogin = _props.autoLogin,
             redirect = _props.redirect;
 
 
-        this.sdk.load(appId, redirect).then(function (accessToken) {
+        this.sdk.load(appId, redirect, appSecret).then(function (accessToken) {
+          if (autoCleanUri) {
+            (0, _utils.cleanLocation)();
+          }
+
           if (accessToken) {
             _this2.accessToken = accessToken;
           }
@@ -1291,7 +1351,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
             });
           }, function () {
             if (autoLogin || _this2.accessToken) {
-              if (_this2.axiosProvider && !_this2.accessToken) {
+              if (_this2.fetchProvider && !_this2.accessToken) {
                 _this2.sdk.login(appId, redirect);
               } else {
                 _this2.sdk.checkLogin(true).then(function (authResponse) {
@@ -1393,22 +1453,30 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     return SocialLogin;
   }(_react.Component), _class.propTypes = {
     appId: _propTypes2.default.string.isRequired,
+    appSecret: function appSecret(props, propName, componentName) {
+      if (props.provider === 'github' && !props[propName] && typeof props[propName] !== 'string') {
+        return new Error('Missing required `' + propName + '` prop on ' + componentName + '.');
+      }
+    },
+    autoCleanUri: _propTypes2.default.bool,
     autoLogin: _propTypes2.default.bool,
     onLoginFailure: _propTypes2.default.func,
     onLoginSuccess: _propTypes2.default.func,
     provider: _propTypes2.default.oneOf(_config2.default.providers).isRequired,
     redirect: function redirect(props, propName, componentName) {
       if (props.provider === 'instagram' && !props[propName] && typeof props[propName] !== 'string') {
-        return new Error('Invalid prop `' + propName + '` supplied to ' + componentName + '. Validation failed.');
+        return new Error('Missing required `' + propName + '` prop on ' + componentName + '.');
       }
     }
+  }, _class.defaultProps = {
+    autoCleanUri: false
   }, _temp;
 };
 
 exports.default = SocialLogin;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1420,23 +1488,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _propTypes = __webpack_require__(10);
+var _propTypes = __webpack_require__(9);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _react = __webpack_require__(11);
+var _react = __webpack_require__(10);
 
 var _react2 = _interopRequireDefault(_react);
-
-var _config = __webpack_require__(6);
-
-var _config2 = _interopRequireDefault(_config);
 
 var _sdk = __webpack_require__(7);
 
 var _sdk2 = _interopRequireDefault(_sdk);
 
-var _SocialUser = __webpack_require__(5);
+var _SocialUser = __webpack_require__(6);
 
 var _SocialUser2 = _interopRequireDefault(_SocialUser);
 
@@ -1622,13 +1686,29 @@ SocialLogin.propTypes = {
   appId: _propTypes2.default.string.isRequired,
   callback: _propTypes2.default.func,
   children: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number, _propTypes2.default.element, _propTypes2.default.node]).isRequired,
-  provider: _propTypes2.default.oneOf(_config2.default.providers).isRequired,
+  provider: _propTypes2.default.oneOf(['facebook', 'google', 'linkedin']).isRequired,
   version: _propTypes2.default.string
 };
 SocialLogin.defaultProps = {
   version: '2.8'
 };
 exports.default = SocialLogin;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var config = {
+  providers: ['facebook', 'github', 'google', 'instagram', 'linkedin']
+};
+
+exports.default = config;
 
 /***/ }),
 /* 14 */
@@ -1808,6 +1888,168 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _v = __webpack_require__(24);
+
+var _v2 = _interopRequireDefault(_v);
+
+var _utils = __webpack_require__(2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var GITHUB_API = 'https://api.github.com';
+var GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token';
+
+var githubAuth = void 0;
+var githubAppId = void 0;
+var githubAppSecret = void 0;
+var githubRedirect = void 0;
+var githubAccessToken = void 0;
+
+// Load fetch polyfill for browsers not supporting fetch API
+if (!window.fetch) {
+  __webpack_require__(1);
+}
+
+/**
+ * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
+ * @param {string} appId
+ * @param {string} redirect
+ * @param {string} appSecret
+ */
+var load = function load(appId, redirect, appSecret) {
+  return new Promise(function (resolve, reject) {
+    githubAppId = appId;
+    githubAppSecret = appSecret;
+    githubRedirect = redirect + '%3FrslCallback%3Dgithub';
+    githubAuth = 'http://github.com/login/oauth/authorize?client_id=' + githubAppId + '&redirect_uri=' + githubRedirect + '&scope=user&state=' + (0, _v2.default)(redirect, _v2.default.URL);
+
+    if ((0, _utils.getQueryStringValue)('rslCallback') === 'github') {
+      getAccessToken().then(function (accessToken) {
+        githubAccessToken = accessToken;
+
+        return resolve(githubAccessToken);
+      }).catch(function (err) {
+        return reject(err);
+      });
+    } else {
+      return resolve();
+    }
+  });
+};
+
+/**
+ * Checks if user is logged in to app through LinkedIn.
+ * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps/#redirect-urls
+ */
+var checkLogin = function checkLogin() {
+  var autoLogin = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+  if (autoLogin) {
+    return login();
+  }
+
+  if (!githubAccessToken) {
+    return Promise.reject('No access token available');
+  }
+
+  return new Promise(function (resolve, reject) {
+    window.fetch(GITHUB_API + '/user?access_token=' + githubAccessToken.access_token, {
+      method: 'GET'
+    }).then(function (response) {
+      return response.json();
+    }).then(function (json) {
+      return resolve(json);
+    }).catch(function (err) {
+      return reject(err);
+    });
+  });
+};
+
+/**
+ * Trigger LinkedIn login process.
+ * This code only triggers login request, response is handled by a callback handled on SDK load.
+ * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
+ */
+var login = function login() {
+  return new Promise(function (resolve) {
+    checkLogin().then(function (response) {
+      return resolve(response);
+    }).catch(function () {
+      window.open(githubAuth, '_self');
+    });
+  });
+};
+
+/**
+ * Get access token with authorization code
+ * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
+ */
+var getAccessToken = function getAccessToken() {
+  return new Promise(function (resolve, reject) {
+    var authorizationCode = (0, _utils.getQueryStringValue)('code');
+
+    if (!authorizationCode) {
+      return reject('Authorization code not found');
+    }
+
+    window.fetch(GITHUB_ACCESS_TOKEN + '?client_id=' + githubAppId + '&client_secret=' + githubAppSecret + '&code=' + authorizationCode + '&redirect_uri=' + githubRedirect, {
+      method: 'GET'
+    }).then(function (response) {
+      return response.text();
+    }).then(function (text) {
+      return (0, _utils.responseTextToObject)(text);
+    }).then(function (response) {
+      if (response.error) {
+        return reject('Failed to get GitHub access token (' + response.error + ': ' + response.error_description + ' - ' + response.error_uri + ')');
+      }
+
+      return resolve(response);
+    }).catch(function (err) {
+      return reject(err);
+    });
+  });
+};
+
+/**
+ * Helper to generate user account data.
+ * @param {Object} response
+ */
+var generateUser = function generateUser(response) {
+  return {
+    profile: {
+      id: response.id,
+      name: response.name,
+      firstName: response.name,
+      lastName: response.name,
+      email: response.email,
+      profilePicURL: response.avatar_url
+    },
+    token: {
+      accessToken: githubAccessToken.access_token,
+      expiresAt: Infinity // Couldn’t find a way to get expiration time
+    }
+  };
+};
+
+exports.default = {
+  checkLogin: checkLogin,
+  generateUser: generateUser,
+  getAccessToken: getAccessToken,
+  load: load,
+  login: login
+};
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 /**
  * Loads Google SDK.
  * @param {string} appId
@@ -1942,7 +2184,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1952,7 +2194,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _utils = __webpack_require__(8);
+var _utils = __webpack_require__(2);
 
 var INSTAGRAM_API = 'https://api.instagram.com/v1';
 
@@ -1963,7 +2205,7 @@ var instagramAccessToken = void 0;
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
-  __webpack_require__(4);
+  __webpack_require__(1);
 }
 
 /**
@@ -1998,6 +2240,10 @@ var checkLogin = function checkLogin() {
     return login();
   }
 
+  if (!instagramAccessToken) {
+    return Promise.reject('No access token available');
+  }
+
   return new Promise(function (resolve, reject) {
     window.fetch(INSTAGRAM_API + '/users/self/?access_token=' + instagramAccessToken).then(function (response) {
       return response.json();
@@ -2008,22 +2254,26 @@ var checkLogin = function checkLogin() {
 
       return resolve({ data: json.data, accessToken: instagramAccessToken });
     }).catch(function (err) {
-      return reject('Failed to parse Instagram API response', err);
+      return reject({ fetchErr: true, err: err });
     });
   });
 };
 
 /**
  * Trigger Instagram login process.
- * This code only triggers login request, response is handled by a callback so it’s RSL itself which handles it.
+ * This code only triggers login request, response is handled by a callback handled on SDK load.
  * @see https://www.instagram.com/developer/authentication/
  */
 var login = function login() {
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
     checkLogin().then(function (response) {
       return resolve(response);
-    }).catch(function () {
-      window.open(instagramAuth, '_self');
+    }).catch(function (err) {
+      if (!err.fetchErr) {
+        window.open(instagramAuth, '_self');
+      } else {
+        return reject(err.err || err || null);
+      }
     });
   });
 };
@@ -2057,7 +2307,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2194,7 +2444,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2210,9 +2460,9 @@ exports.default = {
 
 
 if (process.env.NODE_ENV !== 'production') {
-  var invariant = __webpack_require__(2);
-  var warning = __webpack_require__(9);
-  var ReactPropTypesSecret = __webpack_require__(3);
+  var invariant = __webpack_require__(4);
+  var warning = __webpack_require__(8);
+  var ReactPropTypesSecret = __webpack_require__(5);
   var loggedTypeFailures = {};
 }
 
@@ -2263,7 +2513,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2278,9 +2528,9 @@ module.exports = checkPropTypes;
 
 
 
-var emptyFunction = __webpack_require__(1);
-var invariant = __webpack_require__(2);
-var ReactPropTypesSecret = __webpack_require__(3);
+var emptyFunction = __webpack_require__(3);
+var invariant = __webpack_require__(4);
+var ReactPropTypesSecret = __webpack_require__(5);
 
 module.exports = function() {
   function shim(props, propName, componentName, location, propFullName, secret) {
@@ -2329,7 +2579,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2344,12 +2594,12 @@ module.exports = function() {
 
 
 
-var emptyFunction = __webpack_require__(1);
-var invariant = __webpack_require__(2);
-var warning = __webpack_require__(9);
+var emptyFunction = __webpack_require__(3);
+var invariant = __webpack_require__(4);
+var warning = __webpack_require__(8);
 
-var ReactPropTypesSecret = __webpack_require__(3);
-var checkPropTypes = __webpack_require__(18);
+var ReactPropTypesSecret = __webpack_require__(5);
+var checkPropTypes = __webpack_require__(19);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -2849,11 +3099,180 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 21 */
+/* 22 */
+/***/ (function(module, exports) {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(4);
-module.exports = __webpack_require__(12);
+"use strict";
+// Adapted from Chris Veness' SHA1 code at
+// http://www.movable-type.co.uk/scripts/sha1.html
+
+
+function f(s, x, y, z) {
+  switch (s) {
+    case 0: return (x & y) ^ (~x & z);
+    case 1: return x ^ y ^ z;
+    case 2: return (x & y) ^ (x & z) ^ (y & z);
+    case 3: return x ^ y ^ z;
+  }
+}
+
+function ROTL(x, n) {
+  return (x << n) | (x>>> (32 - n));
+}
+
+function sha1(bytes) {
+  var K = [0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6];
+  var H = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
+
+  if (typeof(bytes) == 'string') {
+    var msg = unescape(encodeURIComponent(bytes)); // UTF8 escape
+    bytes = new Array(msg.length);
+    for (var i = 0; i < msg.length; i++) bytes[i] = msg.charCodeAt(i);
+  }
+
+  bytes.push(0x80);
+
+  var l = bytes.length/4 + 2;
+  var N = Math.ceil(l/16);
+  var M = new Array(N);
+
+  for (var i=0; i<N; i++) {
+    M[i] = new Array(16);
+    for (var j=0; j<16; j++) {
+      M[i][j] =
+        bytes[i * 64 + j * 4] << 24 |
+        bytes[i * 64 + j * 4 + 1] << 16 |
+        bytes[i * 64 + j * 4 + 2] << 8 |
+        bytes[i * 64 + j * 4 + 3];
+    }
+  }
+
+  M[N - 1][14] = ((bytes.length - 1) * 8) /
+    Math.pow(2, 32); M[N - 1][14] = Math.floor(M[N - 1][14]);
+  M[N - 1][15] = ((bytes.length - 1) * 8) & 0xffffffff;
+
+  for (var i=0; i<N; i++) {
+    var W = new Array(80);
+
+    for (var t=0; t<16; t++) W[t] = M[i][t];
+    for (var t=16; t<80; t++) {
+      W[t] = ROTL(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+    }
+
+    var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4];
+
+    for (var t=0; t<80; t++) {
+      var s = Math.floor(t/20);
+      var T = ROTL(a, 5) + f(s, b, c, d) + e + K[s] + W[t] >>> 0;
+      e = d;
+      d = c;
+      c = ROTL(b, 30) >>> 0;
+      b = a;
+      a = T;
+    }
+
+    H[0] = (H[0] + a) >>> 0;
+    H[1] = (H[1] + b) >>> 0;
+    H[2] = (H[2] + c) >>> 0;
+    H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0;
+  }
+
+  return [
+    H[0] >> 24 & 0xff, H[0] >> 16 & 0xff, H[0] >> 8 & 0xff, H[0] & 0xff,
+    H[1] >> 24 & 0xff, H[1] >> 16 & 0xff, H[1] >> 8 & 0xff, H[1] & 0xff,
+    H[2] >> 24 & 0xff, H[2] >> 16 & 0xff, H[2] >> 8 & 0xff, H[2] & 0xff,
+    H[3] >> 24 & 0xff, H[3] >> 16 & 0xff, H[3] >> 8 & 0xff, H[3] & 0xff,
+    H[4] >> 24 & 0xff, H[4] >> 16 & 0xff, H[4] >> 8 & 0xff, H[4] & 0xff
+  ];
+}
+
+module.exports = sha1;
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var sha1 = __webpack_require__(23);
+var bytesToUuid = __webpack_require__(22);
+
+function uuidToBytes(uuid) {
+  // Note: We assume we're being passed a valid uuid string
+  var bytes = [];
+  uuid.replace(/[a-fA-F0-9]{2}/g, function(hex) {
+    bytes.push(parseInt(hex, 16));
+  });
+
+  return bytes;
+}
+
+function stringToBytes(str) {
+  str = unescape(encodeURIComponent(str)); // UTF8 escape
+  var bytes = new Array(str.length);
+  for (var i = 0; i < str.length; i++) {
+    bytes[i] = str.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function v5(name, namespace, buf, offset) {
+  if (typeof(name) == 'string') name = stringToBytes(name);
+  if (typeof(namespace) == 'string') namespace = uuidToBytes(namespace);
+
+  if (!Array.isArray(name)) throw TypeError('name must be an array of bytes');
+  if (!Array.isArray(namespace) || namespace.length != 16) throw TypeError('namespace must be uuid string or an Array of 16 byte values');
+
+  // Per 4.3
+  var bytes = sha1(namespace.concat(name));
+  bytes[6] = (bytes[6] & 0x0f) | 0x50;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+  return buf || bytesToUuid(bytes);
+}
+
+// Pre-defined namespaces, per Appendix C
+v5.DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+v5.URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+
+module.exports = v5;
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(1);
+module.exports = __webpack_require__(11);
 
 
 /***/ })

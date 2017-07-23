@@ -14,7 +14,7 @@
 
 React Social Login is an HOC which provides social login through multiple providers.
 
-Currently supports Google, Facebook and LinkedIn as providers (more to come!)
+**Currently supports Facebook, GitHub, Google, Instagram and LinkedIn as providers (more to come!)**
 
 ## Motivation
 
@@ -32,6 +32,8 @@ $ npm start
 ```
 
 You can then view the demo at [http://localhost:8080][demo].
+
+**WARNING!** Be aware that Facebook demo doesn’t work on localhost
 
 ## Install
 
@@ -101,7 +103,7 @@ Raw component props (before transform):
 | autoLogin  | false  | boolean  | Enable auto login on `componentDidMount`  |
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
-| provider  | —  | `facebook`, `google`, `linkedin`  | Social provider to use  |
+| provider  | —  | `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 Transformed component props:
@@ -115,15 +117,23 @@ Transformed component props:
 
 #### Facebook
 
-See [facebook for developers documentation][fb4devdoc]
+See [facebook for developers documentation][fb4devdoc].
+
+#### GitHub
+
+See [GitHub Developer guide][githubdoc].
 
 #### Google
 
-See [Google Sign-In for Websites guide][gsignindoc]
+See [Google Sign-In for Websites guide][gsignindoc].
+
+#### Instagram
+
+See [Instagram developers documentation][instadoc].
 
 #### LinkedIn
 
-See `Where can I find my API key?` section on the [FAQ][linkedinfaq]
+See `Where can I find my API key?` section on the [FAQ][linkedinfaq].
 
 ## Old component support
 
@@ -189,6 +199,8 @@ TBD
 [demo]: http://localhost:8080
 [findmyappid]: #find-my-appid
 [fb4devdoc]: https://developers.facebook.com/docs/apps/register
+[githubdoc]: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps
 [gsignindoc]: https://developers.google.com/identity/sign-in/web/devconsole-project
+[instadoc]: https://www.instagram.com/developer
 [linkedinfaq]: https://developer.linkedin.com/support/faq
 [ghngoudry]: https://github.com/nicolas-goudry
