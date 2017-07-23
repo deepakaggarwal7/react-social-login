@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
 
@@ -15,7 +14,11 @@ export default class SocialLogin extends Component {
       PropTypes.element,
       PropTypes.node
     ]).isRequired,
-    provider: PropTypes.oneOf(config.providers).isRequired,
+    provider: PropTypes.oneOf([
+      'facebook',
+      'google',
+      'linkedin'
+    ]).isRequired,
     version: PropTypes.string
   }
 
