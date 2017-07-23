@@ -72,7 +72,7 @@ const checkLogin = () => new Promise((resolve, reject) => {
  */
 const login = () => new Promise((resolve, reject) => {
   window.FB.login((response) => handleLoginStatus(response)
-    .then(resolve, reject))
+    .then(resolve, reject), { scope: 'public_profile,email' })
 })
 
 /**
