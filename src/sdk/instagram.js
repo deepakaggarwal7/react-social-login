@@ -40,6 +40,10 @@ const checkLogin = (autoLogin = false) => {
     return login()
   }
 
+  if (!instagramAccessToken) {
+    return Promise.reject('No access token available')
+  }
+
   return new Promise((resolve, reject) => {
     window.fetch(`${INSTAGRAM_API}/users/self/?access_token=${instagramAccessToken}`)
       .then((response) => response.json())
@@ -49,21 +53,25 @@ const checkLogin = (autoLogin = false) => {
         }
 
         return resolve({ data: json.data, accessToken: instagramAccessToken })
-      }).catch((err) => reject('Failed to parse Instagram API response', err)
+      }).catch((err) => reject({ fetchErr: true, err })
     )
   })
 }
 
 /**
  * Trigger Instagram login process.
- * This code only triggers login request, response is handled by a callback so it’s RSL itself which handles it.
+ * This code only triggers login request, response is handled by a callback handled on SDK load.
  * @see https://www.instagram.com/developer/authentication/
  */
-const login = () => new Promise((resolve) => {
+const login = () => new Promise((resolve, reject) => {
   checkLogin()
     .then((response) => resolve(response))
-    .catch(() => {
-      window.open(instagramAuth, '_self')
+    .catch((err) => {
+      if (!err.fetchErr) {
+        window.open(instagramAuth, '_self')
+      } else {
+        return reject(err.err || err || null)
+      }
     })
 })
 
