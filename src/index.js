@@ -16,6 +16,12 @@ export { default as OldSocialLogin } from './component'
 const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   static propTypes = {
     appId: PropTypes.string.isRequired,
+    appSecret: (props, propName, componentName) => {
+      if (props.provider === 'github' && !props[propName] && typeof props[propName] !== 'string') {
+        return new Error(`Missing required \`${propName}\` prop on ${componentName}.`)
+      }
+    },
+    autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
@@ -39,7 +45,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     // Load required SDK
     this.sdk = sdk[props.provider]
     this.accessToken = null
-    this.axiosProvider = props.provider === 'instagram' || props.provider === 'linkedin'
+    this.fetchProvider = props.provider === 'instagram' || props.provider === 'github'
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
@@ -50,9 +56,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoLogin, redirect } = this.props
+    const { appId, appSecret, autoLogin, redirect } = this.props
 
-    this.sdk.load(appId, redirect)
+    this.sdk.load(appId, redirect, appSecret)
       .then((accessToken) => {
         if (accessToken) {
           this.accessToken = accessToken
@@ -63,7 +69,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
           isLoaded: true
         }), () => {
           if (autoLogin || this.accessToken) {
-            if (this.axiosProvider && !this.accessToken) {
+            if (this.fetchProvider && !this.accessToken) {
               this.sdk.login(appId, redirect)
             } else {
               this.sdk.checkLogin(true).then((authResponse) => {
