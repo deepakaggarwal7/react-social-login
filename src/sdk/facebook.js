@@ -80,7 +80,7 @@ const login = () => new Promise((resolve, reject) => {
  * Requires SDK to be loaded first.
  * @see https://developers.facebook.com/tools/explorer?method=GET&path=me%3Ffields%3Demail%2Cname%2Cid%2Cfirst_name%2Clast_name%2Cpicture&version=v2.9
  */
-const getProfile = () => new Promise((resolve, reject) => {
+const getProfile = () => new Promise((resolve) => {
   window.FB.api('/me', 'GET', {
     fields: 'email,name,id,first_name,last_name,picture'
   }, resolve)
@@ -90,20 +90,24 @@ const getProfile = () => new Promise((resolve, reject) => {
  * Helper to generate user account data.
  * @param {Object} response
  */
-const generateUser = (response) => ({
-  profile: {
-    id: response.id,
-    name: response.name,
-    firstName: response.first_name,
-    lastName: response.last_name,
-    email: response.email,
-    profilePicURL: response.picture.data.url
-  },
-  token: {
-    accessToken: response.authResponse.accessToken,
-    expiresAt: response.authResponse.expiresIn
+const generateUser = (response) => {
+  const expiresAt = new Date()
+
+  return {
+    profile: {
+      id: response.id,
+      name: response.name,
+      firstName: response.first_name,
+      lastName: response.last_name,
+      email: response.email,
+      profilePicURL: response.picture.data.url
+    },
+    token: {
+      accessToken: response.accessToken,
+      expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + response.expiresIn)
+    }
   }
-})
+}
 
 const oldLoad = (appId) => {
   const id = 'fb-client'
