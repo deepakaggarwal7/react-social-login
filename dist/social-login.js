@@ -2407,7 +2407,7 @@ var generateUser = function generateUser(response) {
       profilePicURL: response.values[0].pictureUrl
     },
     token: {
-      accessToken: undefined, // Couldn't find a way to fetch token
+      accessToken: window.IN.ENV.auth.oauth_token,
       expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + window.IN.ENV.auth.oauth_expires_in)
     }
   };

@@ -53,6 +53,6 @@
     "pre-commit": "^1.2.2",
     "react-dom": "^15.2.0",
     "webpack": "^2.7.0",
-    "webpack-dev-server": "^2.4.1"
+    "webpack-dev-server": "^2.6.1"
   }
 }
