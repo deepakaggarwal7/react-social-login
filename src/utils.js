@@ -47,3 +47,39 @@ export const responseTextToObject = (text, key) => {
     return result
   }, {})
 }
+
+export const cleanLocation = () => {
+  if (!window.history || !window.history.pushState) {
+    return
+  }
+
+  const { protocol, host, pathname, search, hash } = window.location
+
+  const cleanedHash = /access_token/.test(hash) ? '' : hash ? `#${hash}` : ''
+  let cleanedSearch = search.split('&').reduce((acc, keyval, i) => {
+    const del = /rslCallback=/.test(keyval) ||
+      /code=/.test(keyval) ||
+      /state=/.test(keyval) ||
+      /error=/.test(keyval) ||
+      /error_reason=/.test(keyval)
+
+    if (i === 0 && del) {
+      return '?'
+    } else if (i === 0) {
+      return keyval
+    } else if (del) {
+      return acc
+    }
+
+    return `${acc}&${keyval}`
+  }, '')
+
+  cleanedSearch = cleanedSearch === '?' ? '' : cleanedSearch
+
+  window.history.pushState({
+    html: document.body.innerHTML,
+    pageTitle: document.title
+  }, '', `${protocol}//${host}${pathname}${cleanedSearch}${cleanedHash}`)
+
+  return true
+}

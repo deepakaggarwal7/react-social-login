@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
-import { omit } from './utils'
+import { cleanLocation, omit } from './utils'
 
 export { default as OldSocialLogin } from './component'
 
@@ -33,6 +33,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     }
   }
 
+  static defaultProps = {
+    autoCleanUri: false
+  }
+
   constructor (props) {
     super(props)
 
@@ -56,10 +60,14 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, appSecret, autoLogin, redirect } = this.props
+    const { appId, appSecret, autoCleanUri, autoLogin, redirect } = this.props
 
     this.sdk.load(appId, redirect, appSecret)
       .then((accessToken) => {
+        if (autoCleanUri) {
+          cleanLocation()
+        }
+
         if (accessToken) {
           this.accessToken = accessToken
         }
