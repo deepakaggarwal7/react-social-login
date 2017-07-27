@@ -16,11 +16,6 @@ export { default as OldSocialLogin } from './component'
 const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   static propTypes = {
     appId: PropTypes.string.isRequired,
-    appSecret: (props, propName, componentName) => {
-      if (props.provider === 'github' && !props[propName] && typeof props[propName] !== 'string') {
-        return new Error(`Missing required \`${propName}\` prop on ${componentName}.`)
-      }
-    },
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
     onLoginFailure: PropTypes.func,
@@ -60,9 +55,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, appSecret, autoCleanUri, autoLogin, onLoginFailure, redirect } = this.props
+    const { appId, autoCleanUri, autoLogin, onLoginFailure, redirect } = this.props
 
-    this.sdk.load(appId, redirect, appSecret)
+    this.sdk.load(appId, redirect)
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
