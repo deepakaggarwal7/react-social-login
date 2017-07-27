@@ -3,7 +3,6 @@ import { rslError } from '../utils'
 const GITHUB_API = 'https://api.github.com/graphql'
 
 let githubAppId
-let githubAuth
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
@@ -14,9 +13,17 @@ if (!window.fetch) {
  * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
  * @param {string} appId
  */
-const load = (appId) => new Promise((resolve) => {
+const load = (appId) => new Promise((resolve, reject) => {
+  if (!appId) {
+    return reject(rslError({
+      provider: 'github',
+      type: 'load',
+      description: 'Cannot load SDK without appId',
+      error: null
+    }))
+  }
+
   githubAppId = appId
-  githubAuth = new Headers({ 'Authorization': `Bearer ${githubAppId}` })
 
   return resolve()
 })
@@ -33,11 +40,24 @@ const checkLogin = (autoLogin = false) => {
   return new Promise((resolve, reject) => {
     window.fetch(GITHUB_API, {
       method: 'POST',
-      headers: githubAuth,
+      headers: new Headers({
+        'Authorization': `Bearer ${githubAppId}`
+      }),
       body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
     })
       .then((response) => response.json())
-      .then((json) => resolve(json))
+      .then((json) => {
+        if (json.message || json.errors) {
+          return reject(rslError({
+            provider: 'github',
+            type: 'check_login',
+            description: 'Failed to fetch user data',
+            error: json
+          }))
+        }
+
+        return resolve(json)
+      })
       .catch(() => reject(rslError({
         provider: 'github',
         type: 'check_login',
@@ -52,12 +72,10 @@ const checkLogin = (autoLogin = false) => {
  * This code only triggers login request, response is handled by a callback handled on SDK load.
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
  */
-const login = () => new Promise((resolve) => {
+const login = () => new Promise((resolve, reject) => {
   checkLogin()
     .then((response) => resolve(response))
-    .catch(() => {
-      window.open(githubAuth, '_self')
-    })
+    .catch((error) => reject(error))
 })
 
 /**
