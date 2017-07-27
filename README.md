@@ -14,7 +14,7 @@
 
 React Social Login is an HOC which provides social login through multiple providers.
 
-**Currently supports Facebook, GitHub, Google, Instagram and LinkedIn as providers (more to come!)**
+**Currently supports Facebook, GitHub (basic auth only), Google, Instagram and LinkedIn as providers (more to come!)**
 
 ## Motivation
 
@@ -32,8 +32,6 @@ $ npm start
 ```
 
 You can then view the demo at [http://localhost:8080][demo].
-
-**WARNING!** Be aware that Instagram and GitHub demos doesn’t work on localhost due to CORS. You can use Chrome plugin [Allow-Control-Allow-Origin: *][corschrome] or Firefox plugin [CORS Everywhere][corsff] to get rid of this limitation.
 
 ## Install
 
@@ -121,6 +119,12 @@ See [facebook for developers documentation][fb4devdoc].
 
 #### GitHub
 
+**Basic authentication method using personal access tokens**
+
+See [GitHub Help][githubhelp].
+
+**OAuth authentication (broken for now)**
+
 See [GitHub Developer guide][githubdoc].
 
 #### Google
@@ -197,10 +201,9 @@ TBD
 * No longer just myself
 
 [demo]: http://localhost:8080
-[corschrome]: https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi
-[corsff]: https://addons.mozilla.org/fr/firefox/addon/cors-everywhere/
 [findmyappid]: #find-my-appid
 [fb4devdoc]: https://developers.facebook.com/docs/apps/register
+[githubhelp]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line
 [githubdoc]: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps
 [gsignindoc]: https://developers.google.com/identity/sign-in/web/devconsole-project
 [instadoc]: https://www.instagram.com/developer
