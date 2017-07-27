@@ -1,6 +1,6 @@
 import uuid from 'uuid/v5'
 
-import { getQueryStringValue, responseTextToObject } from '../utils'
+import { getQueryStringValue, responseTextToObject, rslError } from '../utils'
 
 const GITHUB_API = 'https://api.github.com'
 const GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token'
@@ -35,7 +35,7 @@ const load = (appId, redirect, appSecret) => new Promise((resolve, reject) => {
 
         return resolve(githubAccessToken)
       })
-      .catch((err) => reject(err))
+      .catch(reject)
   } else {
     return resolve()
   }
@@ -51,7 +51,12 @@ const checkLogin = (autoLogin = false) => {
   }
 
   if (!githubAccessToken) {
-    return Promise.reject('No access token available')
+    return Promise.reject(rslError({
+      provider: 'github',
+      type: 'access_token',
+      description: 'No access token available',
+      error: null
+    }))
   }
 
   return new Promise((resolve, reject) => {
@@ -60,7 +65,12 @@ const checkLogin = (autoLogin = false) => {
     })
       .then((response) => response.json())
       .then((json) => resolve(json))
-      .catch((err) => reject(err))
+      .catch(() => reject(rslError({
+        provider: 'github',
+        type: 'check_login',
+        description: 'Failed to fetch user data due to CORS issue',
+        error: null
+      })))
   })
 }
 
@@ -95,12 +105,22 @@ const getAccessToken = () => new Promise((resolve, reject) => {
     .then((text) => responseTextToObject(text))
     .then((response) => {
       if (response.error) {
-        return reject(`Failed to get GitHub access token (${response.error}: ${response.error_description} - ${response.error_uri})`)
+        return reject(rslError({
+          provider: 'github',
+          type: 'access_token',
+          description: 'Failed to fetch access token',
+          error: response
+        }))
       }
 
       return resolve(response)
     })
-    .catch((err) => reject(err))
+    .catch(() => reject(rslError({
+      provider: 'github',
+      type: 'access_token',
+      description: 'Failed to fetch access token due to CORS issue',
+      error: null
+    })))
 })
 
 /**

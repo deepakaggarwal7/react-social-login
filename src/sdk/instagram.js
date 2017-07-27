@@ -1,4 +1,4 @@
-import { getHashValue, getQueryStringValue } from '../utils'
+import { getHashValue, getQueryStringValue, rslError } from '../utils'
 
 const INSTAGRAM_API = 'https://api.instagram.com/v1'
 
@@ -22,7 +22,15 @@ const load = (appId, redirect) => new Promise((resolve, reject) => {
 
   if (getQueryStringValue('rslCallback') === 'instagram') {
     if (getQueryStringValue('error')) {
-      return reject(`${getQueryStringValue('error_reason')}: ${getQueryStringValue('error_description')}`)
+      return reject(rslError({
+        provider: 'instagram',
+        type: 'auth',
+        description: 'Authentication failed',
+        error: {
+          error_reason: getQueryStringValue('error_reason'),
+          error_description: getQueryStringValue('error_description')
+        }
+      }))
     } else {
       instagramAccessToken = getHashValue('access_token')
     }
@@ -41,7 +49,12 @@ const checkLogin = (autoLogin = false) => {
   }
 
   if (!instagramAccessToken) {
-    return Promise.reject('No access token available')
+    return Promise.reject(rslError({
+      provider: 'instagram',
+      type: 'access_token',
+      description: 'No access token available',
+      error: null
+    }))
   }
 
   return new Promise((resolve, reject) => {
@@ -49,12 +62,24 @@ const checkLogin = (autoLogin = false) => {
       .then((response) => response.json())
       .then((json) => {
         if (json.meta.code !== 200) {
-          return reject(`${json.meta.error_type}: ${json.meta.error_message}`)
+          return reject(rslError({
+            provider: 'instagram',
+            type: 'check_login',
+            description: 'Failed to fetch user data',
+            error: json.meta
+          }))
         }
 
         return resolve({ data: json.data, accessToken: instagramAccessToken })
-      }).catch((err) => reject({ fetchErr: true, err })
-    )
+      }).catch(() => reject({
+        fetchErr: true,
+        err: rslError({
+          provider: 'instagram',
+          type: 'check_login',
+          description: 'Failed to fetch user data due to CORS issue',
+          error: null
+        })
+      }))
   })
 }
 
@@ -70,7 +95,7 @@ const login = () => new Promise((resolve, reject) => {
       if (!err.fetchErr) {
         window.open(instagramAuth, '_self')
       } else {
-        return reject(err.err || err || null)
+        return reject(err.err)
       }
     })
 })

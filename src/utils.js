@@ -32,7 +32,7 @@ export const getHashValue = (key) => {
   return matches ? matches[1] : null
 }
 
-export const responseTextToObject = (text, key) => {
+export const responseTextToObject = (text) => {
   const keyValuePairs = text.split('&')
 
   if (!keyValuePairs || keyValuePairs.length === 0) {
@@ -82,4 +82,16 @@ export const cleanLocation = () => {
   }, '', `${protocol}//${host}${pathname}${cleanedSearch}${cleanedHash}`)
 
   return true
+}
+
+export const rslError = (errorObject) => {
+  const error = []
+
+  error.push(`[${errorObject.provider}][${errorObject.type}] ${errorObject.description}`)
+
+  if (errorObject.error) {
+    error.push(JSON.stringify(errorObject.error, null, 2))
+  }
+
+  return error.join('\n\nORIGINAL ERROR: ')
 }

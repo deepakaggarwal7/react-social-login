@@ -1,8 +1,10 @@
+import { rslError } from '../utils'
+
 /**
  * Loads LinkedIn SDK.
  * @param {string} appId
  */
-const load = (appId) => new Promise((resolve, reject) => {
+const load = (appId) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('linkedin-client')) {
     return resolve()
@@ -36,7 +38,12 @@ const load = (appId) => new Promise((resolve, reject) => {
  */
 const checkLogin = () => new Promise((resolve, reject) => {
   if (!window.IN.User.isAuthorized()) {
-    return reject()
+    return reject(rslError({
+      provider: 'linkedin',
+      type: 'check_login',
+      description: 'Not authenticated',
+      error: null
+    }))
   }
 
   return getProfile().then(resolve, reject)
@@ -67,7 +74,12 @@ const getProfile = () => new Promise((resolve, reject) => {
     'pictureUrl',
     'publicProfileUrl',
     'emailAddress'
-  ]).result(resolve).error(reject)
+  ]).result(resolve).error((err) => reject(rslError({
+    provider: 'linkedin',
+    type: 'get_profile',
+    description: 'Failed to get user profile',
+    error: err
+  })))
 })
 
 /**
