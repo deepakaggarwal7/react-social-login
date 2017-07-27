@@ -78,6 +78,124 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+/**
+ * Create a copy of an object, omitting provided keys.
+ * @param {Object} obj Object to copy
+ * @param {Array} arr Keys to omit
+ * @returns {Object}
+ */
+var omit = exports.omit = function omit(obj, arr) {
+  return Object.keys(obj).reduce(function (res, key) {
+    if (arr.indexOf(key) === -1) {
+      res[key] = obj[key];
+    }
+
+    return res;
+  }, {});
+};
+
+/**
+ * Get key value from url query strings
+ * @param {string} key Key to get value from
+ * @returns {string}
+ */
+var getQueryStringValue = exports.getQueryStringValue = function getQueryStringValue(key) {
+  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
+};
+
+/**
+ * Get key value from location hash
+ * @param {string} key Key to get value from
+ * @returns {string|null}
+ */
+var getHashValue = exports.getHashValue = function getHashValue(key) {
+  var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
+
+  return matches ? matches[1] : null;
+};
+
+var responseTextToObject = exports.responseTextToObject = function responseTextToObject(text) {
+  var keyValuePairs = text.split('&');
+
+  if (!keyValuePairs || keyValuePairs.length === 0) {
+    return {};
+  }
+
+  return keyValuePairs.reduce(function (result, pair) {
+    var _pair$split = pair.split('='),
+        _pair$split2 = _slicedToArray(_pair$split, 2),
+        key = _pair$split2[0],
+        value = _pair$split2[1];
+
+    result[key] = decodeURIComponent(value);
+
+    return result;
+  }, {});
+};
+
+var cleanLocation = exports.cleanLocation = function cleanLocation() {
+  if (!window.history || !window.history.pushState) {
+    return;
+  }
+
+  var _window$location = window.location,
+      protocol = _window$location.protocol,
+      host = _window$location.host,
+      pathname = _window$location.pathname,
+      search = _window$location.search,
+      hash = _window$location.hash;
+
+
+  var cleanedHash = /access_token/.test(hash) ? '' : hash ? '#' + hash : '';
+  var cleanedSearch = search.split('&').reduce(function (acc, keyval, i) {
+    var del = /rslCallback=/.test(keyval) || /code=/.test(keyval) || /state=/.test(keyval) || /error=/.test(keyval) || /error_reason=/.test(keyval);
+
+    if (i === 0 && del) {
+      return '?';
+    } else if (i === 0) {
+      return keyval;
+    } else if (del) {
+      return acc;
+    }
+
+    return acc + '&' + keyval;
+  }, '');
+
+  cleanedSearch = cleanedSearch === '?' ? '' : cleanedSearch;
+
+  window.history.pushState({
+    html: document.body.innerHTML,
+    pageTitle: document.title
+  }, '', protocol + '//' + host + pathname + cleanedSearch + cleanedHash);
+
+  return true;
+};
+
+var rslError = exports.rslError = function rslError(errorObject) {
+  var error = [];
+
+  error.push('[' + errorObject.provider + '][' + errorObject.type + '] ' + errorObject.description);
+
+  if (errorObject.error) {
+    error.push(JSON.stringify(errorObject.error, null, 2));
+  }
+
+  return error.join('\n\nORIGINAL ERROR: ');
+};
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -267,7 +385,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -734,112 +852,6 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-/**
- * Create a copy of an object, omitting provided keys.
- * @param {Object} obj Object to copy
- * @param {Array} arr Keys to omit
- * @returns {Object}
- */
-var omit = exports.omit = function omit(obj, arr) {
-  return Object.keys(obj).reduce(function (res, key) {
-    if (arr.indexOf(key) === -1) {
-      res[key] = obj[key];
-    }
-
-    return res;
-  }, {});
-};
-
-/**
- * Get key value from url query strings
- * @param {string} key Key to get value from
- * @returns {string}
- */
-var getQueryStringValue = exports.getQueryStringValue = function getQueryStringValue(key) {
-  return decodeURIComponent(window.location.search.replace(new RegExp('^(?:.*[&\\?]' + encodeURIComponent(key).replace(/[.+*]/g, '\\$&') + '(?:\\=([^&]*))?)?.*$', 'i'), '$1'));
-};
-
-/**
- * Get key value from location hash
- * @param {string} key Key to get value from
- * @returns {string|null}
- */
-var getHashValue = exports.getHashValue = function getHashValue(key) {
-  var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
-
-  return matches ? matches[1] : null;
-};
-
-var responseTextToObject = exports.responseTextToObject = function responseTextToObject(text, key) {
-  var keyValuePairs = text.split('&');
-
-  if (!keyValuePairs || keyValuePairs.length === 0) {
-    return {};
-  }
-
-  return keyValuePairs.reduce(function (result, pair) {
-    var _pair$split = pair.split('='),
-        _pair$split2 = _slicedToArray(_pair$split, 2),
-        key = _pair$split2[0],
-        value = _pair$split2[1];
-
-    result[key] = decodeURIComponent(value);
-
-    return result;
-  }, {});
-};
-
-var cleanLocation = exports.cleanLocation = function cleanLocation() {
-  if (!window.history || !window.history.pushState) {
-    return;
-  }
-
-  var _window$location = window.location,
-      protocol = _window$location.protocol,
-      host = _window$location.host,
-      pathname = _window$location.pathname,
-      search = _window$location.search,
-      hash = _window$location.hash;
-
-
-  var cleanedHash = /access_token/.test(hash) ? '' : hash ? '#' + hash : '';
-  var cleanedSearch = search.split('&').reduce(function (acc, keyval, i) {
-    var del = /rslCallback=/.test(keyval) || /code=/.test(keyval) || /state=/.test(keyval) || /error=/.test(keyval) || /error_reason=/.test(keyval);
-
-    if (i === 0 && del) {
-      return '?';
-    } else if (i === 0) {
-      return keyval;
-    } else if (del) {
-      return acc;
-    }
-
-    return acc + '&' + keyval;
-  }, '');
-
-  cleanedSearch = cleanedSearch === '?' ? '' : cleanedSearch;
-
-  window.history.pushState({
-    html: document.body.innerHTML,
-    pageTitle: document.title
-  }, '', protocol + '//' + host + pathname + cleanedSearch + cleanedHash);
-
-  return true;
-};
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -943,7 +955,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 }
 
 module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 5 */
@@ -1186,7 +1198,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = warning;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 9 */
@@ -1223,7 +1235,7 @@ if (process.env.NODE_ENV !== 'production') {
   module.exports = __webpack_require__(20)();
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 10 */
@@ -1276,7 +1288,7 @@ var _SocialUser = __webpack_require__(6);
 
 var _SocialUser2 = _interopRequireDefault(_SocialUser);
 
-var _utils = __webpack_require__(2);
+var _utils = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1333,6 +1345,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
             appSecret = _props.appSecret,
             autoCleanUri = _props.autoCleanUri,
             autoLogin = _props.autoLogin,
+            onLoginFailure = _props.onLoginFailure,
             redirect = _props.redirect;
 
 
@@ -1352,14 +1365,20 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
           }, function () {
             if (autoLogin || _this2.accessToken) {
               if (_this2.fetchProvider && !_this2.accessToken) {
-                _this2.sdk.login(appId, redirect);
+                _this2.sdk.login(appId, redirect).catch(function (err) {
+                  return _this2.onLoginFailure(err);
+                });
               } else {
                 _this2.sdk.checkLogin(true).then(function (authResponse) {
-                  _this2.onLoginSuccess(authResponse);
+                  return _this2.onLoginSuccess(authResponse);
+                }).catch(function (err) {
+                  return _this2.onLoginFailure(err);
                 });
               }
             }
           });
+        }).catch(function (err) {
+          return onLoginFailure(err);
         });
       }
 
@@ -1723,13 +1742,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _utils = __webpack_require__(0);
+
 /**
  * Loads Facebook SDK.
  * @param {string} appId
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
 var load = function load(appId) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     // @TODO: handle errors
     if (document.getElementById('facebook-jssdk')) {
       return resolve();
@@ -1766,7 +1787,12 @@ var load = function load(appId) {
 var handleLoginStatus = function handleLoginStatus(response) {
   return new Promise(function (resolve, reject) {
     if (!response.authResponse) {
-      return reject();
+      return reject((0, _utils.rslError)({
+        provider: 'facebook',
+        type: 'auth',
+        description: 'Authentication failed',
+        error: response
+      }));
     }
 
     switch (response.status) {
@@ -1778,7 +1804,12 @@ var handleLoginStatus = function handleLoginStatus(response) {
         break;
       case 'not_authorized':
       case 'unknown':
-        return reject();
+        return reject((0, _utils.rslError)({
+          provider: 'facebook',
+          type: 'auth',
+          description: 'Authentication has been cancelled or an unknown error occurred',
+          error: response
+        }));
     }
   });
 };
@@ -1895,7 +1926,7 @@ var _v = __webpack_require__(24);
 
 var _v2 = _interopRequireDefault(_v);
 
-var _utils = __webpack_require__(2);
+var _utils = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1910,7 +1941,7 @@ var githubAccessToken = void 0;
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
-  __webpack_require__(1);
+  __webpack_require__(2);
 }
 
 /**
@@ -1931,9 +1962,7 @@ var load = function load(appId, redirect, appSecret) {
         githubAccessToken = accessToken;
 
         return resolve(githubAccessToken);
-      }).catch(function (err) {
-        return reject(err);
-      });
+      }).catch(reject);
     } else {
       return resolve();
     }
@@ -1952,7 +1981,12 @@ var checkLogin = function checkLogin() {
   }
 
   if (!githubAccessToken) {
-    return Promise.reject('No access token available');
+    return Promise.reject((0, _utils.rslError)({
+      provider: 'github',
+      type: 'access_token',
+      description: 'No access token available',
+      error: null
+    }));
   }
 
   return new Promise(function (resolve, reject) {
@@ -1962,8 +1996,13 @@ var checkLogin = function checkLogin() {
       return response.json();
     }).then(function (json) {
       return resolve(json);
-    }).catch(function (err) {
-      return reject(err);
+    }).catch(function () {
+      return reject((0, _utils.rslError)({
+        provider: 'github',
+        type: 'check_login',
+        description: 'Failed to fetch user data due to CORS issue',
+        error: null
+      }));
     });
   });
 };
@@ -2003,12 +2042,22 @@ var getAccessToken = function getAccessToken() {
       return (0, _utils.responseTextToObject)(text);
     }).then(function (response) {
       if (response.error) {
-        return reject('Failed to get GitHub access token (' + response.error + ': ' + response.error_description + ' - ' + response.error_uri + ')');
+        return reject((0, _utils.rslError)({
+          provider: 'github',
+          type: 'access_token',
+          description: 'Failed to fetch access token',
+          error: response
+        }));
       }
 
       return resolve(response);
-    }).catch(function (err) {
-      return reject(err);
+    }).catch(function () {
+      return reject((0, _utils.rslError)({
+        provider: 'github',
+        type: 'access_token',
+        description: 'Failed to fetch access token due to CORS issue',
+        error: null
+      }));
     });
   });
 };
@@ -2052,6 +2101,9 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _utils = __webpack_require__(0);
+
 /**
  * Loads Google SDK.
  * @param {string} appId
@@ -2074,8 +2126,13 @@ var load = function load(appId) {
             client_id: appId
           }).then(function () {
             return resolve();
-          }, function () {
-            return reject();
+          }, function (err) {
+            return reject((0, _utils.rslError)({
+              provider: 'google',
+              type: 'load',
+              description: 'Failed to load SDK',
+              error: err
+            }));
           });
         }
       });
@@ -2101,7 +2158,12 @@ var checkLogin = function checkLogin() {
     var GoogleAuth = window.gapi.auth2.getAuthInstance();
 
     if (!GoogleAuth.isSignedIn.get()) {
-      return reject();
+      return reject((0, _utils.rslError)({
+        provider: 'google',
+        type: 'check_login',
+        description: 'Not authenticated',
+        error: null
+      }));
     }
 
     return resolve(GoogleAuth.currentUser.get());
@@ -2120,8 +2182,13 @@ var login = function login() {
 
     GoogleAuth.signIn().then(function () {
       return checkLogin().then(resolve, reject);
-    }, function () {
-      return reject();
+    }, function (err) {
+      return reject((0, _utils.rslError)({
+        provider: 'google',
+        type: 'auth',
+        description: 'Authentication failed',
+        error: err
+      }));
     });
   });
 };
@@ -2196,7 +2263,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _utils = __webpack_require__(2);
+var _utils = __webpack_require__(0);
 
 var INSTAGRAM_API = 'https://api.instagram.com/v1';
 
@@ -2207,7 +2274,7 @@ var instagramAccessToken = void 0;
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
-  __webpack_require__(1);
+  __webpack_require__(2);
 }
 
 /**
@@ -2221,7 +2288,15 @@ var load = function load(appId, redirect) {
 
     if ((0, _utils.getQueryStringValue)('rslCallback') === 'instagram') {
       if ((0, _utils.getQueryStringValue)('error')) {
-        return reject((0, _utils.getQueryStringValue)('error_reason') + ': ' + (0, _utils.getQueryStringValue)('error_description'));
+        return reject((0, _utils.rslError)({
+          provider: 'instagram',
+          type: 'auth',
+          description: 'Authentication failed',
+          error: {
+            error_reason: (0, _utils.getQueryStringValue)('error_reason'),
+            error_description: (0, _utils.getQueryStringValue)('error_description')
+          }
+        }));
       } else {
         instagramAccessToken = (0, _utils.getHashValue)('access_token');
       }
@@ -2243,7 +2318,12 @@ var checkLogin = function checkLogin() {
   }
 
   if (!instagramAccessToken) {
-    return Promise.reject('No access token available');
+    return Promise.reject((0, _utils.rslError)({
+      provider: 'instagram',
+      type: 'access_token',
+      description: 'No access token available',
+      error: null
+    }));
   }
 
   return new Promise(function (resolve, reject) {
@@ -2251,12 +2331,25 @@ var checkLogin = function checkLogin() {
       return response.json();
     }).then(function (json) {
       if (json.meta.code !== 200) {
-        return reject(json.meta.error_type + ': ' + json.meta.error_message);
+        return reject((0, _utils.rslError)({
+          provider: 'instagram',
+          type: 'check_login',
+          description: 'Failed to fetch user data',
+          error: json.meta
+        }));
       }
 
       return resolve({ data: json.data, accessToken: instagramAccessToken });
-    }).catch(function (err) {
-      return reject({ fetchErr: true, err: err });
+    }).catch(function () {
+      return reject({
+        fetchErr: true,
+        err: (0, _utils.rslError)({
+          provider: 'instagram',
+          type: 'check_login',
+          description: 'Failed to fetch user data due to CORS issue',
+          error: null
+        })
+      });
     });
   });
 };
@@ -2274,7 +2367,7 @@ var login = function login() {
       if (!err.fetchErr) {
         window.open(instagramAuth, '_self');
       } else {
-        return reject(err.err || err || null);
+        return reject(err.err);
       }
     });
   });
@@ -2318,12 +2411,15 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _utils = __webpack_require__(0);
+
 /**
  * Loads LinkedIn SDK.
  * @param {string} appId
  */
 var load = function load(appId) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     // @TODO: handle errors
     if (document.getElementById('linkedin-client')) {
       return resolve();
@@ -2359,7 +2455,12 @@ var load = function load(appId) {
 var checkLogin = function checkLogin() {
   return new Promise(function (resolve, reject) {
     if (!window.IN.User.isAuthorized()) {
-      return reject();
+      return reject((0, _utils.rslError)({
+        provider: 'linkedin',
+        type: 'check_login',
+        description: 'Not authenticated',
+        error: null
+      }));
     }
 
     return getProfile().then(resolve, reject);
@@ -2386,7 +2487,14 @@ var login = function login() {
  */
 var getProfile = function getProfile() {
   return new Promise(function (resolve, reject) {
-    window.IN.API.Profile('me').fields(['id', 'firstName', 'lastName', 'pictureUrl', 'publicProfileUrl', 'emailAddress']).result(resolve).error(reject);
+    window.IN.API.Profile('me').fields(['id', 'firstName', 'lastName', 'pictureUrl', 'publicProfileUrl', 'emailAddress']).result(resolve).error(function (err) {
+      return reject((0, _utils.rslError)({
+        provider: 'linkedin',
+        type: 'get_profile',
+        description: 'Failed to get user profile',
+        error: err
+      }));
+    });
   });
 };
 
@@ -2512,7 +2620,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 
 module.exports = checkPropTypes;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 20 */
@@ -3098,7 +3206,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
   return ReactPropTypes;
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 22 */
@@ -3273,7 +3381,7 @@ module.exports = v5;
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(1);
+__webpack_require__(2);
 module.exports = __webpack_require__(11);
 
 
