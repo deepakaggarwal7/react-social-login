@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 26);
+/******/ 	return __webpack_require__(__webpack_require__.s = 23);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1342,14 +1342,13 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
 
         var _props = this.props,
             appId = _props.appId,
-            appSecret = _props.appSecret,
             autoCleanUri = _props.autoCleanUri,
             autoLogin = _props.autoLogin,
             onLoginFailure = _props.onLoginFailure,
             redirect = _props.redirect;
 
 
-        this.sdk.load(appId, redirect, appSecret).then(function (accessToken) {
+        this.sdk.load(appId, redirect).then(function (accessToken) {
           if (autoCleanUri) {
             (0, _utils.cleanLocation)();
           }
@@ -1381,6 +1380,34 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
           return onLoginFailure(err);
         });
       }
+    }, {
+      key: 'componentWillReceiveProps',
+      value: function componentWillReceiveProps(nextProps) {
+        var _this3 = this;
+
+        var _props2 = this.props,
+            appId = _props2.appId,
+            provider = _props2.provider;
+
+
+        if (provider === 'github' && appId !== nextProps.appId) {
+          this.setState(function (prevState) {
+            return {
+              isLoaded: false,
+              isFetching: false,
+              isConnected: false
+            };
+          }, function () {
+            _this3.sdk.load(nextProps.appId).then(function () {
+              _this3.setState(function (prevState) {
+                return _extends({}, prevState, {
+                  isLoaded: true
+                });
+              });
+            }).catch(_this3.onLoginFailure);
+          });
+        }
+      }
 
       /**
        * Triggers login process.
@@ -1389,7 +1416,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     }, {
       key: 'login',
       value: function login() {
-        var _this3 = this;
+        var _this4 = this;
 
         if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
           this.setState(function (prevState) {
@@ -1399,9 +1426,9 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
           });
 
           this.sdk.login().then(function (response) {
-            return _this3.onLoginSuccess(response);
+            return _this4.onLoginSuccess(response);
           }).catch(function (err) {
-            return _this3.onLoginFailure(err);
+            return _this4.onLoginFailure(err);
           });
         } else if (this.state.isLoaded && this.state.isConnected) {
           this.props.onLoginFailure('User already connected');
@@ -1418,9 +1445,9 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     }, {
       key: 'onLoginSuccess',
       value: function onLoginSuccess(response) {
-        var _props2 = this.props,
-            onLoginSuccess = _props2.onLoginSuccess,
-            provider = _props2.provider;
+        var _props3 = this.props,
+            onLoginSuccess = _props3.onLoginSuccess,
+            provider = _props3.provider;
 
         var user = new _SocialUser2.default(provider);
         var socialUserData = this.sdk.generateUser(response);
@@ -1472,11 +1499,6 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     return SocialLogin;
   }(_react.Component), _class.propTypes = {
     appId: _propTypes2.default.string.isRequired,
-    appSecret: function appSecret(props, propName, componentName) {
-      if (props.provider === 'github' && !props[propName] && typeof props[propName] !== 'string') {
-        return new Error('Missing required `' + propName + '` prop on ' + componentName + '.');
-      }
-    },
     autoCleanUri: _propTypes2.default.bool,
     autoLogin: _propTypes2.default.bool,
     onLoginFailure: _propTypes2.default.func,
@@ -1922,22 +1944,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _v = __webpack_require__(25);
-
-var _v2 = _interopRequireDefault(_v);
-
 var _utils = __webpack_require__(0);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var GITHUB_API = 'https://api.github.com/graphql';
 
-var GITHUB_API = 'https://api.github.com';
-var GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token';
-
-var githubAuth = void 0;
 var githubAppId = void 0;
-var githubAppSecret = void 0;
-var githubRedirect = void 0;
-var githubAccessToken = void 0;
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
@@ -1947,25 +1958,21 @@ if (!window.fetch) {
 /**
  * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
  * @param {string} appId
- * @param {string} redirect
- * @param {string} appSecret
  */
-var load = function load(appId, redirect, appSecret) {
+var load = function load(appId) {
   return new Promise(function (resolve, reject) {
-    githubAppId = appId;
-    githubAppSecret = appSecret;
-    githubRedirect = redirect + '%3FrslCallback%3Dgithub';
-    githubAuth = 'http://github.com/login/oauth/authorize?client_id=' + githubAppId + '&redirect_uri=' + githubRedirect + '&scope=user&state=' + (0, _v2.default)(redirect, _v2.default.URL);
-
-    if ((0, _utils.getQueryStringValue)('rslCallback') === 'github') {
-      getAccessToken().then(function (accessToken) {
-        githubAccessToken = accessToken;
-
-        return resolve(githubAccessToken);
-      }).catch(reject);
-    } else {
-      return resolve();
+    if (!appId) {
+      return reject((0, _utils.rslError)({
+        provider: 'github',
+        type: 'load',
+        description: 'Cannot load SDK without appId',
+        error: null
+      }));
     }
+
+    githubAppId = appId;
+
+    return resolve();
   });
 };
 
@@ -1980,21 +1987,25 @@ var checkLogin = function checkLogin() {
     return login();
   }
 
-  if (!githubAccessToken) {
-    return Promise.reject((0, _utils.rslError)({
-      provider: 'github',
-      type: 'access_token',
-      description: 'No access token available',
-      error: null
-    }));
-  }
-
   return new Promise(function (resolve, reject) {
-    window.fetch(GITHUB_API + '/user?access_token=' + githubAccessToken.access_token, {
-      method: 'GET'
+    window.fetch(GITHUB_API, {
+      method: 'POST',
+      headers: new Headers({
+        'Authorization': 'Bearer ' + githubAppId
+      }),
+      body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
     }).then(function (response) {
       return response.json();
     }).then(function (json) {
+      if (json.message || json.errors) {
+        return reject((0, _utils.rslError)({
+          provider: 'github',
+          type: 'check_login',
+          description: 'Failed to fetch user data',
+          error: json
+        }));
+      }
+
       return resolve(json);
     }).catch(function () {
       return reject((0, _utils.rslError)({
@@ -2013,71 +2024,33 @@ var checkLogin = function checkLogin() {
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
  */
 var login = function login() {
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
     checkLogin().then(function (response) {
       return resolve(response);
-    }).catch(function () {
-      window.open(githubAuth, '_self');
-    });
-  });
-};
-
-/**
- * Get access token with authorization code
- * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
- */
-var getAccessToken = function getAccessToken() {
-  return new Promise(function (resolve, reject) {
-    var authorizationCode = (0, _utils.getQueryStringValue)('code');
-
-    if (!authorizationCode) {
-      return reject('Authorization code not found');
-    }
-
-    window.fetch(GITHUB_ACCESS_TOKEN + '?client_id=' + githubAppId + '&client_secret=' + githubAppSecret + '&code=' + authorizationCode + '&redirect_uri=' + githubRedirect, {
-      method: 'GET'
-    }).then(function (response) {
-      return response.text();
-    }).then(function (text) {
-      return (0, _utils.responseTextToObject)(text);
-    }).then(function (response) {
-      if (response.error) {
-        return reject((0, _utils.rslError)({
-          provider: 'github',
-          type: 'access_token',
-          description: 'Failed to fetch access token',
-          error: response
-        }));
-      }
-
-      return resolve(response);
-    }).catch(function () {
-      return reject((0, _utils.rslError)({
-        provider: 'github',
-        type: 'access_token',
-        description: 'Failed to fetch access token due to CORS issue',
-        error: null
-      }));
+    }).catch(function (error) {
+      return reject(error);
     });
   });
 };
 
 /**
  * Helper to generate user account data.
- * @param {Object} response
+ * @param {Object} viewer
  */
-var generateUser = function generateUser(response) {
+var generateUser = function generateUser(_ref) {
+  var viewer = _ref.data.viewer;
+
   return {
     profile: {
-      id: response.id,
-      name: response.name,
-      firstName: response.name,
-      lastName: response.name,
-      email: response.email,
-      profilePicURL: response.avatar_url
+      id: viewer.id,
+      name: viewer.name,
+      firstName: viewer.name,
+      lastName: viewer.name,
+      email: viewer.email,
+      profilePicURL: viewer.avatarUrl
     },
     token: {
-      accessToken: githubAccessToken.access_token,
+      accessToken: githubAppId,
       expiresAt: Infinity // Couldn’t find a way to get expiration time
     }
   };
@@ -2086,7 +2059,6 @@ var generateUser = function generateUser(response) {
 exports.default = {
   checkLogin: checkLogin,
   generateUser: generateUser,
-  getAccessToken: getAccessToken,
   load: load,
   login: login
 };
@@ -3344,175 +3316,6 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 
 /***/ }),
 /* 23 */
-/***/ (function(module, exports) {
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  return bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]];
-}
-
-module.exports = bytesToUuid;
-
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-// Adapted from Chris Veness' SHA1 code at
-// http://www.movable-type.co.uk/scripts/sha1.html
-
-
-function f(s, x, y, z) {
-  switch (s) {
-    case 0: return (x & y) ^ (~x & z);
-    case 1: return x ^ y ^ z;
-    case 2: return (x & y) ^ (x & z) ^ (y & z);
-    case 3: return x ^ y ^ z;
-  }
-}
-
-function ROTL(x, n) {
-  return (x << n) | (x>>> (32 - n));
-}
-
-function sha1(bytes) {
-  var K = [0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6];
-  var H = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
-
-  if (typeof(bytes) == 'string') {
-    var msg = unescape(encodeURIComponent(bytes)); // UTF8 escape
-    bytes = new Array(msg.length);
-    for (var i = 0; i < msg.length; i++) bytes[i] = msg.charCodeAt(i);
-  }
-
-  bytes.push(0x80);
-
-  var l = bytes.length/4 + 2;
-  var N = Math.ceil(l/16);
-  var M = new Array(N);
-
-  for (var i=0; i<N; i++) {
-    M[i] = new Array(16);
-    for (var j=0; j<16; j++) {
-      M[i][j] =
-        bytes[i * 64 + j * 4] << 24 |
-        bytes[i * 64 + j * 4 + 1] << 16 |
-        bytes[i * 64 + j * 4 + 2] << 8 |
-        bytes[i * 64 + j * 4 + 3];
-    }
-  }
-
-  M[N - 1][14] = ((bytes.length - 1) * 8) /
-    Math.pow(2, 32); M[N - 1][14] = Math.floor(M[N - 1][14]);
-  M[N - 1][15] = ((bytes.length - 1) * 8) & 0xffffffff;
-
-  for (var i=0; i<N; i++) {
-    var W = new Array(80);
-
-    for (var t=0; t<16; t++) W[t] = M[i][t];
-    for (var t=16; t<80; t++) {
-      W[t] = ROTL(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
-    }
-
-    var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4];
-
-    for (var t=0; t<80; t++) {
-      var s = Math.floor(t/20);
-      var T = ROTL(a, 5) + f(s, b, c, d) + e + K[s] + W[t] >>> 0;
-      e = d;
-      d = c;
-      c = ROTL(b, 30) >>> 0;
-      b = a;
-      a = T;
-    }
-
-    H[0] = (H[0] + a) >>> 0;
-    H[1] = (H[1] + b) >>> 0;
-    H[2] = (H[2] + c) >>> 0;
-    H[3] = (H[3] + d) >>> 0;
-    H[4] = (H[4] + e) >>> 0;
-  }
-
-  return [
-    H[0] >> 24 & 0xff, H[0] >> 16 & 0xff, H[0] >> 8 & 0xff, H[0] & 0xff,
-    H[1] >> 24 & 0xff, H[1] >> 16 & 0xff, H[1] >> 8 & 0xff, H[1] & 0xff,
-    H[2] >> 24 & 0xff, H[2] >> 16 & 0xff, H[2] >> 8 & 0xff, H[2] & 0xff,
-    H[3] >> 24 & 0xff, H[3] >> 16 & 0xff, H[3] >> 8 & 0xff, H[3] & 0xff,
-    H[4] >> 24 & 0xff, H[4] >> 16 & 0xff, H[4] >> 8 & 0xff, H[4] & 0xff
-  ];
-}
-
-module.exports = sha1;
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var sha1 = __webpack_require__(24);
-var bytesToUuid = __webpack_require__(23);
-
-function uuidToBytes(uuid) {
-  // Note: We assume we're being passed a valid uuid string
-  var bytes = [];
-  uuid.replace(/[a-fA-F0-9]{2}/g, function(hex) {
-    bytes.push(parseInt(hex, 16));
-  });
-
-  return bytes;
-}
-
-function stringToBytes(str) {
-  str = unescape(encodeURIComponent(str)); // UTF8 escape
-  var bytes = new Array(str.length);
-  for (var i = 0; i < str.length; i++) {
-    bytes[i] = str.charCodeAt(i);
-  }
-  return bytes;
-}
-
-function v5(name, namespace, buf, offset) {
-  if (typeof(name) == 'string') name = stringToBytes(name);
-  if (typeof(namespace) == 'string') namespace = uuidToBytes(namespace);
-
-  if (!Array.isArray(name)) throw TypeError('name must be an array of bytes');
-  if (!Array.isArray(namespace) || namespace.length != 16) throw TypeError('namespace must be uuid string or an Array of 16 byte values');
-
-  // Per 4.3
-  var bytes = sha1(namespace.concat(name));
-  bytes[6] = (bytes[6] & 0x0f) | 0x50;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-
-  return buf || bytesToUuid(bytes);
-}
-
-// Pre-defined namespaces, per Appendix C
-v5.DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
-v5.URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
-
-module.exports = v5;
-
-
-/***/ }),
-/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(2);
