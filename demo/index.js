@@ -74,11 +74,8 @@ ReactDOM.render(
       Login with Instagram
     </SocialButton>
     <SocialButton
-      autoCleanUri
       provider='github'
-      appId='8a7c2edb2e602d969839'
-      appSecret='6b9376025f232f4957403d7480e218128bdfc7d6'
-      redirect='http://localhost:8080'
+      appId='87c2663f0f2e624f6f15533f15f3015858e39631'
       onLoginSuccess={handleSocialLogin}
       onLoginFailure={handleSocialLoginFailure}
     >
