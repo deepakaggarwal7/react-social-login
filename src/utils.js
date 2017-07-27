@@ -32,7 +32,7 @@ export const getHashValue = (key) => {
   return matches ? matches[1] : null
 }
 
-export const responseTextToObject = (text, key) => {
+export const responseTextToObject = (text) => {
   const keyValuePairs = text.split('&')
 
   if (!keyValuePairs || keyValuePairs.length === 0) {

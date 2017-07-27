@@ -3,7 +3,7 @@
  * @param {string} appId
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-const load = (appId) => new Promise((resolve, reject) => {
+const load = (appId) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('facebook-jssdk')) {
     return resolve()

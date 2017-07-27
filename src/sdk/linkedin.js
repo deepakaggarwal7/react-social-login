@@ -2,7 +2,7 @@
  * Loads LinkedIn SDK.
  * @param {string} appId
  */
-const load = (appId) => new Promise((resolve, reject) => {
+const load = (appId) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('linkedin-client')) {
     return resolve()
