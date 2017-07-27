@@ -86,6 +86,25 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       .catch((err) => onLoginFailure(err))
   }
 
+  componentWillReceiveProps (nextProps) {
+    const { appId, provider } = this.props
+
+    if (provider === 'github' && appId !== nextProps.appId) {
+      this.setState((prevState) => ({
+        isLoaded: false,
+        isFetching: false,
+        isConnected: false
+      }), () => {
+        this.sdk.load(nextProps.appId).then(() => {
+          this.setState((prevState) => ({
+            ...prevState,
+            isLoaded: true
+          }))
+        }).catch(this.onLoginFailure)
+      })
+    }
+  }
+
   /**
    * Triggers login process.
    */
