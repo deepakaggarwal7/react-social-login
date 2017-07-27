@@ -1,8 +1,10 @@
+import fetchJsonp from 'fetch-jsonp'
+
 import { getHashValue, getQueryStringValue, rslError } from '../utils'
 
 const INSTAGRAM_API = 'https://api.instagram.com/v1'
 
-let instagramAuth = 'https://api.instagram.com/oauth/authorize/?response_type=token'
+let instagramAuth
 let instagramAppId
 let instagramRedirect
 let instagramAccessToken
@@ -58,7 +60,7 @@ const checkLogin = (autoLogin = false) => {
   }
 
   return new Promise((resolve, reject) => {
-    window.fetch(`${INSTAGRAM_API}/users/self/?access_token=${instagramAccessToken}`)
+    fetchJsonp(`${INSTAGRAM_API}/users/self/?access_token=${instagramAccessToken}`)
       .then((response) => response.json())
       .then((json) => {
         if (json.meta.code !== 200) {
@@ -71,7 +73,8 @@ const checkLogin = (autoLogin = false) => {
         }
 
         return resolve({ data: json.data, accessToken: instagramAccessToken })
-      }).catch(() => reject({
+      })
+      .catch(() => reject({
         fetchErr: true,
         err: rslError({
           provider: 'instagram',
