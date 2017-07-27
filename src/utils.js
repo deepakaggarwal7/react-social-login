@@ -83,3 +83,15 @@ export const cleanLocation = () => {
 
   return true
 }
+
+export const rslError = (errorObject) => {
+  const error = []
+
+  error.push(`[${errorObject.provider}][${errorObject.type}] ${errorObject.description}`)
+
+  if (errorObject.error) {
+    error.push(JSON.stringify(errorObject.error, null, 2))
+  }
+
+  return error.join('\n\nORIGINAL ERROR: ')
+}

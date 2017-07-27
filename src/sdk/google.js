@@ -1,3 +1,5 @@
+import { rslError } from '../utils'
+
 /**
  * Loads Google SDK.
  * @param {string} appId
@@ -17,7 +19,12 @@ const load = (appId) => new Promise((resolve, reject) => {
       if (!window.gapi.auth2.getAuthInstance()) {
         window.gapi.auth2.init({
           client_id: appId
-        }).then(() => resolve(), () => reject())
+        }).then(() => resolve(), (err) => reject(rslError({
+          provider: 'google',
+          type: 'load',
+          description: 'Failed to load SDK',
+          error: err
+        })))
       }
     })
   }
@@ -40,7 +47,12 @@ const checkLogin = () => new Promise((resolve, reject) => {
   const GoogleAuth = window.gapi.auth2.getAuthInstance()
 
   if (!GoogleAuth.isSignedIn.get()) {
-    return reject()
+    return reject(rslError({
+      provider: 'google',
+      type: 'check_login',
+      description: 'Not authenticated',
+      error: null
+    }))
   }
 
   return resolve(GoogleAuth.currentUser.get())
@@ -57,7 +69,12 @@ const login = () => new Promise((resolve, reject) => {
 
   GoogleAuth.signIn().then(
     () => checkLogin().then(resolve, reject),
-    () => reject()
+    (err) => reject(rslError({
+      provider: 'google',
+      type: 'auth',
+      description: 'Authentication failed',
+      error: err
+    }))
   )
 })
 

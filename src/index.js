@@ -60,7 +60,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, appSecret, autoCleanUri, autoLogin, redirect } = this.props
+    const { appId, appSecret, autoCleanUri, autoLogin, onLoginFailure, redirect } = this.props
 
     this.sdk.load(appId, redirect, appSecret)
       .then((accessToken) => {
@@ -79,14 +79,16 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
           if (autoLogin || this.accessToken) {
             if (this.fetchProvider && !this.accessToken) {
               this.sdk.login(appId, redirect)
+                .catch((err) => this.onLoginFailure(err))
             } else {
-              this.sdk.checkLogin(true).then((authResponse) => {
-                this.onLoginSuccess(authResponse)
-              })
+              this.sdk.checkLogin(true)
+                .then((authResponse) => this.onLoginSuccess(authResponse))
+                .catch((err) => this.onLoginFailure(err))
             }
           }
         })
       })
+      .catch((err) => onLoginFailure(err))
   }
 
   /**

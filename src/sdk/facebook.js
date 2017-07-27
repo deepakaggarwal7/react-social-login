@@ -1,3 +1,5 @@
+import { rslError } from '../utils'
+
 /**
  * Loads Facebook SDK.
  * @param {string} appId
@@ -38,7 +40,12 @@ const load = (appId) => new Promise((resolve) => {
  */
 const handleLoginStatus = (response) => new Promise((resolve, reject) => {
   if (!response.authResponse) {
-    return reject()
+    return reject(rslError({
+      provider: 'facebook',
+      type: 'auth',
+      description: 'Authentication failed',
+      error: response
+    }))
   }
 
   switch (response.status) {
@@ -51,7 +58,12 @@ const handleLoginStatus = (response) => new Promise((resolve, reject) => {
       break
     case 'not_authorized':
     case 'unknown':
-      return reject()
+      return reject(rslError({
+        provider: 'facebook',
+        type: 'auth',
+        description: 'Authentication has been cancelled or an unknown error occurred',
+        error: response
+      }))
   }
 })
 
