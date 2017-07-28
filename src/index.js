@@ -167,7 +167,17 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
   render () {
     // Don’t forward unneeded props
-    const originalProps = omit(this.props, ['appId', 'autoLogin', 'onLoginFailure', 'onLoginSuccess', 'provider'])
+    const originalProps = omit(this.props, [
+      'appId',
+      'autocleanUri',
+      'autoLogin',
+      'fetchAccessToken',
+      'mode',
+      'onLoginFailure',
+      'onLoginSuccess',
+      'provider',
+      'redirect'
+    ])
 
     return (
       <WrappedComponent triggerLogin={this.login} {...originalProps} />
