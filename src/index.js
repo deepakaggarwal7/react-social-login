@@ -18,6 +18,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     appId: PropTypes.string.isRequired,
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
+    fetchAccessToken: PropTypes.string,
+    mode: PropTypes.oneOf(['basic', 'server']),
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
     provider: PropTypes.oneOf(config.providers).isRequired,
@@ -29,7 +31,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   static defaultProps = {
-    autoCleanUri: false
+    autoCleanUri: false,
+    mode: 'basic'
   }
 
   constructor (props) {
@@ -55,9 +58,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, onLoginFailure, redirect } = this.props
+    const { appId, autoCleanUri, autoLogin, fetchAccessToken, mode, redirect } = this.props
 
-    this.sdk.load(appId, redirect)
+    this.sdk.load(appId, redirect, mode, fetchAccessToken)
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -83,13 +86,13 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
           }
         })
       })
-      .catch((err) => onLoginFailure(err))
+      .catch(this.onLoginFailure)
   }
 
   componentWillReceiveProps (nextProps) {
-    const { appId, provider } = this.props
+    const { appId, mode, provider } = this.props
 
-    if (provider === 'github' && appId !== nextProps.appId) {
+    if (mode === 'basic' && provider === 'github' && appId !== nextProps.appId) {
       this.setState((prevState) => ({
         isLoaded: false,
         isFetching: false,
@@ -115,9 +118,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         isFetching: true
       }))
 
-      this.sdk.login()
-        .then((response) => this.onLoginSuccess(response))
-        .catch((err) => this.onLoginFailure(err))
+      this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
     } else if (this.state.isLoaded && this.state.isConnected) {
       this.props.onLoginFailure('User already connected')
     } else {
