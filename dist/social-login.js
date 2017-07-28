@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -86,9 +86,6 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 /**
  * Create a copy of an object, omitting provided keys.
  * @param {Object} obj Object to copy
@@ -123,25 +120,6 @@ var getHashValue = exports.getHashValue = function getHashValue(key) {
   var matches = window.location.hash.match(new RegExp(key + '=([^&]*)'));
 
   return matches ? matches[1] : null;
-};
-
-var responseTextToObject = exports.responseTextToObject = function responseTextToObject(text) {
-  var keyValuePairs = text.split('&');
-
-  if (!keyValuePairs || keyValuePairs.length === 0) {
-    return {};
-  }
-
-  return keyValuePairs.reduce(function (result, pair) {
-    var _pair$split = pair.split('='),
-        _pair$split2 = _slicedToArray(_pair$split, 2),
-        key = _pair$split2[0],
-        value = _pair$split2[1];
-
-    result[key] = decodeURIComponent(value);
-
-    return result;
-  }, {});
 };
 
 var cleanLocation = exports.cleanLocation = function cleanLocation() {
@@ -1344,11 +1322,12 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
             appId = _props.appId,
             autoCleanUri = _props.autoCleanUri,
             autoLogin = _props.autoLogin,
-            onLoginFailure = _props.onLoginFailure,
+            fetchAccessToken = _props.fetchAccessToken,
+            mode = _props.mode,
             redirect = _props.redirect;
 
 
-        this.sdk.load(appId, redirect).then(function (accessToken) {
+        this.sdk.load(appId, redirect, mode, fetchAccessToken).then(function (accessToken) {
           if (autoCleanUri) {
             (0, _utils.cleanLocation)();
           }
@@ -1376,9 +1355,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
               }
             }
           });
-        }).catch(function (err) {
-          return onLoginFailure(err);
-        });
+        }).catch(this.onLoginFailure);
       }
     }, {
       key: 'componentWillReceiveProps',
@@ -1387,10 +1364,11 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
 
         var _props2 = this.props,
             appId = _props2.appId,
+            mode = _props2.mode,
             provider = _props2.provider;
 
 
-        if (provider === 'github' && appId !== nextProps.appId) {
+        if (mode === 'basic' && provider === 'github' && appId !== nextProps.appId) {
           this.setState(function (prevState) {
             return {
               isLoaded: false,
@@ -1416,8 +1394,6 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     }, {
       key: 'login',
       value: function login() {
-        var _this4 = this;
-
         if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
           this.setState(function (prevState) {
             return _extends({}, prevState, {
@@ -1425,11 +1401,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
             });
           });
 
-          this.sdk.login().then(function (response) {
-            return _this4.onLoginSuccess(response);
-          }).catch(function (err) {
-            return _this4.onLoginFailure(err);
-          });
+          this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure);
         } else if (this.state.isLoaded && this.state.isConnected) {
           this.props.onLoginFailure('User already connected');
         } else {
@@ -1501,6 +1473,8 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     appId: _propTypes2.default.string.isRequired,
     autoCleanUri: _propTypes2.default.bool,
     autoLogin: _propTypes2.default.bool,
+    fetchAccessToken: _propTypes2.default.string,
+    mode: _propTypes2.default.oneOf(['basic', 'server']),
     onLoginFailure: _propTypes2.default.func,
     onLoginSuccess: _propTypes2.default.func,
     provider: _propTypes2.default.oneOf(_config2.default.providers).isRequired,
@@ -1510,7 +1484,8 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
       }
     }
   }, _class.defaultProps = {
-    autoCleanUri: false
+    autoCleanUri: false,
+    mode: 'basic'
   }, _temp;
 };
 
@@ -1944,11 +1919,23 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _v = __webpack_require__(25);
+
+var _v2 = _interopRequireDefault(_v);
+
 var _utils = __webpack_require__(0);
 
-var GITHUB_API = 'https://api.github.com/graphql';
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var GITHUB_API = 'https://api.github.com/graphql';
+var GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token';
+
+var basic = void 0;
+var fetchAccessTokenURL = void 0;
+var githubAccessToken = void 0;
 var githubAppId = void 0;
+var githubAuth = void 0;
+var githubRedirect = void 0;
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
@@ -1958,8 +1945,11 @@ if (!window.fetch) {
 /**
  * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
  * @param {string} appId
+ * @param {string} redirect
+ * @param {string} mode
+ * @param {string} fetchAccessToken
  */
-var load = function load(appId) {
+var load = function load(appId, redirect, mode, fetchAccessToken) {
   return new Promise(function (resolve, reject) {
     if (!appId) {
       return reject((0, _utils.rslError)({
@@ -1970,9 +1960,28 @@ var load = function load(appId) {
       }));
     }
 
+    // Basic mode or server mode, just checking for basic
+    basic = mode === 'basic';
+
     githubAppId = appId;
 
-    return resolve();
+    if (!basic) {
+      fetchAccessTokenURL = fetchAccessToken;
+      githubRedirect = redirect + '%3FrslCallback%3Dgithub';
+      githubAuth = 'http://github.com/login/oauth/authorize?client_id=' + githubAppId + '&redirect_uri=' + githubRedirect + '&scope=user&state=' + (0, _v2.default)(redirect, _v2.default.URL);
+
+      if ((0, _utils.getQueryStringValue)('rslCallback') === 'github') {
+        getAccessToken().then(function (accessToken) {
+          githubAccessToken = accessToken;
+
+          return resolve(githubAccessToken);
+        }).catch(reject);
+      } else {
+        return resolve();
+      }
+    } else {
+      return resolve();
+    }
   });
 };
 
@@ -1987,11 +1996,20 @@ var checkLogin = function checkLogin() {
     return login();
   }
 
+  if (!githubAccessToken && !basic) {
+    return Promise.reject((0, _utils.rslError)({
+      provider: 'github',
+      type: 'access_token',
+      description: 'No access token available',
+      error: null
+    }));
+  }
+
   return new Promise(function (resolve, reject) {
     window.fetch(GITHUB_API, {
       method: 'POST',
       headers: new Headers({
-        'Authorization': 'Bearer ' + githubAppId
+        'Authorization': 'Bearer ' + (githubAccessToken.access_token || githubAppId)
       }),
       body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
     }).then(function (response) {
@@ -2011,7 +2029,7 @@ var checkLogin = function checkLogin() {
       return reject((0, _utils.rslError)({
         provider: 'github',
         type: 'check_login',
-        description: 'Failed to fetch user data due to CORS issue',
+        description: 'Failed to fetch user data due to window.fetch() error',
         error: null
       }));
     });
@@ -2028,7 +2046,56 @@ var login = function login() {
     checkLogin().then(function (response) {
       return resolve(response);
     }).catch(function (error) {
-      return reject(error);
+      if (basic) {
+        return reject(error);
+      }
+
+      window.open(githubAuth, '_self');
+    });
+  });
+};
+
+/**
+ * Get access token with authorization code
+ * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
+ */
+var getAccessToken = function getAccessToken() {
+  return new Promise(function (resolve, reject) {
+    var authorizationCode = (0, _utils.getQueryStringValue)('code');
+
+    if (!authorizationCode) {
+      return reject('Authorization code not found');
+    }
+
+    window.fetch(fetchAccessTokenURL + '?url=' + GITHUB_ACCESS_TOKEN + '&client_id=' + githubAppId + '&authorization_code=' + authorizationCode + '&redirect_uri=' + githubRedirect).then(function (response) {
+      return response.json();
+    }).then(function (json) {
+      if (json.error) {
+        return reject((0, _utils.rslError)({
+          provider: 'github',
+          type: 'access_token',
+          description: 'Got error from fetch access token',
+          error: json
+        }));
+      }
+
+      return resolve(json);
+    }).catch(function (error) {
+      if (error.error) {
+        return reject((0, _utils.rslError)({
+          provider: 'github',
+          type: 'access_token',
+          description: 'Got error from fetch access token',
+          error: error
+        }));
+      }
+
+      return reject((0, _utils.rslError)({
+        provider: 'github',
+        type: 'access_token',
+        description: 'Failed to fetch user data due to window.fetch() error',
+        error: error
+      }));
     });
   });
 };
@@ -2050,7 +2117,7 @@ var generateUser = function generateUser(_ref) {
       profilePicURL: viewer.avatarUrl
     },
     token: {
-      accessToken: githubAppId,
+      accessToken: githubAccessToken.access_token || githubAppId,
       expiresAt: Infinity // Couldn’t find a way to get expiration time
     }
   };
@@ -2324,7 +2391,7 @@ var checkLogin = function checkLogin() {
         err: (0, _utils.rslError)({
           provider: 'instagram',
           type: 'check_login',
-          description: 'Failed to fetch user data due to CORS issue',
+          description: 'Failed to fetch user data due to window.fetch() error',
           error: null
         })
       });
@@ -3316,6 +3383,175 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 
 /***/ }),
 /* 23 */
+/***/ (function(module, exports) {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Adapted from Chris Veness' SHA1 code at
+// http://www.movable-type.co.uk/scripts/sha1.html
+
+
+function f(s, x, y, z) {
+  switch (s) {
+    case 0: return (x & y) ^ (~x & z);
+    case 1: return x ^ y ^ z;
+    case 2: return (x & y) ^ (x & z) ^ (y & z);
+    case 3: return x ^ y ^ z;
+  }
+}
+
+function ROTL(x, n) {
+  return (x << n) | (x>>> (32 - n));
+}
+
+function sha1(bytes) {
+  var K = [0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6];
+  var H = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
+
+  if (typeof(bytes) == 'string') {
+    var msg = unescape(encodeURIComponent(bytes)); // UTF8 escape
+    bytes = new Array(msg.length);
+    for (var i = 0; i < msg.length; i++) bytes[i] = msg.charCodeAt(i);
+  }
+
+  bytes.push(0x80);
+
+  var l = bytes.length/4 + 2;
+  var N = Math.ceil(l/16);
+  var M = new Array(N);
+
+  for (var i=0; i<N; i++) {
+    M[i] = new Array(16);
+    for (var j=0; j<16; j++) {
+      M[i][j] =
+        bytes[i * 64 + j * 4] << 24 |
+        bytes[i * 64 + j * 4 + 1] << 16 |
+        bytes[i * 64 + j * 4 + 2] << 8 |
+        bytes[i * 64 + j * 4 + 3];
+    }
+  }
+
+  M[N - 1][14] = ((bytes.length - 1) * 8) /
+    Math.pow(2, 32); M[N - 1][14] = Math.floor(M[N - 1][14]);
+  M[N - 1][15] = ((bytes.length - 1) * 8) & 0xffffffff;
+
+  for (var i=0; i<N; i++) {
+    var W = new Array(80);
+
+    for (var t=0; t<16; t++) W[t] = M[i][t];
+    for (var t=16; t<80; t++) {
+      W[t] = ROTL(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+    }
+
+    var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4];
+
+    for (var t=0; t<80; t++) {
+      var s = Math.floor(t/20);
+      var T = ROTL(a, 5) + f(s, b, c, d) + e + K[s] + W[t] >>> 0;
+      e = d;
+      d = c;
+      c = ROTL(b, 30) >>> 0;
+      b = a;
+      a = T;
+    }
+
+    H[0] = (H[0] + a) >>> 0;
+    H[1] = (H[1] + b) >>> 0;
+    H[2] = (H[2] + c) >>> 0;
+    H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0;
+  }
+
+  return [
+    H[0] >> 24 & 0xff, H[0] >> 16 & 0xff, H[0] >> 8 & 0xff, H[0] & 0xff,
+    H[1] >> 24 & 0xff, H[1] >> 16 & 0xff, H[1] >> 8 & 0xff, H[1] & 0xff,
+    H[2] >> 24 & 0xff, H[2] >> 16 & 0xff, H[2] >> 8 & 0xff, H[2] & 0xff,
+    H[3] >> 24 & 0xff, H[3] >> 16 & 0xff, H[3] >> 8 & 0xff, H[3] & 0xff,
+    H[4] >> 24 & 0xff, H[4] >> 16 & 0xff, H[4] >> 8 & 0xff, H[4] & 0xff
+  ];
+}
+
+module.exports = sha1;
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var sha1 = __webpack_require__(24);
+var bytesToUuid = __webpack_require__(23);
+
+function uuidToBytes(uuid) {
+  // Note: We assume we're being passed a valid uuid string
+  var bytes = [];
+  uuid.replace(/[a-fA-F0-9]{2}/g, function(hex) {
+    bytes.push(parseInt(hex, 16));
+  });
+
+  return bytes;
+}
+
+function stringToBytes(str) {
+  str = unescape(encodeURIComponent(str)); // UTF8 escape
+  var bytes = new Array(str.length);
+  for (var i = 0; i < str.length; i++) {
+    bytes[i] = str.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function v5(name, namespace, buf, offset) {
+  if (typeof(name) == 'string') name = stringToBytes(name);
+  if (typeof(namespace) == 'string') namespace = uuidToBytes(namespace);
+
+  if (!Array.isArray(name)) throw TypeError('name must be an array of bytes');
+  if (!Array.isArray(namespace) || namespace.length != 16) throw TypeError('namespace must be uuid string or an Array of 16 byte values');
+
+  // Per 4.3
+  var bytes = sha1(namespace.concat(name));
+  bytes[6] = (bytes[6] & 0x0f) | 0x50;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+  return buf || bytesToUuid(bytes);
+}
+
+// Pre-defined namespaces, per Appendix C
+v5.DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+v5.URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+
+module.exports = v5;
+
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(2);
