@@ -79,7 +79,7 @@ const checkLogin = (autoLogin = false) => {
         err: rslError({
           provider: 'instagram',
           type: 'check_login',
-          description: 'Failed to fetch user data due to CORS issue',
+          description: 'Failed to fetch user data due to window.fetch() error',
           error: null
         })
       }))
