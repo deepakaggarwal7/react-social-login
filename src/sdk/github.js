@@ -61,7 +61,7 @@ const load = (appId, redirect, mode, fetchAccessToken) => new Promise((resolve, 
 })
 
 /**
- * Checks if user is logged in to app through LinkedIn.
+ * Check if user is logged in to app through GitHub.
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps/#redirect-urls
  */
 const checkLogin = (autoLogin = false) => {
@@ -109,7 +109,7 @@ const checkLogin = (autoLogin = false) => {
 }
 
 /**
- * Trigger LinkedIn login process.
+ * Trigger GitHub login process.
  * This code only triggers login request, response is handled by a callback handled on SDK load.
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
  */
