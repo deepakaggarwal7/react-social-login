@@ -120,6 +120,18 @@ ReactDOM.render(
       >
         Login with Instagram
       </SocialButton>
+      <SocialButton
+        autoCleanUri
+        provider='github'
+        mode='server'
+        fetchAccessToken='http://localhost:3000/github-oauth'
+        appId='8a7c2edb2e602d969839'
+        redirect='http://localhost:8080'
+        onLoginSuccess={handleSocialLogin}
+        onLoginFailure={handleSocialLoginFailure}
+      >
+        Login with GitHub
+      </SocialButton>
     </div>
     <GitHubLogin />
   </div>,

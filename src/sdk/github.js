@@ -1,8 +1,16 @@
-import { rslError } from '../utils'
+import uuid from 'uuid/v5'
+
+import { getQueryStringValue, rslError } from '../utils'
 
 const GITHUB_API = 'https://api.github.com/graphql'
+const GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token'
 
+let basic
+let fetchAccessTokenURL
+let githubAccessToken
 let githubAppId
+let githubAuth
+let githubRedirect
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
@@ -12,8 +20,11 @@ if (!window.fetch) {
 /**
  * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
  * @param {string} appId
+ * @param {string} redirect
+ * @param {string} mode
+ * @param {string} fetchAccessToken
  */
-const load = (appId) => new Promise((resolve, reject) => {
+const load = (appId, redirect, mode, fetchAccessToken) => new Promise((resolve, reject) => {
   if (!appId) {
     return reject(rslError({
       provider: 'github',
@@ -23,9 +34,30 @@ const load = (appId) => new Promise((resolve, reject) => {
     }))
   }
 
+  // Basic mode or server mode, just checking for basic
+  basic = mode === 'basic'
+
   githubAppId = appId
 
-  return resolve()
+  if (!basic) {
+    fetchAccessTokenURL = fetchAccessToken
+    githubRedirect = `${redirect}%3FrslCallback%3Dgithub`
+    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${githubRedirect}&scope=user&state=${uuid(redirect, uuid.URL)}`
+
+    if (getQueryStringValue('rslCallback') === 'github') {
+      getAccessToken()
+        .then((accessToken) => {
+          githubAccessToken = accessToken
+
+          return resolve(githubAccessToken)
+        })
+        .catch(reject)
+    } else {
+      return resolve()
+    }
+  } else {
+    return resolve()
+  }
 })
 
 /**
@@ -37,13 +69,22 @@ const checkLogin = (autoLogin = false) => {
     return login()
   }
 
+  if (!githubAccessToken && !basic) {
+    return Promise.reject(rslError({
+      provider: 'github',
+      type: 'access_token',
+      description: 'No access token available',
+      error: null
+    }))
+  }
+
   return new Promise((resolve, reject) => {
     window.fetch(GITHUB_API, {
       method: 'POST',
       headers: new Headers({
-        'Authorization': `Bearer ${githubAppId}`
+        'Authorization': `Bearer ${githubAccessToken.access_token || githubAppId}`
       }),
-      body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
+      body: JSON.stringify({query: 'query { viewer { id, name, email, avatarUrl } }'})
     })
       .then((response) => response.json())
       .then((json) => {
@@ -61,7 +102,7 @@ const checkLogin = (autoLogin = false) => {
       .catch(() => reject(rslError({
         provider: 'github',
         type: 'check_login',
-        description: 'Failed to fetch user data due to CORS issue',
+        description: 'Failed to fetch user data due to window.fetch() error',
         error: null
       })))
   })
@@ -75,7 +116,57 @@ const checkLogin = (autoLogin = false) => {
 const login = () => new Promise((resolve, reject) => {
   checkLogin()
     .then((response) => resolve(response))
-    .catch((error) => reject(error))
+    .catch((error) => {
+      if (basic) {
+        return reject(error)
+      }
+
+      window.open(githubAuth, '_self')
+    })
+})
+
+/**
+ * Get access token with authorization code
+ * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
+ */
+const getAccessToken = () => new Promise((resolve, reject) => {
+  const authorizationCode = getQueryStringValue('code')
+
+  if (!authorizationCode) {
+    return reject('Authorization code not found')
+  }
+
+  window.fetch(`${fetchAccessTokenURL}?url=${GITHUB_ACCESS_TOKEN}&client_id=${githubAppId}&authorization_code=${authorizationCode}&redirect_uri=${githubRedirect}`)
+    .then((response) => response.json())
+    .then((json) => {
+      if (json.error) {
+        return reject(rslError({
+          provider: 'github',
+          type: 'access_token',
+          description: 'Got error from fetch access token',
+          error: json
+        }))
+      }
+
+      return resolve(json)
+    })
+    .catch((error) => {
+      if (error.error) {
+        return reject(rslError({
+          provider: 'github',
+          type: 'access_token',
+          description: 'Got error from fetch access token',
+          error
+        }))
+      }
+
+      return reject(rslError({
+        provider: 'github',
+        type: 'access_token',
+        description: 'Failed to fetch user data due to window.fetch() error',
+        error
+      }))
+    })
 })
 
 /**
@@ -93,7 +184,7 @@ const generateUser = ({ data: { viewer } }) => {
       profilePicURL: viewer.avatarUrl
     },
     token: {
-      accessToken: githubAppId,
+      accessToken: githubAccessToken.access_token || githubAppId,
       expiresAt: Infinity // Couldn’t find a way to get expiration time
     }
   }

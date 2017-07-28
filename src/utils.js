@@ -32,22 +32,6 @@ export const getHashValue = (key) => {
   return matches ? matches[1] : null
 }
 
-export const responseTextToObject = (text) => {
-  const keyValuePairs = text.split('&')
-
-  if (!keyValuePairs || keyValuePairs.length === 0) {
-    return {}
-  }
-
-  return keyValuePairs.reduce((result, pair) => {
-    const [key, value] = pair.split('=')
-
-    result[key] = decodeURIComponent(value)
-
-    return result
-  }, {})
-}
-
 export const cleanLocation = () => {
   if (!window.history || !window.history.pushState) {
     return
