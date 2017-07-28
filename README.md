@@ -123,7 +123,7 @@ See [facebook for developers documentation][fb4devdoc].
 
 See [GitHub Help][githubhelp].
 
-**OAuth authentication (broken for now)**
+**OAuth authentication (see [rsl-oauth-support][rsl-oauth-support])**
 
 See [GitHub Developer guide][githubdoc].
 
@@ -205,6 +205,7 @@ TBD
 [fb4devdoc]: https://developers.facebook.com/docs/apps/register
 [githubhelp]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line
 [githubdoc]: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps
+[rsl-oauth-support]: https://github.com/nicolas-goudry/rsl-oauth-support
 [gsignindoc]: https://developers.google.com/identity/sign-in/web/devconsole-project
 [instadoc]: https://www.instagram.com/developer
 [linkedinfaq]: https://developer.linkedin.com/support/faq
