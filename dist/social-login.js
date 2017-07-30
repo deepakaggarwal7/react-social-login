@@ -1322,12 +1322,11 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
             appId = _props.appId,
             autoCleanUri = _props.autoCleanUri,
             autoLogin = _props.autoLogin,
-            fetchAccessToken = _props.fetchAccessToken,
-            mode = _props.mode,
+            gatekeeper = _props.gatekeeper,
             redirect = _props.redirect;
 
 
-        this.sdk.load(appId, redirect, mode, fetchAccessToken).then(function (accessToken) {
+        this.sdk.load(appId, redirect, gatekeeper).then(function (accessToken) {
           if (autoCleanUri) {
             (0, _utils.cleanLocation)();
           }
@@ -1364,11 +1363,11 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
 
         var _props2 = this.props,
             appId = _props2.appId,
-            mode = _props2.mode,
+            gatekeeper = _props2.gatekeeper,
             provider = _props2.provider;
 
 
-        if (mode === 'basic' && provider === 'github' && appId !== nextProps.appId) {
+        if (provider === 'github' && !gatekeeper && appId !== nextProps.appId) {
           this.setState(function (prevState) {
             return {
               isLoaded: false,
@@ -1462,7 +1461,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
       key: 'render',
       value: function render() {
         // Don’t forward unneeded props
-        var originalProps = (0, _utils.omit)(this.props, ['appId', 'autoLogin', 'onLoginFailure', 'onLoginSuccess', 'provider']);
+        var originalProps = (0, _utils.omit)(this.props, ['appId', 'autocleanUri', 'autoLogin', 'gatekeeper', 'onLoginFailure', 'onLoginSuccess', 'provider', 'redirect']);
 
         return _react2.default.createElement(WrappedComponent, _extends({ triggerLogin: this.login }, originalProps));
       }
@@ -1473,8 +1472,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     appId: _propTypes2.default.string.isRequired,
     autoCleanUri: _propTypes2.default.bool,
     autoLogin: _propTypes2.default.bool,
-    fetchAccessToken: _propTypes2.default.string,
-    mode: _propTypes2.default.oneOf(['basic', 'server']),
+    gatekeeper: _propTypes2.default.string,
     onLoginFailure: _propTypes2.default.func,
     onLoginSuccess: _propTypes2.default.func,
     provider: _propTypes2.default.oneOf(_config2.default.providers).isRequired,
@@ -1483,9 +1481,6 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
         return new Error('Missing required `' + propName + '` prop on ' + componentName + '.');
       }
     }
-  }, _class.defaultProps = {
-    autoCleanUri: false,
-    mode: 'basic'
   }, _temp;
 };
 
@@ -1928,10 +1923,9 @@ var _utils = __webpack_require__(0);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var GITHUB_API = 'https://api.github.com/graphql';
-var GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token';
 
-var basic = void 0;
-var fetchAccessTokenURL = void 0;
+var oauth = false;
+var gatekeeperURL = void 0;
 var githubAccessToken = void 0;
 var githubAppId = void 0;
 var githubAuth = void 0;
@@ -1946,10 +1940,9 @@ if (!window.fetch) {
  * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
  * @param {string} appId
  * @param {string} redirect
- * @param {string} mode
- * @param {string} fetchAccessToken
+ * @param {string} gatekeeper
  */
-var load = function load(appId, redirect, mode, fetchAccessToken) {
+var load = function load(appId, redirect, gatekeeper) {
   return new Promise(function (resolve, reject) {
     if (!appId) {
       return reject((0, _utils.rslError)({
@@ -1960,13 +1953,11 @@ var load = function load(appId, redirect, mode, fetchAccessToken) {
       }));
     }
 
-    // Basic mode or server mode, just checking for basic
-    basic = mode === 'basic';
-
     githubAppId = appId;
 
-    if (!basic) {
-      fetchAccessTokenURL = fetchAccessToken;
+    if (gatekeeper) {
+      gatekeeperURL = gatekeeper;
+      oauth = true;
       githubRedirect = redirect + '%3FrslCallback%3Dgithub';
       githubAuth = 'http://github.com/login/oauth/authorize?client_id=' + githubAppId + '&redirect_uri=' + githubRedirect + '&scope=user&state=' + (0, _v2.default)(redirect, _v2.default.URL);
 
@@ -1986,7 +1977,7 @@ var load = function load(appId, redirect, mode, fetchAccessToken) {
 };
 
 /**
- * Checks if user is logged in to app through LinkedIn.
+ * Check if user is logged in to app through GitHub.
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps/#redirect-urls
  */
 var checkLogin = function checkLogin() {
@@ -1996,7 +1987,7 @@ var checkLogin = function checkLogin() {
     return login();
   }
 
-  if (!githubAccessToken && !basic) {
+  if (!githubAccessToken && oauth) {
     return Promise.reject((0, _utils.rslError)({
       provider: 'github',
       type: 'access_token',
@@ -2009,7 +2000,7 @@ var checkLogin = function checkLogin() {
     window.fetch(GITHUB_API, {
       method: 'POST',
       headers: new Headers({
-        'Authorization': 'Bearer ' + (githubAccessToken.access_token || githubAppId)
+        'Authorization': 'Bearer ' + (githubAccessToken || githubAppId)
       }),
       body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
     }).then(function (response) {
@@ -2037,7 +2028,7 @@ var checkLogin = function checkLogin() {
 };
 
 /**
- * Trigger LinkedIn login process.
+ * Trigger GitHub login process.
  * This code only triggers login request, response is handled by a callback handled on SDK load.
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
  */
@@ -2046,7 +2037,7 @@ var login = function login() {
     checkLogin().then(function (response) {
       return resolve(response);
     }).catch(function (error) {
-      if (basic) {
+      if (!oauth) {
         return reject(error);
       }
 
@@ -2057,6 +2048,7 @@ var login = function login() {
 
 /**
  * Get access token with authorization code
+ * @see https://github.com/prose/gatekeeper
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
  */
 var getAccessToken = function getAccessToken() {
@@ -2067,10 +2059,10 @@ var getAccessToken = function getAccessToken() {
       return reject('Authorization code not found');
     }
 
-    window.fetch(fetchAccessTokenURL + '?url=' + GITHUB_ACCESS_TOKEN + '&client_id=' + githubAppId + '&authorization_code=' + authorizationCode + '&redirect_uri=' + githubRedirect).then(function (response) {
+    window.fetch(gatekeeperURL + '/authenticate/' + authorizationCode).then(function (response) {
       return response.json();
     }).then(function (json) {
-      if (json.error) {
+      if (json.error || !json.token) {
         return reject((0, _utils.rslError)({
           provider: 'github',
           type: 'access_token',
@@ -2079,17 +2071,8 @@ var getAccessToken = function getAccessToken() {
         }));
       }
 
-      return resolve(json);
+      return resolve(json.token);
     }).catch(function (error) {
-      if (error.error) {
-        return reject((0, _utils.rslError)({
-          provider: 'github',
-          type: 'access_token',
-          description: 'Got error from fetch access token',
-          error: error
-        }));
-      }
-
       return reject((0, _utils.rslError)({
         provider: 'github',
         type: 'access_token',
@@ -2117,7 +2100,7 @@ var generateUser = function generateUser(_ref) {
       profilePicURL: viewer.avatarUrl
     },
     token: {
-      accessToken: githubAccessToken.access_token || githubAppId,
+      accessToken: githubAccessToken || githubAppId,
       expiresAt: Infinity // Couldn’t find a way to get expiration time
     }
   };
