@@ -1,5 +1,6 @@
 const config = {
   providers: [
+    'amazon',
     'facebook',
     'github',
     'google',
