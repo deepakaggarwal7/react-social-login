@@ -98,7 +98,9 @@ Raw component props (before transform):
 | Prop  | Default  | Type / Values  | Description  |
 |---|---|---|---|
 | appId  | —  | string  | Your app identifier (see [find my appId][findmyappid])  |
+| autoCleanUri  | false  | boolean  | Enable auto URI cleaning with OAuth callbacks  |
 | autoLogin  | false  | boolean  | Enable auto login on `componentDidMount`  |
+| gatekeeper  | —  | string  | Gatekeeper URL to use for GitHub OAuth support (see [GitHub specifics][githubspecifics])  |
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
 | provider  | —  | `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
@@ -111,37 +113,9 @@ Transformed component props:
 | triggerLogin  | function  | Function to trigger login process, usually attached to an event listener  |
 | all your props  | —  | All props from your original component, minus SocialLogin specific props  |
 
-### Find my appId
-
-#### Facebook
-
-See [facebook for developers documentation][fb4devdoc].
-
-#### GitHub
-
-**Basic authentication method using personal access tokens**
-
-See [GitHub Help][githubhelp].
-
-**OAuth authentication (see [rsl-oauth-support][rsl-oauth-support])**
-
-See [GitHub Developer guide][githubdoc].
-
-#### Google
-
-See [Google Sign-In for Websites guide][gsignindoc].
-
-#### Instagram
-
-See [Instagram developers documentation][instadoc].
-
-#### LinkedIn
-
-See `Where can I find my API key?` section on the [FAQ][linkedinfaq].
-
 ## Old component support
 
-We decided to keep the old behavior as a fallback, it is available as a named export:
+We decided to keep the old behavior as a fallback, it only supports `facebook`, `google` and `linkedin` providers and is available as a named export:
 
 ```js
 import React from 'react'
@@ -176,6 +150,70 @@ $ npm install
 $ npm run build
 ```
 
+## Miscellaneous
+
+### Find my appId
+
+#### Facebook
+
+See [facebook for developers documentation][fb4devdoc].
+
+#### GitHub (see [GitHub specifics][githubspecifics])
+
+**Basic authentication method using personal access tokens**
+
+See [GitHub Help][githubhelp].
+
+**OAuth authentication**
+
+See [GitHub Developer guide][githubdoc].
+
+#### Google
+
+See [Google Sign-In for Websites guide][gsignindoc].
+
+#### Instagram
+
+See [Instagram developers documentation][instadoc].
+
+#### LinkedIn
+
+See `Where can I find my API key?` section on the [FAQ][linkedinfaq].
+
+### GitHub specifics
+
+GitHub provider is implemented in two different modes:
+
+* One using [GitHub Personal Tokens][ghpersonaltokens]
+* Another using GitHub OAuth
+
+#### GitHub Personal Tokens mode
+
+Actually, this one is more a hacky way to get user profile than a way to really *connect* your app like OAuth does.
+
+Plus, it requires from users to create their personal token from their GitHub account, which is not a good experience for them.
+
+This mode is the default if you do not provide `gatekeeper` prop and will try to use the `appId` prop to get user data. Anyway, we **strongly advise you to use the GitHub OAuth authentication flow**.
+
+#### GitHub OAuth
+
+If you provide a `gatekeeper` prop, this mode will be active and will use a server of your own to fetch GitHub OAuth access token. This is a [know issue of GitHub][ghoauthwebflowissue].
+
+The simplest way to setup this mode is to use the [Gatekeeper project][gatekeeper]. Just follow setup instructions then tell RSL to use it:
+
+```
+<SocialLogin
+  provider='github'
+  gatekeeper='http://localhost:9999'
+  appId='YOUR_GITHUB_CLIENT_ID'
+  redirect='http://localhost:8080'
+>
+  Login with GitHub OAuth
+</SocialLogin>
+```
+
+You can also implement it your own way but you must use the same routing than `Gatekeeper` (`/authenticate/:code`) and return a JSON response containing a `token` or `error` property (it will also throw if it doesn't find `token`).
+
 ## Change Log
 
 __v2.0.0__ [26 Feb 2017]
@@ -205,8 +243,11 @@ TBD
 [fb4devdoc]: https://developers.facebook.com/docs/apps/register
 [githubhelp]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line
 [githubdoc]: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps
-[rsl-oauth-support]: https://github.com/nicolas-goudry/rsl-oauth-support
 [gsignindoc]: https://developers.google.com/identity/sign-in/web/devconsole-project
 [instadoc]: https://www.instagram.com/developer
 [linkedinfaq]: https://developer.linkedin.com/support/faq
 [ghngoudry]: https://github.com/nicolas-goudry
+[ghpersonaltokens]: https://github.com/blog/1509-personal-api-tokens
+[ghoauthwebflowissue]: https://github.com/isaacs/github/issues/330
+[gatekeeper]: https://github.com/prose/gatekeeper
+[githubspecifics]: #github-specifics
