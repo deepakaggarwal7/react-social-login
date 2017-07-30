@@ -3,10 +3,9 @@ import uuid from 'uuid/v5'
 import { getQueryStringValue, rslError } from '../utils'
 
 const GITHUB_API = 'https://api.github.com/graphql'
-const GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token'
 
-let basic
-let fetchAccessTokenURL
+let oauth = false
+let gatekeeperURL
 let githubAccessToken
 let githubAppId
 let githubAuth
@@ -21,10 +20,9 @@ if (!window.fetch) {
  * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
  * @param {string} appId
  * @param {string} redirect
- * @param {string} mode
- * @param {string} fetchAccessToken
+ * @param {string} gatekeeper
  */
-const load = (appId, redirect, mode, fetchAccessToken) => new Promise((resolve, reject) => {
+const load = (appId, redirect, gatekeeper) => new Promise((resolve, reject) => {
   if (!appId) {
     return reject(rslError({
       provider: 'github',
@@ -34,13 +32,11 @@ const load = (appId, redirect, mode, fetchAccessToken) => new Promise((resolve, 
     }))
   }
 
-  // Basic mode or server mode, just checking for basic
-  basic = mode === 'basic'
-
   githubAppId = appId
 
-  if (!basic) {
-    fetchAccessTokenURL = fetchAccessToken
+  if (gatekeeper) {
+    gatekeeperURL = gatekeeper
+    oauth = true
     githubRedirect = `${redirect}%3FrslCallback%3Dgithub`
     githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${githubRedirect}&scope=user&state=${uuid(redirect, uuid.URL)}`
 
@@ -69,7 +65,7 @@ const checkLogin = (autoLogin = false) => {
     return login()
   }
 
-  if (!githubAccessToken && !basic) {
+  if (!githubAccessToken && oauth) {
     return Promise.reject(rslError({
       provider: 'github',
       type: 'access_token',
@@ -82,7 +78,7 @@ const checkLogin = (autoLogin = false) => {
     window.fetch(GITHUB_API, {
       method: 'POST',
       headers: new Headers({
-        'Authorization': `Bearer ${githubAccessToken.access_token || githubAppId}`
+        'Authorization': `Bearer ${githubAccessToken || githubAppId}`
       }),
       body: JSON.stringify({query: 'query { viewer { id, name, email, avatarUrl } }'})
     })
@@ -117,7 +113,7 @@ const login = () => new Promise((resolve, reject) => {
   checkLogin()
     .then((response) => resolve(response))
     .catch((error) => {
-      if (basic) {
+      if (!oauth) {
         return reject(error)
       }
 
@@ -127,6 +123,7 @@ const login = () => new Promise((resolve, reject) => {
 
 /**
  * Get access token with authorization code
+ * @see https://github.com/prose/gatekeeper
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
  */
 const getAccessToken = () => new Promise((resolve, reject) => {
@@ -136,10 +133,10 @@ const getAccessToken = () => new Promise((resolve, reject) => {
     return reject('Authorization code not found')
   }
 
-  window.fetch(`${fetchAccessTokenURL}?url=${GITHUB_ACCESS_TOKEN}&client_id=${githubAppId}&authorization_code=${authorizationCode}&redirect_uri=${githubRedirect}`)
+  window.fetch(`${gatekeeperURL}/authenticate/${authorizationCode}`)
     .then((response) => response.json())
     .then((json) => {
-      if (json.error) {
+      if (json.error || !json.token) {
         return reject(rslError({
           provider: 'github',
           type: 'access_token',
@@ -148,25 +145,14 @@ const getAccessToken = () => new Promise((resolve, reject) => {
         }))
       }
 
-      return resolve(json)
+      return resolve(json.token)
     })
-    .catch((error) => {
-      if (error.error) {
-        return reject(rslError({
-          provider: 'github',
-          type: 'access_token',
-          description: 'Got error from fetch access token',
-          error
-        }))
-      }
-
-      return reject(rslError({
-        provider: 'github',
-        type: 'access_token',
-        description: 'Failed to fetch user data due to window.fetch() error',
-        error
-      }))
-    })
+    .catch((error) => reject(rslError({
+      provider: 'github',
+      type: 'access_token',
+      description: 'Failed to fetch user data due to window.fetch() error',
+      error
+    })))
 })
 
 /**
@@ -184,7 +170,7 @@ const generateUser = ({ data: { viewer } }) => {
       profilePicURL: viewer.avatarUrl
     },
     token: {
-      accessToken: githubAccessToken.access_token || githubAppId,
+      accessToken: githubAccessToken || githubAppId,
       expiresAt: Infinity // Couldn’t find a way to get expiration time
     }
   }

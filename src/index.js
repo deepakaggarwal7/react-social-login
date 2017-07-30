@@ -18,8 +18,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     appId: PropTypes.string.isRequired,
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
-    fetchAccessToken: PropTypes.string,
-    mode: PropTypes.oneOf(['basic', 'server']),
+    gatekeeper: PropTypes.string,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
     provider: PropTypes.oneOf(config.providers).isRequired,
@@ -28,11 +27,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         return new Error(`Missing required \`${propName}\` prop on ${componentName}.`)
       }
     }
-  }
-
-  static defaultProps = {
-    autoCleanUri: false,
-    mode: 'basic'
   }
 
   constructor (props) {
@@ -58,9 +52,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, fetchAccessToken, mode, redirect } = this.props
+    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect } = this.props
 
-    this.sdk.load(appId, redirect, mode, fetchAccessToken)
+    this.sdk.load(appId, redirect, gatekeeper)
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -90,9 +84,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { appId, mode, provider } = this.props
+    const { appId, gatekeeper, provider } = this.props
 
-    if (mode === 'basic' && provider === 'github' && appId !== nextProps.appId) {
+    if (provider === 'github' && !gatekeeper && appId !== nextProps.appId) {
       this.setState((prevState) => ({
         isLoaded: false,
         isFetching: false,
@@ -171,8 +165,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'appId',
       'autocleanUri',
       'autoLogin',
-      'fetchAccessToken',
-      'mode',
+      'gatekeeper',
       'onLoginFailure',
       'onLoginSuccess',
       'provider',
