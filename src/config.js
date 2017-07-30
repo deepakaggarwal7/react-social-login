@@ -1,7 +1,9 @@
 const config = {
   providers: [
     'facebook',
+    'github',
     'google',
+    'instagram',
     'linkedin'
   ]
 }
