@@ -14,7 +14,7 @@
 
 React Social Login is an HOC which provides social login through multiple providers.
 
-**Currently supports Facebook, GitHub (basic auth only), Google, Instagram and LinkedIn as providers (more to come!)**
+**Currently supports Facebook, GitHub, Google, Instagram and LinkedIn as providers (more to come!)**
 
 ## Motivation
 
@@ -32,6 +32,8 @@ $ npm start
 ```
 
 You can then view the demo at [http://localhost:8080][demo].
+
+For GitHub provider, see [GitHub specifics][githubspecifics] first.
 
 ## Install
 
