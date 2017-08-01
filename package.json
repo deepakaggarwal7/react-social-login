@@ -10,7 +10,7 @@
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run lint && webpack",
-    "start": "cd demo && { webpack-dev-server --progress --colors; cd -; }",
+    "start": "cd demo && { webpack-dev-server --https --progress --colors; cd -; }",
     "start:old": "cd demo.old && { webpack-dev-server --progress --colors; cd -; }"
   },
   "pre-commit": [

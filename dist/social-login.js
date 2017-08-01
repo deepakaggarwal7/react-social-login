@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 26);
+/******/ 	return __webpack_require__(__webpack_require__.s = 27);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1075,29 +1075,34 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _facebook = __webpack_require__(14);
+var _amazon = __webpack_require__(14);
+
+var _amazon2 = _interopRequireDefault(_amazon);
+
+var _facebook = __webpack_require__(15);
 
 var _facebook2 = _interopRequireDefault(_facebook);
 
-var _github = __webpack_require__(15);
+var _github = __webpack_require__(16);
 
 var _github2 = _interopRequireDefault(_github);
 
-var _google = __webpack_require__(16);
+var _google = __webpack_require__(17);
 
 var _google2 = _interopRequireDefault(_google);
 
-var _instagram = __webpack_require__(17);
+var _instagram = __webpack_require__(18);
 
 var _instagram2 = _interopRequireDefault(_instagram);
 
-var _linkedin = __webpack_require__(18);
+var _linkedin = __webpack_require__(19);
 
 var _linkedin2 = _interopRequireDefault(_linkedin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+  amazon: _amazon2.default,
   github: _github2.default,
   google: _google2.default,
   facebook: _facebook2.default,
@@ -1206,11 +1211,11 @@ if (process.env.NODE_ENV !== 'production') {
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
   var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(22)(isValidElement, throwOnDirectAccess);
+  module.exports = __webpack_require__(23)(isValidElement, throwOnDirectAccess);
 } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(21)();
+  module.exports = __webpack_require__(22)();
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -1716,13 +1721,146 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var config = {
-  providers: ['facebook', 'github', 'google', 'instagram', 'linkedin']
+  providers: ['amazon', 'facebook', 'github', 'google', 'instagram', 'linkedin']
 };
 
 exports.default = config;
 
 /***/ }),
 /* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _utils = __webpack_require__(0);
+
+/**
+ * Loads Amazon SDK.
+ * @param {string} appId
+ * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/install_sdk_javascript.html
+ */
+var load = function load(appId) {
+  return new Promise(function (resolve) {
+    // @TODO: handle errors
+    if (document.getElementById('amazon-sdk')) {
+      return resolve();
+    }
+
+    var firstJS = document.getElementsByTagName('script')[0];
+    var js = document.createElement('script');
+
+    js.src = '//api-cdn.amazon.com/sdk/login1.js';
+    js.id = 'amazon-sdk';
+    js.async = true;
+
+    window.onAmazonLoginReady = function () {
+      window.amazon.Login.setClientId(appId);
+
+      return resolve();
+    };
+
+    if (!firstJS) {
+      document.appendChild(js);
+    } else {
+      firstJS.parentNode.appendChild(js);
+    }
+  });
+};
+
+/**
+ * Checks if user is logged in to app through Amazon.
+ * Requires SDK to be loaded first.
+ */
+var checkLogin = function checkLogin() {
+  return new Promise(function (resolve, reject) {
+    window.amazon.Login.authorize({ scope: 'profile' }, function (response) {
+      if (response.error) {
+        return reject((0, _utils.rslError)({
+          provider: 'linkedin',
+          type: 'auth',
+          description: 'Authentication failed',
+          error: response
+        }));
+      }
+
+      return getProfile(response).then(resolve, reject);
+    });
+  });
+};
+
+/**
+ * Trigger Amazon login process.
+ * Requires SDK to be loaded first.
+ * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/javascript_sdk_reference.html#authorize
+ */
+var login = function login() {
+  return new Promise(function (resolve, reject) {
+    return checkLogin().then(resolve, reject);
+  });
+};
+
+/**
+ * Gets currently logged in user profile data.
+ * Requires SDK to be loaded first.
+ * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/javascript_sdk_reference.html#retrieveProfile
+ */
+var getProfile = function getProfile(authResponse) {
+  return new Promise(function (resolve, reject) {
+    window.amazon.Login.retrieveProfile(authResponse.access_token, function (response) {
+      if (response.error) {
+        return reject((0, _utils.rslError)({
+          provider: 'amazon',
+          type: 'get_profile',
+          description: 'Failed to get user profile',
+          error: response
+        }));
+      }
+
+      return resolve(_extends({}, authResponse, response));
+    });
+  });
+};
+
+/**
+ * Helper to generate user account data.
+ * @param {Object} response
+ * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/javascript_sdk_reference.html#retrieveProfile
+ */
+var generateUser = function generateUser(response) {
+  var expiresAt = new Date();
+
+  return {
+    profile: {
+      id: response.profile.CustomerId,
+      name: response.profile.Name,
+      firstName: response.profile.Name,
+      lastName: response.profile.Name,
+      email: response.profile.PrimaryEmail,
+      profilePicURL: undefined // No profile picture available for Amazon provider
+    },
+    token: {
+      accessToken: response.access_token,
+      expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in)
+    }
+  };
+};
+
+exports.default = {
+  checkLogin: checkLogin,
+  generateUser: generateUser,
+  load: load,
+  login: login
+};
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1904,7 +2042,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1914,7 +2052,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _v = __webpack_require__(25);
+var _v = __webpack_require__(26);
 
 var _v2 = _interopRequireDefault(_v);
 
@@ -2114,7 +2252,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2275,7 +2413,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2285,7 +2423,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _fetchJsonp = __webpack_require__(19);
+var _fetchJsonp = __webpack_require__(20);
 
 var _fetchJsonp2 = _interopRequireDefault(_fetchJsonp);
 
@@ -2430,7 +2568,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2582,7 +2720,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
@@ -2710,7 +2848,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 });
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2779,7 +2917,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2845,7 +2983,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2865,7 +3003,7 @@ var invariant = __webpack_require__(4);
 var warning = __webpack_require__(8);
 
 var ReactPropTypesSecret = __webpack_require__(5);
-var checkPropTypes = __webpack_require__(20);
+var checkPropTypes = __webpack_require__(21);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -3365,7 +3503,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 /**
@@ -3394,7 +3532,7 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3486,11 +3624,11 @@ module.exports = sha1;
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var sha1 = __webpack_require__(24);
-var bytesToUuid = __webpack_require__(23);
+var sha1 = __webpack_require__(25);
+var bytesToUuid = __webpack_require__(24);
 
 function uuidToBytes(uuid) {
   // Note: We assume we're being passed a valid uuid string
@@ -3534,7 +3672,7 @@ module.exports = v5;
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(2);

@@ -87,6 +87,14 @@ ReactDOM.render(
   <div>
     <div>
       <SocialButton
+        provider='amazon'
+        appId='amzn1.application-oa2-client.26aaf63624854cbcaa084735a0fc47ed'
+        onLoginSuccess={handleSocialLogin}
+        onLoginFailure={handleSocialLoginFailure}
+      >
+        Login with Amazon
+      </SocialButton>
+      <SocialButton
         provider='facebook'
         appId='309479849514684'
         onLoginSuccess={handleSocialLogin}
@@ -95,41 +103,42 @@ ReactDOM.render(
         Login with Facebook
       </SocialButton>
       <SocialButton
+        autoCleanUri
+        provider='github'
+        mode='server'
+        fetchAccessToken='http://localhost:3000/github-oauth'
+        appId='8a7c2edb2e602d969839'
+        redirect='https://localhost:8080'
+        onLoginSuccess={handleSocialLogin}
+        onLoginFailure={handleSocialLoginFailure}
+      >
+        Login with GitHub OAuth
+      </SocialButton>
+      <SocialButton
         provider='google'
-        appId='1085669919173-lslfngv7lb6j9sr7eostmtk54mrdmhc5.apps.googleusercontent.com'
+        appId='844845104372-h8htjngp1os1tb79nksc54dq7tko4r8n.apps.googleusercontent.com'
         onLoginSuccess={handleSocialLogin}
         onLoginFailure={handleSocialLoginFailure}
       >
         Login with Google
       </SocialButton>
       <SocialButton
-        provider='linkedin'
-        appId='81oplz05qxuccs'
-        onLoginSuccess={handleSocialLogin}
-        onLoginFailure={handleSocialLoginFailure}
-      >
-        Login with LinkedIn
-      </SocialButton>
-      <SocialButton
         autoCleanUri
         provider='instagram'
         appId='afdf675d26214280ac9a792afea5651c'
-        redirect='http://localhost:8080'
+        redirect='https://localhost:8080'
         onLoginSuccess={handleSocialLogin}
         onLoginFailure={handleSocialLoginFailure}
       >
         Login with Instagram
       </SocialButton>
       <SocialButton
-        autoCleanUri
-        provider='github'
-        gatekeeper='http://localhost:9999'
-        appId='8a7c2edb2e602d969839'
-        redirect='http://localhost:8080'
+        provider='linkedin'
+        appId='7775kne2guetd0'
         onLoginSuccess={handleSocialLogin}
         onLoginFailure={handleSocialLoginFailure}
       >
-        Login with GitHub OAuth
+        Login with LinkedIn
       </SocialButton>
     </div>
     <GitHubLogin />

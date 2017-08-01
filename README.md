@@ -14,7 +14,7 @@
 
 React Social Login is an HOC which provides social login through multiple providers.
 
-**Currently supports Facebook, GitHub, Google, Instagram and LinkedIn as providers (more to come!)**
+**Currently supports Amazon, Facebook, GitHub, Google, Instagram and LinkedIn as providers (more to come!)**
 
 ## Motivation
 
@@ -105,7 +105,7 @@ Raw component props (before transform):
 | gatekeeper  | —  | string  | Gatekeeper URL to use for GitHub OAuth support (see [GitHub specifics][githubspecifics])  |
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
-| provider  | —  | `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
+| provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 Transformed component props:
@@ -156,19 +156,18 @@ $ npm run build
 
 ### Find my appId
 
+#### Amazon
+
+See [Amazon developers documentation][amazondoc].
+
 #### Facebook
 
 See [facebook for developers documentation][fb4devdoc].
 
 #### GitHub (see [GitHub specifics][githubspecifics])
 
-**Basic authentication method using personal access tokens**
-
-See [GitHub Help][githubhelp].
-
-**OAuth authentication**
-
-See [GitHub Developer guide][githubdoc].
+* Basic authentication method using personal access tokens: see [GitHub Help][githubhelp].
+* OAuth authentication: see [GitHub Developer guide][githubdoc].
 
 #### Google
 
@@ -253,3 +252,4 @@ TBD
 [ghoauthwebflowissue]: https://github.com/isaacs/github/issues/330
 [gatekeeper]: https://github.com/prose/gatekeeper
 [githubspecifics]: #github-specifics
+[amazondoc]: https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/register_web.html
