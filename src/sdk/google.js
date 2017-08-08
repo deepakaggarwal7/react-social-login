@@ -11,7 +11,7 @@ const load = ({ appId, scope }) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
 
-  scope = scope ? scope.join(',') : null;
+  scope = scope ? scope.join(',') : null
 
   js.src = '//apis.google.com/js/platform.js'
   js.id = 'gapi-client'
