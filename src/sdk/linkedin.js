@@ -4,7 +4,7 @@ import { rslError } from '../utils'
  * Loads LinkedIn SDK.
  * @param {string} appId
  */
-const load = (appId) => new Promise((resolve) => {
+const load = ({ appId }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('linkedin-client')) {
     return resolve()

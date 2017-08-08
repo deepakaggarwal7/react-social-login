@@ -22,7 +22,7 @@ if (!window.fetch) {
  * @param {string} redirect
  * @param {string} gatekeeper
  */
-const load = (appId, redirect, gatekeeper) => new Promise((resolve, reject) => {
+const load = ({ appId, redirect, gatekeeper }) => new Promise((resolve, reject) => {
   if (!appId) {
     return reject(rslError({
       provider: 'github',

@@ -5,7 +5,7 @@ import { rslError } from '../utils'
  * @param {string} appId
  * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/install_sdk_javascript.html
  */
-const load = (appId) => new Promise((resolve) => {
+const load = ({ appId }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('amazon-sdk')) {
     return resolve()
