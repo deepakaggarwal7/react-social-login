@@ -117,6 +117,9 @@ ReactDOM.render(
       <SocialButton
         provider='google'
         appId='844845104372-h8htjngp1os1tb79nksc54dq7tko4r8n.apps.googleusercontent.com'
+        scope={[
+          'https://www.googleapis.com/auth/contacts.readonly'
+        ]}
         onLoginSuccess={handleSocialLogin}
         onLoginFailure={handleSocialLoginFailure}
       >
