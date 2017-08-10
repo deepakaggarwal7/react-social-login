@@ -1,4 +1,4 @@
-import { rslError } from '../utils'
+import { rslError, timestampFromNow } from '../utils'
 
 /**
  * Loads LinkedIn SDK.
@@ -86,24 +86,20 @@ const getProfile = () => new Promise((resolve, reject) => {
  * Helper to generate user account data.
  * @param {Object} response
  */
-const generateUser = (response) => {
-  const expiresAt = new Date()
-
-  return {
-    profile: {
-      id: window.IN.ENV.auth.member_id,
-      name: `${response.values[0].firstName} ${response.values[0].lastName}`,
-      firstName: response.values[0].firstName,
-      lastName: response.values[0].lastName,
-      email: response.values[0].emailAddress,
-      profilePicURL: response.values[0].pictureUrl
-    },
-    token: {
-      accessToken: window.IN.ENV.auth.oauth_token,
-      expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + window.IN.ENV.auth.oauth_expires_in)
-    }
+const generateUser = (response) => ({
+  profile: {
+    id: window.IN.ENV.auth.member_id,
+    name: `${response.values[0].firstName} ${response.values[0].lastName}`,
+    firstName: response.values[0].firstName,
+    lastName: response.values[0].lastName,
+    email: response.values[0].emailAddress,
+    profilePicURL: response.values[0].pictureUrl
+  },
+  token: {
+    accessToken: window.IN.ENV.auth.oauth_token,
+    expiresAt: timestampFromNow(window.IN.ENV.auth.oauth_expires_in)
   }
-}
+})
 
 const oldLoad = (appId) => {
   const id = 'li-client'

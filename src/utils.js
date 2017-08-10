@@ -79,3 +79,9 @@ export const rslError = (errorObject) => {
 
   return error.join('\n\nORIGINAL ERROR: ')
 }
+
+export const timestampFromNow = (duration) => {
+  const expiresAt = new Date()
+
+  return expiresAt.setSeconds(expiresAt.getSeconds() + duration)
+}
