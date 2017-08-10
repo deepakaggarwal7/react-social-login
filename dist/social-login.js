@@ -1476,7 +1476,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     return SocialLogin;
   }(_react.Component), _class.propTypes = {
     appId: _propTypes2.default.string.isRequired,
-    scope: _propTypes2.default.array,
+    scope: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.string]),
     autoCleanUri: _propTypes2.default.bool,
     autoLogin: _propTypes2.default.bool,
     gatekeeper: _propTypes2.default.string,
@@ -2273,7 +2273,6 @@ var _utils = __webpack_require__(0);
 
 /**
  * Loads Google SDK.
- * @param {string} appId
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiclientloadname--------version--------callback
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2initparams
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
@@ -2285,7 +2284,7 @@ var load = function load(_ref) {
     var firstJS = document.getElementsByTagName('script')[0];
     var js = document.createElement('script');
 
-    scope = scope ? scope.join(',') : null;
+    scope = scope ? Array.isArray(scope) && scope.join(',') || scope : null;
 
     js.src = '//apis.google.com/js/platform.js';
     js.id = 'gapi-client';
