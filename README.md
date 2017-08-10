@@ -31,7 +31,7 @@ Edit `appId` props with your own ones in `demo/index.js` file and build demo:
 $ npm start
 ```
 
-You can then view the demo at [http://localhost:8080][demo].
+You can then view the demo at [https://localhost:8080][demo].
 
 For GitHub provider, see [GitHub specifics][githubspecifics] first.
 
@@ -216,6 +216,14 @@ The simplest way to setup this mode is to use the [Gatekeeper project][gatekeepe
 
 You can also implement it your own way but you must use the same routing than `Gatekeeper` (`/authenticate/:code`) and return a JSON response containing a `token` or `error` property (it will also throw if it doesn't find `token`).
 
+#### Special instructions to run demo
+
+RSL demo is served over https with `webpack-dev-server`. This is a requirement of Amazon Login SDK. `Gatekeeper` is served over insecure http so you will have to serve the demo through http also to work with GitHub (but it will break Amazon):
+
+```shell
+$ npm run start:insecure
+```
+
 ## Change Log
 
 __v2.0.0__ [26 Feb 2017]
@@ -240,7 +248,7 @@ TBD
 * [Nicolas Goudry][ghngoudry]
 * No longer just myself
 
-[demo]: http://localhost:8080
+[demo]: https://localhost:8080
 [findmyappid]: #find-my-appid
 [fb4devdoc]: https://developers.facebook.com/docs/apps/register
 [githubhelp]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line
