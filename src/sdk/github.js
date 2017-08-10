@@ -158,6 +158,7 @@ const getAccessToken = () => new Promise((resolve, reject) => {
 /**
  * Helper to generate user account data.
  * @param {Object} viewer
+ * @see About token expiration: https://gist.github.com/technoweenie/419219#gistcomment-3232
  */
 const generateUser = ({ data: { viewer } }) => {
   return {
@@ -171,7 +172,7 @@ const generateUser = ({ data: { viewer } }) => {
     },
     token: {
       accessToken: githubAccessToken || githubAppId,
-      expiresAt: Infinity // Couldn’t find a way to get expiration time
+      expiresAt: Infinity
     }
   }
 }
