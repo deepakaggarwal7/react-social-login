@@ -80,7 +80,7 @@ const checkLogin = (autoLogin = false) => {
       headers: new Headers({
         'Authorization': `Bearer ${githubAccessToken || githubAppId}`
       }),
-      body: JSON.stringify({query: 'query { viewer { id, name, email, avatarUrl } }'})
+      body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
     })
       .then((response) => response.json())
       .then((json) => {
