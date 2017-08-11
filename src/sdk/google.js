@@ -2,14 +2,15 @@ import { rslError } from '../utils'
 
 /**
  * Loads Google SDK.
- * @param {string} appId
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiclientloadname--------version--------callback
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2initparams
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
  */
-const load = (appId) => new Promise((resolve, reject) => {
+const load = ({ appId, scope }) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
+
+  scope = scope ? (Array.isArray(scope) && scope.join(',') || scope) : null
 
   js.src = '//apis.google.com/js/platform.js'
   js.id = 'gapi-client'
@@ -18,7 +19,8 @@ const load = (appId) => new Promise((resolve, reject) => {
     window.gapi.load('auth2', () => {
       if (!window.gapi.auth2.getAuthInstance()) {
         window.gapi.auth2.init({
-          client_id: appId
+          client_id: appId,
+          scope
         }).then(() => resolve(), (err) => reject(rslError({
           provider: 'google',
           type: 'load',

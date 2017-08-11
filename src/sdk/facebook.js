@@ -5,7 +5,7 @@ import { rslError } from '../utils'
  * @param {string} appId
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-const load = (appId) => new Promise((resolve) => {
+const load = ({ appId }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('facebook-jssdk')) {
     return resolve()

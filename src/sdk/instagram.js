@@ -17,7 +17,7 @@ if (!window.fetch) {
 /**
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
-const load = (appId, redirect) => new Promise((resolve, reject) => {
+const load = ({ appId, redirect }) => new Promise((resolve, reject) => {
   instagramAppId = appId
   instagramRedirect = redirect
   instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${instagramAppId}&redirect_uri=${instagramRedirect}%3FrslCallback%3Dinstagram&response_type=token`

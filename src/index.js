@@ -16,6 +16,10 @@ export { default as OldSocialLogin } from './component'
 const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   static propTypes = {
     appId: PropTypes.string.isRequired,
+    scope: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string
+    ]),
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
     gatekeeper: PropTypes.string,
@@ -52,9 +56,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect } = this.props
+    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope } = this.props
 
-    this.sdk.load(appId, redirect, gatekeeper)
+    this.sdk.load({ appId, redirect, gatekeeper, scope })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -163,6 +167,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
       'appId',
+      'scope',
       'autocleanUri',
       'autoLogin',
       'gatekeeper',

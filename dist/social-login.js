@@ -1328,10 +1328,11 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
             autoCleanUri = _props.autoCleanUri,
             autoLogin = _props.autoLogin,
             gatekeeper = _props.gatekeeper,
-            redirect = _props.redirect;
+            redirect = _props.redirect,
+            scope = _props.scope;
 
 
-        this.sdk.load(appId, redirect, gatekeeper).then(function (accessToken) {
+        this.sdk.load({ appId: appId, redirect: redirect, gatekeeper: gatekeeper, scope: scope }).then(function (accessToken) {
           if (autoCleanUri) {
             (0, _utils.cleanLocation)();
           }
@@ -1466,7 +1467,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
       key: 'render',
       value: function render() {
         // Don’t forward unneeded props
-        var originalProps = (0, _utils.omit)(this.props, ['appId', 'autocleanUri', 'autoLogin', 'gatekeeper', 'onLoginFailure', 'onLoginSuccess', 'provider', 'redirect']);
+        var originalProps = (0, _utils.omit)(this.props, ['appId', 'scope', 'autocleanUri', 'autoLogin', 'gatekeeper', 'onLoginFailure', 'onLoginSuccess', 'provider', 'redirect']);
 
         return _react2.default.createElement(WrappedComponent, _extends({ triggerLogin: this.login }, originalProps));
       }
@@ -1475,6 +1476,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
     return SocialLogin;
   }(_react.Component), _class.propTypes = {
     appId: _propTypes2.default.string.isRequired,
+    scope: _propTypes2.default.oneOfType([_propTypes2.default.array, _propTypes2.default.string]),
     autoCleanUri: _propTypes2.default.bool,
     autoLogin: _propTypes2.default.bool,
     gatekeeper: _propTypes2.default.string,
@@ -1746,7 +1748,8 @@ var _utils = __webpack_require__(0);
  * @param {string} appId
  * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/install_sdk_javascript.html
  */
-var load = function load(appId) {
+var load = function load(_ref) {
+  var appId = _ref.appId;
   return new Promise(function (resolve) {
     // @TODO: handle errors
     if (document.getElementById('amazon-sdk')) {
@@ -1879,7 +1882,8 @@ var _utils = __webpack_require__(0);
  * @param {string} appId
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-var load = function load(appId) {
+var load = function load(_ref) {
+  var appId = _ref.appId;
   return new Promise(function (resolve) {
     // @TODO: handle errors
     if (document.getElementById('facebook-jssdk')) {
@@ -2080,7 +2084,10 @@ if (!window.fetch) {
  * @param {string} redirect
  * @param {string} gatekeeper
  */
-var load = function load(appId, redirect, gatekeeper) {
+var load = function load(_ref) {
+  var appId = _ref.appId,
+      redirect = _ref.redirect,
+      gatekeeper = _ref.gatekeeper;
   return new Promise(function (resolve, reject) {
     if (!appId) {
       return reject((0, _utils.rslError)({
@@ -2225,8 +2232,8 @@ var getAccessToken = function getAccessToken() {
  * Helper to generate user account data.
  * @param {Object} viewer
  */
-var generateUser = function generateUser(_ref) {
-  var viewer = _ref.data.viewer;
+var generateUser = function generateUser(_ref2) {
+  var viewer = _ref2.data.viewer;
 
   return {
     profile: {
@@ -2266,15 +2273,18 @@ var _utils = __webpack_require__(0);
 
 /**
  * Loads Google SDK.
- * @param {string} appId
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiclientloadname--------version--------callback
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2initparams
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
  */
-var load = function load(appId) {
+var load = function load(_ref) {
+  var appId = _ref.appId,
+      scope = _ref.scope;
   return new Promise(function (resolve, reject) {
     var firstJS = document.getElementsByTagName('script')[0];
     var js = document.createElement('script');
+
+    scope = scope ? Array.isArray(scope) && scope.join(',') || scope : null;
 
     js.src = '//apis.google.com/js/platform.js';
     js.id = 'gapi-client';
@@ -2283,7 +2293,8 @@ var load = function load(appId) {
       window.gapi.load('auth2', function () {
         if (!window.gapi.auth2.getAuthInstance()) {
           window.gapi.auth2.init({
-            client_id: appId
+            client_id: appId,
+            scope: scope
           }).then(function () {
             return resolve();
           }, function (err) {
@@ -2446,7 +2457,9 @@ if (!window.fetch) {
 /**
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
-var load = function load(appId, redirect) {
+var load = function load(_ref) {
+  var appId = _ref.appId,
+      redirect = _ref.redirect;
   return new Promise(function (resolve, reject) {
     instagramAppId = appId;
     instagramRedirect = redirect;
@@ -2584,7 +2597,8 @@ var _utils = __webpack_require__(0);
  * Loads LinkedIn SDK.
  * @param {string} appId
  */
-var load = function load(appId) {
+var load = function load(_ref) {
+  var appId = _ref.appId;
   return new Promise(function (resolve) {
     // @TODO: handle errors
     if (document.getElementById('linkedin-client')) {
