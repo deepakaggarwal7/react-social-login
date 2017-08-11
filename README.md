@@ -106,7 +106,7 @@ Raw component props (before transform):
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
 | provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
-| scope  | -  | array/string  | An array or string of scopes to be forwarded in request. Current support for [google](https://developers.google.com/identity/protocols/googlescopes) only; others to come  |
+| scope  | -  | array, string  | An array or string of scopes to be forwarded in request. Current support is for [google scopes][googlescopes] only (more to come)  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 Transformed component props:
@@ -233,12 +233,23 @@ __v2.0.0__ [26 Feb 2017]
 * Uses Webpack 2.x
 __Huge  Thanks to  Nicolas Goudry for his generous contribution __
 
-__v2.0.1__ [24 June 2017]
-merged Pull #15  Request  which resolves:
+__v2.0.1__ [24 June 2017] merged pull request [#15](https://github.com/deepakaggarwal7/react-social-login/pull/15)
  * Facebook error
  * code styling
  * unnecessary console logs
  * pre-commit lint
+
+__v3.0.0__ [30 July 2017] merged pull request [#19](https://github.com/deepakaggarwal7/react-social-login/pull/19)
+ * Rewrote as HOC
+ * Instagram
+ * GitHub
+ * Auto login
+ * Better error handling
+ * Various fixes
+
+__v3.1.0__ [01 August 2017] merged pull request [#20](https://github.com/deepakaggarwal7/react-social-login/pull/20)
+ * Amazon
+ * https
 
 ## Tests
 
@@ -262,3 +273,4 @@ TBD
 [gatekeeper]: https://github.com/prose/gatekeeper
 [githubspecifics]: #github-specifics
 [amazondoc]: https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/register_web.html
+[googlescopes]: https://developers.google.com/identity/protocols/googlescopes
