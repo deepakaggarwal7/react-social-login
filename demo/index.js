@@ -105,10 +105,9 @@ ReactDOM.render(
       <SocialButton
         autoCleanUri
         provider='github'
-        mode='server'
-        fetchAccessToken='http://localhost:3000/github-oauth'
+        gatekeeper='http://localhost:9999'
         appId='8a7c2edb2e602d969839'
-        redirect='https://localhost:8080'
+        redirect='http://localhost:8080'
         onLoginSuccess={handleSocialLogin}
         onLoginFailure={handleSocialLoginFailure}
       >

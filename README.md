@@ -31,7 +31,7 @@ Edit `appId` props with your own ones in `demo/index.js` file and build demo:
 $ npm start
 ```
 
-You can then view the demo at [http://localhost:8080][demo].
+You can then view the demo at [https://localhost:8080][demo].
 
 For GitHub provider, see [GitHub specifics][githubspecifics] first.
 
@@ -106,7 +106,7 @@ Raw component props (before transform):
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
 | provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
-| scope  | -  | array/string  | An array or string of scopes to be forwarded in request. Current support for [google](https://developers.google.com/identity/protocols/googlescopes) only; others to come  |
+| scope  | -  | array, string  | An array or string of scopes to be forwarded in request. Current support is for [google scopes][googlescopes] only (more to come)  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 Transformed component props:
@@ -216,6 +216,14 @@ The simplest way to setup this mode is to use the [Gatekeeper project][gatekeepe
 
 You can also implement it your own way but you must use the same routing than `Gatekeeper` (`/authenticate/:code`) and return a JSON response containing a `token` or `error` property (it will also throw if it doesn't find `token`).
 
+#### Special instructions to run demo
+
+RSL demo is served over https with `webpack-dev-server`. This is a requirement of Amazon Login SDK. `Gatekeeper` is served over insecure http so you will have to serve the demo through http also to work with GitHub (but it will break Amazon):
+
+```shell
+$ npm run start:insecure
+```
+
 ## Change Log
 
 __v2.0.0__ [26 Feb 2017]
@@ -225,12 +233,23 @@ __v2.0.0__ [26 Feb 2017]
 * Uses Webpack 2.x
 __Huge  Thanks to  Nicolas Goudry for his generous contribution __
 
-__v2.0.1__ [24 June 2017]
-merged Pull #15  Request  which resolves:
+__v2.0.1__ [24 June 2017] merged pull request [#15](https://github.com/deepakaggarwal7/react-social-login/pull/15)
  * Facebook error
  * code styling
  * unnecessary console logs
  * pre-commit lint
+
+__v3.0.0__ [30 July 2017] merged pull request [#19](https://github.com/deepakaggarwal7/react-social-login/pull/19)
+ * Rewrote as HOC
+ * Instagram
+ * GitHub
+ * Auto login
+ * Better error handling
+ * Various fixes
+
+__v3.1.0__ [01 August 2017] merged pull request [#20](https://github.com/deepakaggarwal7/react-social-login/pull/20)
+ * Amazon
+ * https
 
 ## Tests
 
@@ -240,7 +259,7 @@ TBD
 * [Nicolas Goudry][ghngoudry]
 * No longer just myself
 
-[demo]: http://localhost:8080
+[demo]: https://localhost:8080
 [findmyappid]: #find-my-appid
 [fb4devdoc]: https://developers.facebook.com/docs/apps/register
 [githubhelp]: https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line
@@ -254,3 +273,4 @@ TBD
 [gatekeeper]: https://github.com/prose/gatekeeper
 [githubspecifics]: #github-specifics
 [amazondoc]: https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/register_web.html
+[googlescopes]: https://developers.google.com/identity/protocols/googlescopes
