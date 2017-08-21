@@ -27,6 +27,8 @@ const load = ({ appId, scope }) => new Promise((resolve, reject) => {
           description: 'Failed to load SDK',
           error: err
         })))
+      } else {
+        resolve()
       }
     })
   }
