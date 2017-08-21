@@ -1,3 +1,5 @@
+import Promise from 'bluebird'
+
 import { rslError, timestampFromNow } from '../utils'
 
 /**

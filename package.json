@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/deepakaggarwal7/react-social-login#readme",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "fetch-jsonp": "^1.1.1",
     "prop-types": "^15.5.10",
     "react": "^15.2.0",
