@@ -75,7 +75,7 @@ const checkLogin = (autoLogin = false) => {
 
         return resolve({ data: json.data, accessToken: instagramAccessToken })
       })
-      .catch(() => reject({
+      .catch(() => reject({ // eslint-disable-line prefer-promise-reject-errors
         fetchErr: true,
         err: rslError({
           provider: 'instagram',
