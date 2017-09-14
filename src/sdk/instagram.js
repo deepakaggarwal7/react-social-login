@@ -1,3 +1,4 @@
+import Promise from 'bluebird'
 import fetchJsonp from 'fetch-jsonp'
 
 import { getHashValue, getQueryStringValue, rslError } from '../utils'
