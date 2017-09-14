@@ -131,7 +131,7 @@ const getAccessToken = () => new Promise((resolve, reject) => {
   const authorizationCode = getQueryStringValue('code')
 
   if (!authorizationCode) {
-    return reject('Authorization code not found')
+    return reject(new Error('Authorization code not found'))
   }
 
   window.fetch(`${gatekeeperURL}/authenticate/${authorizationCode}`)
