@@ -2305,6 +2305,8 @@ var load = function load(_ref) {
               error: err
             }));
           });
+        } else {
+          resolve();
         }
       });
     };
