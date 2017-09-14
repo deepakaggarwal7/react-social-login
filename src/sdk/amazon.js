@@ -1,4 +1,4 @@
-import { rslError } from '../utils'
+import { rslError, timestampFromNow } from '../utils'
 
 /**
  * Loads Amazon SDK.
@@ -85,24 +85,20 @@ const getProfile = (authResponse) => new Promise((resolve, reject) => {
  * @param {Object} response
  * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/javascript_sdk_reference.html#retrieveProfile
  */
-const generateUser = (response) => {
-  const expiresAt = new Date()
-
-  return {
-    profile: {
-      id: response.profile.CustomerId,
-      name: response.profile.Name,
-      firstName: response.profile.Name,
-      lastName: response.profile.Name,
-      email: response.profile.PrimaryEmail,
-      profilePicURL: undefined // No profile picture available for Amazon provider
-    },
-    token: {
-      accessToken: response.access_token,
-      expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in)
-    }
+const generateUser = (response) => ({
+  profile: {
+    id: response.profile.CustomerId,
+    name: response.profile.Name,
+    firstName: response.profile.Name,
+    lastName: response.profile.Name,
+    email: response.profile.PrimaryEmail,
+    profilePicURL: undefined // No profile picture available for Amazon provider
+  },
+  token: {
+    accessToken: response.access_token,
+    expiresAt: timestampFromNow(response.expires_in)
   }
-}
+})
 
 export default {
   checkLogin,

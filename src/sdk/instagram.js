@@ -106,6 +106,8 @@ const login = () => new Promise((resolve, reject) => {
 /**
  * Helper to generate user account data.
  * @param {Object} data
+ * @see About token expiration: https://www.instagram.com/developer/authentication/
+ * @see Instagram API doesn’t provide email: https://www.instagram.com/developer/endpoints/users/#get_users_self
  */
 const generateUser = (data) => ({
   profile: {
@@ -113,7 +115,7 @@ const generateUser = (data) => ({
     name: data.data.full_name,
     firstName: data.data.full_name,
     lastName: data.data.full_name,
-    email: undefined, // Instagram API doesn’t provide email (see https://www.instagram.com/developer/endpoints/users/#get_users_self)
+    email: undefined,
     profilePicURL: data.data.profile_picture
   },
   token: {
