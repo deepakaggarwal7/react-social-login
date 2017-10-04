@@ -39,7 +39,7 @@ const checkLogin = () => new Promise((resolve, reject) => {
   window.amazon.Login.authorize({ scope: 'profile' }, (response) => {
     if (response.error) {
       return reject(rslError({
-        provider: 'linkedin',
+        provider: 'amazon',
         type: 'auth',
         description: 'Authentication failed',
         error: response

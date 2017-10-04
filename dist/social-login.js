@@ -1790,7 +1790,7 @@ var checkLogin = function checkLogin() {
     window.amazon.Login.authorize({ scope: 'profile' }, function (response) {
       if (response.error) {
         return reject((0, _utils.rslError)({
-          provider: 'linkedin',
+          provider: 'amazon',
           type: 'auth',
           description: 'Authentication failed',
           error: response
