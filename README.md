@@ -106,6 +106,7 @@ Raw component props (before transform):
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
 | provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
+| redirect  | -  | string  | URL to redirect after login (available for `github` and `instagram` only)  |
 | scope  | -  | array, string  | An array or string of scopes to be forwarded in request. Current support is for [google scopes][googlescopes] only (more to come)  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
