@@ -39,7 +39,7 @@ export const cleanLocation = () => {
 
   const { protocol, host, pathname, search, hash } = window.location
 
-  const cleanedHash = /access_token/.test(hash) ? '' : hash ? `#${hash}` : ''
+  const cleanedHash = /access_token/.test(hash) ? '' : hash || ''
   let cleanedSearch = search.split('&').reduce((acc, keyval, i) => {
     const del = /rslCallback=/.test(keyval) ||
       /code=/.test(keyval) ||
