@@ -86,14 +86,17 @@ class GitHubLoginWithPersonalToken extends Component {
 ReactDOM.render(
   <div>
     <div>
-      <SocialButton
-        provider='amazon'
-        appId='amzn1.application-oa2-client.26aaf63624854cbcaa084735a0fc47ed'
-        onLoginSuccess={handleSocialLogin}
-        onLoginFailure={handleSocialLoginFailure}
-      >
-        Login with Amazon
-      </SocialButton>
+      { // Amazon only supports HTTPS
+        window.location.protocol === 'https:' &&
+        <SocialButton
+          provider='amazon'
+          appId='amzn1.application-oa2-client.26aaf63624854cbcaa084735a0fc47ed'
+          onLoginSuccess={handleSocialLogin}
+          onLoginFailure={handleSocialLoginFailure}
+        >
+          Login with Amazon
+        </SocialButton>
+      }
       <SocialButton
         provider='facebook'
         appId='309479849514684'
