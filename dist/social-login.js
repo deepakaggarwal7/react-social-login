@@ -1574,6 +1574,10 @@ var SocialLogin = function (_Component) {
           };
           token = {
             accessToken: authResponse.access_token,
+            idToken: authResponse.id_token,
+            scope: authResponse.scope,
+            expiresIn: authResponse.expires_in,
+            firstIssued_at: authResponse.first_issued_at,
             expiresAt: authResponse.expires_at
           };
 
@@ -1786,7 +1790,7 @@ var checkLogin = function checkLogin() {
     window.amazon.Login.authorize({ scope: 'profile' }, function (response) {
       if (response.error) {
         return reject((0, _utils.rslError)({
-          provider: 'linkedin',
+          provider: 'amazon',
           type: 'auth',
           description: 'Authentication failed',
           error: response
@@ -2387,6 +2391,10 @@ var generateUser = function generateUser(response) {
     },
     token: {
       accessToken: authResponse.access_token,
+      idToken: authResponse.id_token,
+      scope: authResponse.scope,
+      expiresIn: authResponse.expires_in,
+      firstIssued_at: authResponse.first_issued_at,
       expiresAt: authResponse.expires_at
     }
   };
