@@ -132,6 +132,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
     } else if (this.state.isLoaded && this.state.isConnected) {
       this.props.onLoginFailure('User already connected')
+    } else if (this.state.isLoaded && this.state.isFetching) {
+      this.props.onLoginFailure('Fetching user...')
     } else {
       this.props.onLoginFailure('SDK not loaded')
     }
