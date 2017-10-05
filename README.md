@@ -106,8 +106,11 @@ Raw component props (before transform):
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
 | provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
+| redirect  | -  | string  | URL to redirect after login (available for `github` and `instagram` only)  |
 | scope  | -  | array, string  | An array or string of scopes to be forwarded in request. Current support is for [google scopes][googlescopes] only (more to come)  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
+
+*Note about `redirect`: if you are redirecting on root (eg: https://localhost:8080), you **have** to omit the trailing slash.*
 
 Transformed component props:
 
@@ -250,6 +253,11 @@ __v3.0.0__ [30 July 2017] merged pull request [#19](https://github.com/deepakagg
 __v3.1.0__ [01 August 2017] merged pull request [#20](https://github.com/deepakaggarwal7/react-social-login/pull/20)
  * Amazon
  * https
+
+__v3.2.0__ [14 September 2017] 3.2.0
+ * Custom Google scopes
+ * Multiple Google buttons
+ * GitHub doc
 
 ## Tests
 

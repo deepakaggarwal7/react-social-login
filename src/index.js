@@ -22,10 +22,6 @@ Promise.config({
 const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   static propTypes = {
     appId: PropTypes.string.isRequired,
-    scope: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.string
-    ]),
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
     gatekeeper: PropTypes.string,
@@ -33,10 +29,14 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     onLoginSuccess: PropTypes.func,
     provider: PropTypes.oneOf(config.providers).isRequired,
     redirect: (props, propName, componentName) => {
-      if (props.provider === 'instagram' && !props[propName] && typeof props[propName] !== 'string') {
-        return new Error(`Missing required \`${propName}\` prop on ${componentName}.`)
+      if (props.provider === 'instagram' && (!props[propName] || typeof props[propName] !== 'string')) {
+        return new Error(`Missing required \`${propName}\` prop of type \`string\` on ${componentName}.`)
       }
-    }
+    },
+    scope: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string
+    ])
   }
 
   constructor (props) {
@@ -132,6 +132,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
     } else if (this.state.isLoaded && this.state.isConnected) {
       this.props.onLoginFailure('User already connected')
+    } else if (this.state.isLoaded && this.state.isFetching) {
+      this.props.onLoginFailure('Fetching user...')
     } else {
       this.props.onLoginFailure('SDK not loaded')
     }

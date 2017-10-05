@@ -1,13 +1,11 @@
 import Promise from 'bluebird'
 import fetchJsonp from 'fetch-jsonp'
 
-import { getHashValue, getQueryStringValue, rslError } from '../utils'
+import { getHashValue, getQueryStringValue, parseAsURL, rslError } from '../utils'
 
 const INSTAGRAM_API = 'https://api.instagram.com/v1'
 
 let instagramAuth
-let instagramAppId
-let instagramRedirect
 let instagramAccessToken
 
 // Load fetch polyfill for browsers not supporting fetch API
@@ -19,9 +17,12 @@ if (!window.fetch) {
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
 const load = ({ appId, redirect }) => new Promise((resolve, reject) => {
-  instagramAppId = appId
-  instagramRedirect = redirect
-  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${instagramAppId}&redirect_uri=${instagramRedirect}%3FrslCallback%3Dinstagram&response_type=token`
+  const _redirect = parseAsURL(redirect)
+  const searchParams = 'rslCallback=instagram'
+
+  _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
+
+  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&response_type=token`
 
   if (getQueryStringValue('rslCallback') === 'instagram') {
     if (getQueryStringValue('error')) {

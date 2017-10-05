@@ -37,7 +37,7 @@ class Button extends Component {
 
 const SocialButton = SocialLogin(Button)
 
-class GitHubLogin extends Component {
+class GitHubLoginWithPersonalToken extends Component {
   constructor (props) {
     super(props)
 
@@ -86,14 +86,17 @@ class GitHubLogin extends Component {
 ReactDOM.render(
   <div>
     <div>
-      <SocialButton
-        provider='amazon'
-        appId='amzn1.application-oa2-client.26aaf63624854cbcaa084735a0fc47ed'
-        onLoginSuccess={handleSocialLogin}
-        onLoginFailure={handleSocialLoginFailure}
-      >
-        Login with Amazon
-      </SocialButton>
+      { // Amazon only supports HTTPS
+        window.location.protocol === 'https:' &&
+        <SocialButton
+          provider='amazon'
+          appId='amzn1.application-oa2-client.26aaf63624854cbcaa084735a0fc47ed'
+          onLoginSuccess={handleSocialLogin}
+          onLoginFailure={handleSocialLoginFailure}
+        >
+          Login with Amazon
+        </SocialButton>
+      }
       <SocialButton
         provider='facebook'
         appId='309479849514684'
@@ -102,17 +105,20 @@ ReactDOM.render(
       >
         Login with Facebook
       </SocialButton>
-      <SocialButton
-        autoCleanUri
-        provider='github'
-        gatekeeper='http://localhost:9999'
-        appId='8a7c2edb2e602d969839'
-        redirect='http://localhost:8080'
-        onLoginSuccess={handleSocialLogin}
-        onLoginFailure={handleSocialLoginFailure}
-      >
-        Login with GitHub OAuth
-      </SocialButton>
+      { // We don’t use HTTPS because of Gatekeeper, but it can be enabled if Gatekeeper is served over HTTPS
+        window.location.protocol !== 'https:' &&
+        <SocialButton
+          autoCleanUri
+          provider='github'
+          gatekeeper='http://localhost:9999'
+          appId='8a7c2edb2e602d969839'
+          redirect='http://localhost:8080'
+          onLoginSuccess={handleSocialLogin}
+          onLoginFailure={handleSocialLoginFailure}
+        >
+          Login with GitHub OAuth
+        </SocialButton>
+      }
       <SocialButton
         provider='google'
         appId='844845104372-h8htjngp1os1tb79nksc54dq7tko4r8n.apps.googleusercontent.com'
@@ -143,7 +149,7 @@ ReactDOM.render(
         Login with LinkedIn
       </SocialButton>
     </div>
-    <GitHubLogin />
+    <GitHubLoginWithPersonalToken />
   </div>,
   document.getElementById('app')
 )

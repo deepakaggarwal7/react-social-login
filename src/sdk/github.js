@@ -1,7 +1,7 @@
 import Promise from 'bluebird'
 import uuid from 'uuid/v5'
 
-import { getQueryStringValue, rslError } from '../utils'
+import { getQueryStringValue, parseAsURL, rslError } from '../utils'
 
 const GITHUB_API = 'https://api.github.com/graphql'
 
@@ -10,7 +10,6 @@ let gatekeeperURL
 let githubAccessToken
 let githubAppId
 let githubAuth
-let githubRedirect
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
@@ -38,8 +37,13 @@ const load = ({ appId, redirect, gatekeeper }) => new Promise((resolve, reject) 
   if (gatekeeper) {
     gatekeeperURL = gatekeeper
     oauth = true
-    githubRedirect = `${redirect}%3FrslCallback%3Dgithub`
-    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${githubRedirect}&scope=user&state=${uuid(redirect, uuid.URL)}`
+
+    const _redirect = parseAsURL(redirect)
+    const searchParams = 'rslCallback=github'
+
+    _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
+
+    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&scope=user&state=${uuid(redirect, uuid.URL)}`
 
     if (getQueryStringValue('rslCallback') === 'github') {
       getAccessToken()
