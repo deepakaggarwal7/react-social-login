@@ -103,10 +103,6 @@ const generateUser = (response) => {
     },
     token: {
       accessToken: authResponse.access_token,
-      idToken: authResponse.id_token,
-      scope: authResponse.scope,
-      expiresIn: authResponse.expires_in,
-      firstIssued_at: authResponse.first_issued_at,
       expiresAt: authResponse.expires_at
     }
   }
