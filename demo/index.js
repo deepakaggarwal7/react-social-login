@@ -105,17 +105,20 @@ ReactDOM.render(
       >
         Login with Facebook
       </SocialButton>
-      <SocialButton
-        autoCleanUri
-        provider='github'
-        gatekeeper='http://localhost:9999'
-        appId='8a7c2edb2e602d969839'
-        redirect='http://localhost:8080'
-        onLoginSuccess={handleSocialLogin}
-        onLoginFailure={handleSocialLoginFailure}
-      >
-        Login with GitHub OAuth
-      </SocialButton>
+      { // We don’t use HTTPS because of Gatekeeper, but it can be enabled if Gatekeeper is served over HTTPS
+        window.location.protocol !== 'https:' &&
+        <SocialButton
+          autoCleanUri
+          provider='github'
+          gatekeeper='http://localhost:9999'
+          appId='8a7c2edb2e602d969839'
+          redirect='http://localhost:8080'
+          onLoginSuccess={handleSocialLogin}
+          onLoginFailure={handleSocialLoginFailure}
+        >
+          Login with GitHub OAuth
+        </SocialButton>
+      }
       <SocialButton
         provider='google'
         appId='844845104372-h8htjngp1os1tb79nksc54dq7tko4r8n.apps.googleusercontent.com'
