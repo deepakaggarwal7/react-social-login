@@ -1,3 +1,4 @@
+import Promise from 'bluebird'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -7,6 +8,11 @@ import SocialUser from './SocialUser'
 import { cleanLocation, omit } from './utils'
 
 export { default as OldSocialLogin } from './component'
+
+// Enable Promises cancellation
+Promise.config({
+  cancellation: true
+})
 
 /**
  * React Higher Order Component handling social login for multiple providers.
@@ -46,6 +52,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.sdk = sdk[props.provider]
     this.accessToken = null
     this.fetchProvider = props.provider === 'instagram' || props.provider === 'github'
+    this.loadPromise = Promise.resolve()
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
@@ -58,7 +65,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   componentDidMount () {
     const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope } = this.props
 
-    this.sdk.load({ appId, redirect, gatekeeper, scope })
+    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -83,6 +90,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
             }
           }
         })
+
+        return null
       })
       .catch(this.onLoginFailure)
   }
@@ -104,6 +113,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         }).catch(this.onLoginFailure)
       })
     }
+  }
+
+  componentWillUnmount () {
+    this.loadPromise.cancel()
   }
 
   /**
