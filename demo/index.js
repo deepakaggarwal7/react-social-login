@@ -37,7 +37,7 @@ class Button extends Component {
 
 const SocialButton = SocialLogin(Button)
 
-class GitHubLogin extends Component {
+class GitHubLoginWithPersonalToken extends Component {
   constructor (props) {
     super(props)
 
@@ -143,7 +143,7 @@ ReactDOM.render(
         Login with LinkedIn
       </SocialButton>
     </div>
-    <GitHubLogin />
+    <GitHubLoginWithPersonalToken />
   </div>,
   document.getElementById('app')
 )
