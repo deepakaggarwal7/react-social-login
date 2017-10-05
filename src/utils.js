@@ -1,3 +1,5 @@
+const urlParser = document.createElement('a')
+
 /**
  * Create a copy of an object, omitting provided keys.
  * @param {Object} obj Object to copy
@@ -11,6 +13,23 @@ export const omit = (obj, arr) => Object.keys(obj).reduce((res, key) => {
 
   return res
 }, {})
+
+export const parseAsURL = (text) => {
+  urlParser.href = text
+
+  return {
+    protocol: urlParser.protocol,
+    hostname: urlParser.hostname,
+    port: urlParser.port,
+    pathname: urlParser.pathname,
+    search: urlParser.search,
+    hash: urlParser.hash,
+    host: urlParser.host,
+    toString: function () {
+      return `${this.protocol}//${this.host}${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`
+    }
+  }
+}
 
 /**
  * Get key value from url query strings
