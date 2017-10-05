@@ -33,8 +33,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     onLoginSuccess: PropTypes.func,
     provider: PropTypes.oneOf(config.providers).isRequired,
     redirect: (props, propName, componentName) => {
-      if (props.provider === 'instagram' && !props[propName] && typeof props[propName] !== 'string') {
-        return new Error(`Missing required \`${propName}\` prop on ${componentName}.`)
+      if (props.provider === 'instagram' && (!props[propName] || typeof props[propName] !== 'string')) {
+        return new Error(`Missing required \`${propName}\` prop of type \`string\` on ${componentName}.`)
       }
     }
   }
