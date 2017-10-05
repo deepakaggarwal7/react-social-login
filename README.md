@@ -259,13 +259,28 @@ __v3.2.0__ [14 September 2017] 3.2.0
  * Multiple Google buttons
  * GitHub doc
 
+__v3.2.1__ [06 October 2017] React 16, better build, update dep, additions and fixes
+ * Update React to v16
+ * Update all dependencies to latest stable versions
+ * Optimize webpack build
+ * Return full googleAuthResponse
+ * Preserve redirect url query string and hash
+ * Cancel loading on componentWillUnmount
+ * Various fixes
+
 ## Tests
 
 TBD
 
-## Contributors
+## Main contributors
+* [Deepak Aggarwal][ghdeepak]
 * [Nicolas Goudry][ghngoudry]
-* No longer just myself
+
+## Kind contributors
+* Kamran Ahmed : custom Google scopes
+* Adrien Cohen : multiple Google buttons
+* Jason Loo : full google auth response
+
 
 [demo]: https://localhost:8080
 [findmyappid]: #find-my-appid
@@ -275,10 +290,11 @@ TBD
 [gsignindoc]: https://developers.google.com/identity/sign-in/web/devconsole-project
 [instadoc]: https://www.instagram.com/developer
 [linkedinfaq]: https://developer.linkedin.com/support/faq
-[ghngoudry]: https://github.com/nicolas-goudry
 [ghpersonaltokens]: https://github.com/blog/1509-personal-api-tokens
 [ghoauthwebflowissue]: https://github.com/isaacs/github/issues/330
 [gatekeeper]: https://github.com/prose/gatekeeper
 [githubspecifics]: #github-specifics
 [amazondoc]: https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/register_web.html
 [googlescopes]: https://developers.google.com/identity/protocols/googlescopes
+[ghngoudry]: https://github.com/nicolas-goudry
+[ghdeepak]: https://github.com/deepakaggarwal7
