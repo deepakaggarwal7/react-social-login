@@ -252,6 +252,11 @@ __v3.1.0__ [01 August 2017] merged pull request [#20](https://github.com/deepaka
  * Amazon
  * https
 
+__v3.2.0__ [14 September 2017] 3.2.0
+ * Custom Google scopes
+ * Multiple Google buttons
+ * GitHub doc
+
 ## Tests
 
 TBD
