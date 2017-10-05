@@ -110,6 +110,8 @@ Raw component props (before transform):
 | scope  | -  | array, string  | An array or string of scopes to be forwarded in request. Current support is for [google scopes][googlescopes] only (more to come)  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
+*Note about `redirect`: if you are redirecting on root (eg: https://localhost:8080), you **have** to omit the trailing slash.*
+
 Transformed component props:
 
 | Prop  | Type  | Description  |
