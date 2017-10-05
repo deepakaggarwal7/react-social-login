@@ -1,4 +1,6 @@
-import { rslError } from '../utils'
+import Promise from 'bluebird'
+
+import { rslError, timestampFromNow } from '../utils'
 
 /**
  * Loads Facebook SDK.
@@ -102,24 +104,20 @@ const getProfile = () => new Promise((resolve) => {
  * Helper to generate user account data.
  * @param {Object} response
  */
-const generateUser = (response) => {
-  const expiresAt = new Date()
-
-  return {
-    profile: {
-      id: response.id,
-      name: response.name,
-      firstName: response.first_name,
-      lastName: response.last_name,
-      email: response.email,
-      profilePicURL: response.picture.data.url
-    },
-    token: {
-      accessToken: response.accessToken,
-      expiresAt: expiresAt.setSeconds(expiresAt.getSeconds() + response.expiresIn)
-    }
+const generateUser = (response) => ({
+  profile: {
+    id: response.id,
+    name: response.name,
+    firstName: response.first_name,
+    lastName: response.last_name,
+    email: response.email,
+    profilePicURL: response.picture.data.url
+  },
+  token: {
+    accessToken: response.accessToken,
+    expiresAt: timestampFromNow(response.expiresIn)
   }
-}
+})
 
 const oldLoad = (appId) => {
   const id = 'fb-client'

@@ -1,3 +1,5 @@
+import Promise from 'bluebird'
+
 import { rslError } from '../utils'
 
 /**
@@ -10,7 +12,7 @@ const load = ({ appId, scope }) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
 
-  scope = scope ? (Array.isArray(scope) && scope.join(',') || scope) : null
+  scope = scope ? ((Array.isArray(scope) && scope.join(',')) || scope) : null
 
   js.src = '//apis.google.com/js/platform.js'
   js.id = 'gapi-client'
@@ -103,6 +105,10 @@ const generateUser = (response) => {
     },
     token: {
       accessToken: authResponse.access_token,
+      idToken: authResponse.id_token,
+      scope: authResponse.scope,
+      expiresIn: authResponse.expires_in,
+      firstIssued_at: authResponse.first_issued_at,
       expiresAt: authResponse.expires_at
     }
   }

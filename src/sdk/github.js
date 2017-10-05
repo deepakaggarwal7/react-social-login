@@ -1,6 +1,7 @@
+import Promise from 'bluebird'
 import uuid from 'uuid/v5'
 
-import { getQueryStringValue, rslError } from '../utils'
+import { getQueryStringValue, parseAsURL, rslError } from '../utils'
 
 const GITHUB_API = 'https://api.github.com/graphql'
 
@@ -9,7 +10,6 @@ let gatekeeperURL
 let githubAccessToken
 let githubAppId
 let githubAuth
-let githubRedirect
 
 // Load fetch polyfill for browsers not supporting fetch API
 if (!window.fetch) {
@@ -37,8 +37,13 @@ const load = ({ appId, redirect, gatekeeper }) => new Promise((resolve, reject) 
   if (gatekeeper) {
     gatekeeperURL = gatekeeper
     oauth = true
-    githubRedirect = `${redirect}%3FrslCallback%3Dgithub`
-    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${githubRedirect}&scope=user&state=${uuid(redirect, uuid.URL)}`
+
+    const _redirect = parseAsURL(redirect)
+    const searchParams = 'rslCallback=github'
+
+    _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
+
+    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&scope=user&state=${uuid(redirect, uuid.URL)}`
 
     if (getQueryStringValue('rslCallback') === 'github') {
       getAccessToken()
@@ -80,7 +85,7 @@ const checkLogin = (autoLogin = false) => {
       headers: new Headers({
         'Authorization': `Bearer ${githubAccessToken || githubAppId}`
       }),
-      body: JSON.stringify({query: 'query { viewer { id, name, email, avatarUrl } }'})
+      body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
     })
       .then((response) => response.json())
       .then((json) => {
@@ -130,7 +135,7 @@ const getAccessToken = () => new Promise((resolve, reject) => {
   const authorizationCode = getQueryStringValue('code')
 
   if (!authorizationCode) {
-    return reject('Authorization code not found')
+    return reject(new Error('Authorization code not found'))
   }
 
   window.fetch(`${gatekeeperURL}/authenticate/${authorizationCode}`)
@@ -158,6 +163,7 @@ const getAccessToken = () => new Promise((resolve, reject) => {
 /**
  * Helper to generate user account data.
  * @param {Object} viewer
+ * @see About token expiration: https://gist.github.com/technoweenie/419219#gistcomment-3232
  */
 const generateUser = ({ data: { viewer } }) => {
   return {
@@ -171,7 +177,7 @@ const generateUser = ({ data: { viewer } }) => {
     },
     token: {
       accessToken: githubAccessToken || githubAppId,
-      expiresAt: Infinity // Couldn’t find a way to get expiration time
+      expiresAt: Infinity
     }
   }
 }

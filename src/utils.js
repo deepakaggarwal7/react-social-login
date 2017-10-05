@@ -1,3 +1,5 @@
+const urlParser = document.createElement('a')
+
 /**
  * Create a copy of an object, omitting provided keys.
  * @param {Object} obj Object to copy
@@ -11,6 +13,23 @@ export const omit = (obj, arr) => Object.keys(obj).reduce((res, key) => {
 
   return res
 }, {})
+
+export const parseAsURL = (text) => {
+  urlParser.href = text
+
+  return {
+    protocol: urlParser.protocol,
+    hostname: urlParser.hostname,
+    port: urlParser.port,
+    pathname: urlParser.pathname,
+    search: urlParser.search,
+    hash: urlParser.hash,
+    host: urlParser.host,
+    toString: function () {
+      return `${this.protocol}//${this.host}${this.pathname === '/' ? '' : this.pathname}${this.search}${this.hash}`
+    }
+  }
+}
 
 /**
  * Get key value from url query strings
@@ -39,7 +58,7 @@ export const cleanLocation = () => {
 
   const { protocol, host, pathname, search, hash } = window.location
 
-  const cleanedHash = /access_token/.test(hash) ? '' : hash ? `#${hash}` : ''
+  const cleanedHash = /access_token/.test(hash) ? '' : hash || ''
   let cleanedSearch = search.split('&').reduce((acc, keyval, i) => {
     const del = /rslCallback=/.test(keyval) ||
       /code=/.test(keyval) ||
@@ -77,5 +96,11 @@ export const rslError = (errorObject) => {
     error.push(JSON.stringify(errorObject.error, null, 2))
   }
 
-  return error.join('\n\nORIGINAL ERROR: ')
+  return Error(error.join('\n\nORIGINAL ERROR: '))
+}
+
+export const timestampFromNow = (duration) => {
+  const expiresAt = new Date()
+
+  return expiresAt.setSeconds(expiresAt.getSeconds() + duration)
 }

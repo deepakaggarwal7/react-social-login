@@ -1,12 +1,11 @@
+import Promise from 'bluebird'
 import fetchJsonp from 'fetch-jsonp'
 
-import { getHashValue, getQueryStringValue, rslError } from '../utils'
+import { getHashValue, getQueryStringValue, parseAsURL, rslError } from '../utils'
 
 const INSTAGRAM_API = 'https://api.instagram.com/v1'
 
 let instagramAuth
-let instagramAppId
-let instagramRedirect
 let instagramAccessToken
 
 // Load fetch polyfill for browsers not supporting fetch API
@@ -18,9 +17,12 @@ if (!window.fetch) {
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
 const load = ({ appId, redirect }) => new Promise((resolve, reject) => {
-  instagramAppId = appId
-  instagramRedirect = redirect
-  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${instagramAppId}&redirect_uri=${instagramRedirect}%3FrslCallback%3Dinstagram&response_type=token`
+  const _redirect = parseAsURL(redirect)
+  const searchParams = 'rslCallback=instagram'
+
+  _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
+
+  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&response_type=token`
 
   if (getQueryStringValue('rslCallback') === 'instagram') {
     if (getQueryStringValue('error')) {
@@ -74,7 +76,7 @@ const checkLogin = (autoLogin = false) => {
 
         return resolve({ data: json.data, accessToken: instagramAccessToken })
       })
-      .catch(() => reject({
+      .catch(() => reject({ // eslint-disable-line prefer-promise-reject-errors
         fetchErr: true,
         err: rslError({
           provider: 'instagram',
@@ -106,6 +108,8 @@ const login = () => new Promise((resolve, reject) => {
 /**
  * Helper to generate user account data.
  * @param {Object} data
+ * @see About token expiration: https://www.instagram.com/developer/authentication/
+ * @see Instagram API doesn’t provide email: https://www.instagram.com/developer/endpoints/users/#get_users_self
  */
 const generateUser = (data) => ({
   profile: {
@@ -113,7 +117,7 @@ const generateUser = (data) => ({
     name: data.data.full_name,
     firstName: data.data.full_name,
     lastName: data.data.full_name,
-    email: undefined, // Instagram API doesn’t provide email (see https://www.instagram.com/developer/endpoints/users/#get_users_self)
+    email: undefined,
     profilePicURL: data.data.profile_picture
   },
   token: {
