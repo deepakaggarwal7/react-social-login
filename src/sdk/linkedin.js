@@ -95,6 +95,7 @@ const generateUser = (response) => ({
     firstName: response.values[0].firstName,
     lastName: response.values[0].lastName,
     email: response.values[0].emailAddress,
+    publicProfileURL: response.values[0].publicProfileUrl,
     profilePicURL: response.values[0].pictureUrl
   },
   token: {
