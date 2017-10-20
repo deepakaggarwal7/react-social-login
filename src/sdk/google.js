@@ -85,6 +85,17 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 /**
+ * Trigger Google logout.
+ * Requires SDK to be loaded first.
+ * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthsignout
+ */
+const logout = () => new Promise((resolve, reject) => {
+  const GoogleAuth = window.gapi.auth2.getAuthInstance()
+
+  GoogleAuth.signOut().then(resolve, reject)
+})
+
+/**
  * Helper to generate user account data.
  * @param {Object} response
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleusergetbasicprofile
@@ -144,5 +155,6 @@ export default {
   generateUser,
   load,
   login,
+  logout,
   oldLoad
 }

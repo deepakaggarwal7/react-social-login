@@ -127,6 +127,16 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 /**
+ * Fake GitHub logout always throwing error.
+ */
+const logout = () => new Promise((resolve, reject) => reject(rslError({
+  provider: 'github',
+  type: 'logout',
+  description: 'Cannot logout from github provider',
+  error: null
+})))
+
+/**
  * Get access token with authorization code
  * @see https://github.com/prose/gatekeeper
  * @see https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps
@@ -186,5 +196,6 @@ export default {
   checkLogin,
   generateUser,
   load,
-  login
+  login,
+  logout
 }

@@ -63,6 +63,17 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 /**
+ * Trigger Amazon logout.
+ * Requires SDK to be loaded first.
+ * @see https://developer.amazon.com/docs/login-with-amazon/javascript-sdk-reference.html#logout
+ */
+const logout = () => new Promise((resolve) => {
+  window.amazon.Login.logout()
+
+  return resolve
+})
+
+/**
  * Gets currently logged in user profile data.
  * Requires SDK to be loaded first.
  * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/javascript_sdk_reference.html#retrieveProfile
@@ -106,5 +117,6 @@ export default {
   checkLogin,
   generateUser,
   load,
-  login
+  login,
+  logout
 }

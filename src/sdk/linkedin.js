@@ -64,6 +64,15 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 /**
+ * Trigger LinkedIn logout.
+ * Requires SDK to be loaded first.
+ * @see https://developer.linkedin.com/docs/getting-started-js-sdk Section Additional SDK functions - Log the user out
+ */
+const logout = () => new Promise((resolve) => {
+  window.IN.User.logout(resolve)
+})
+
+/**
  * Gets currently logged in user profile data.
  * Requires SDK to be loaded first.
  * @see https://developer.linkedin.com/docs/getting-started-js-sdk
@@ -133,5 +142,6 @@ export default {
   generateUser,
   load,
   login,
+  logout,
   oldLoad
 }

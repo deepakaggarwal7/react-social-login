@@ -106,6 +106,16 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 /**
+ * Fake Instagram logout always throwing error.
+ */
+const logout = () => new Promise((resolve, reject) => reject(rslError({
+  provider: 'instagram',
+  type: 'logout',
+  description: 'Cannot logout from instagram provider',
+  error: null
+})))
+
+/**
  * Helper to generate user account data.
  * @param {Object} data
  * @see About token expiration: https://www.instagram.com/developer/authentication/
@@ -130,5 +140,6 @@ export default {
   checkLogin,
   generateUser,
   load,
-  login
+  login,
+  logout
 }
