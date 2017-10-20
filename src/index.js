@@ -27,6 +27,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     gatekeeper: PropTypes.string,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
+    onLogoutFailure: PropTypes.func,
+    onLogoutSuccess: PropTypes.func,
     provider: PropTypes.oneOf(config.providers).isRequired,
     redirect: (props, propName, componentName) => {
       if (props.provider === 'instagram' && (!props[propName] || typeof props[propName] !== 'string')) {
@@ -56,7 +58,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
+    this.onLogoutFailure = this.onLogoutFailure.bind(this)
+    this.onLogoutSuccess = this.onLogoutSuccess.bind(this)
     this.login = this.login.bind(this)
+    this.logout = this.logout.bind(this)
   }
 
   /**
@@ -178,6 +183,45 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     }
   }
 
+  /**
+   * Triggers logout process.
+   */
+  logout () {
+    if (this.state.isLoaded && this.state.isConnected) {
+      this.sdk.logout().then(this.onLogoutSuccess, this.onLogoutFailure)
+    } else if (this.state.isLoaded && !this.state.isConnected) {
+      this.props.onLoginFailure('User not connected')
+    } else {
+      this.props.onLoginFailure('SDK not loaded')
+    }
+  }
+
+  /**
+   * Handles logout success
+   */
+  onLogoutSuccess () {
+    const { onLogoutSuccess } = this.props
+
+    this.setState((prevState) => ({
+      ...prevState,
+      isConnected: false
+    }))
+
+    if (typeof onLogoutSuccess === 'function') {
+      onLogoutSuccess()
+    }
+  }
+
+  /**
+   * Handles logout failure.
+   * @param err
+   */
+  onLogoutFailure (err) {
+    if (typeof this.props.onLoginFailure === 'function') {
+      this.props.onLoginFailure(err)
+    }
+  }
+
   render () {
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
@@ -188,12 +232,14 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'gatekeeper',
       'onLoginFailure',
       'onLoginSuccess',
+      'onLogoutFailure',
+      'onLogoutSuccess',
       'provider',
       'redirect'
     ])
 
     return (
-      <WrappedComponent triggerLogin={this.login} {...originalProps} />
+      <WrappedComponent triggerLogin={this.login} triggerLogout={this.logout} {...originalProps} />
     )
   }
 }
