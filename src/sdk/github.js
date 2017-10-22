@@ -19,10 +19,11 @@ if (!window.fetch) {
 /**
  * Fake Github SDK loading (needed to trick RSL into thinking its loaded).
  * @param {string} appId
- * @param {string} redirect
  * @param {string} gatekeeper
+ * @param {string} redirect
+ * @param {array|string} scope
  */
-const load = ({ appId, redirect, gatekeeper }) => new Promise((resolve, reject) => {
+const load = ({ appId, gatekeeper, redirect, scope }) => new Promise((resolve, reject) => {
   if (!appId) {
     return reject(rslError({
       provider: 'github',
@@ -40,10 +41,25 @@ const load = ({ appId, redirect, gatekeeper }) => new Promise((resolve, reject) 
 
     const _redirect = parseAsURL(redirect)
     const searchParams = 'rslCallback=github'
+    let githubScopes = [ 'user' ]
+
+    if (Array.isArray(scope)) {
+      githubScopes = githubScopes.concat(scope)
+    } else if (typeof scope === 'string' && scope) {
+      githubScopes = githubScopes.concat(scope.split(','))
+    }
+
+    githubScopes = githubScopes.reduce((acc, item) => {
+      if (typeof item === 'string' && acc.indexOf(item) === -1) {
+        acc.push(item.trim())
+      }
+
+      return acc
+    }, []).join('%20')
 
     _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
 
-    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&scope=user&state=${uuid(redirect, uuid.URL)}`
+    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&scope=${githubScopes}&state=${uuid(redirect, uuid.URL)}`
 
     if (getQueryStringValue('rslCallback') === 'github') {
       getAccessToken()
@@ -85,7 +101,7 @@ const checkLogin = (autoLogin = false) => {
       headers: new Headers({
         'Authorization': `Bearer ${githubAccessToken || githubAppId}`
       }),
-      body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
+      body: JSON.stringify({ query: 'query { viewer { login, name, email, avatarUrl } }' })
     })
       .then((response) => response.json())
       .then((json) => {
@@ -125,6 +141,16 @@ const login = () => new Promise((resolve, reject) => {
       window.open(githubAuth, '_self')
     })
 })
+
+/**
+ * Fake GitHub logout always throwing error.
+ */
+const logout = () => new Promise((resolve, reject) => reject(rslError({
+  provider: 'github',
+  type: 'logout',
+  description: 'Cannot logout from github provider',
+  error: null
+})))
 
 /**
  * Get access token with authorization code
@@ -168,7 +194,7 @@ const getAccessToken = () => new Promise((resolve, reject) => {
 const generateUser = ({ data: { viewer } }) => {
   return {
     profile: {
-      id: viewer.id,
+      id: viewer.login,
       name: viewer.name,
       firstName: viewer.name,
       lastName: viewer.name,
@@ -186,5 +212,6 @@ export default {
   checkLogin,
   generateUser,
   load,
-  login
+  login,
+  logout
 }
