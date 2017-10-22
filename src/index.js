@@ -56,6 +56,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.accessToken = null
     this.fetchProvider = props.provider === 'instagram' || props.provider === 'github'
     this.loadPromise = Promise.resolve()
+    this.node = null
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
@@ -127,7 +128,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   setInstance (node) {
-    if (this.props.getRef && typeof this.props.getRef === 'function') {
+    this.node = node
+
+    if (typeof this.props.getRef === 'function') {
       this.props.getRef(node)
     }
   }
@@ -161,17 +164,23 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const user = new SocialUser(provider)
     const socialUserData = this.sdk.generateUser(response)
 
-    this.setState((prevState) => ({
-      ...prevState,
-      isFetching: false,
-      isConnected: true
-    }))
-
     user.profile = socialUserData.profile
     user.token = socialUserData.token
 
-    if (typeof onLoginSuccess === 'function') {
-      onLoginSuccess(user)
+    if (this.node) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isFetching: false,
+        isConnected: true
+      }), () => {
+        if (typeof onLoginSuccess === 'function') {
+          onLoginSuccess(user)
+        }
+      })
+    } else {
+      if (typeof onLoginSuccess === 'function') {
+        onLoginSuccess(user)
+      }
     }
   }
 
@@ -180,14 +189,22 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * @param err
    */
   onLoginFailure (err) {
-    this.setState((prevState) => ({
-      ...prevState,
-      isFetching: false,
-      isConnected: false
-    }))
+    const { onLoginFailure } = this.props
 
-    if (typeof this.props.onLoginFailure === 'function') {
-      this.props.onLoginFailure(err)
+    if (this.node) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isFetching: false,
+        isConnected: false
+      }), () => {
+        if (typeof onLoginFailure === 'function') {
+          onLoginFailure(err)
+        }
+      })
+    } else {
+      if (typeof onLoginFailure === 'function') {
+        onLoginFailure(err)
+      }
     }
   }
 
@@ -210,13 +227,19 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   onLogoutSuccess () {
     const { onLogoutSuccess } = this.props
 
-    this.setState((prevState) => ({
-      ...prevState,
-      isConnected: false
-    }))
-
-    if (typeof onLogoutSuccess === 'function') {
-      onLogoutSuccess()
+    if (this.node) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isConnected: false
+      }), () => {
+        if (typeof onLogoutSuccess === 'function') {
+          onLogoutSuccess()
+        }
+      })
+    } else {
+      if (typeof onLogoutSuccess === 'function') {
+        onLogoutSuccess()
+      }
     }
   }
 
