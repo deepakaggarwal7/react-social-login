@@ -2,18 +2,35 @@ import Promise from 'bluebird'
 
 import { rslError, timestampFromNow } from '../utils'
 
+let amazonScopes = [ 'profile' ]
+
 /**
  * Loads Amazon SDK.
  * @param {string} appId
+ * @param {array|string} scope
  * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/install_sdk_javascript.html
  */
-const load = ({ appId }) => new Promise((resolve) => {
+const load = ({ appId, scope }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('amazon-sdk')) {
     return resolve()
   }
 
-  const firstJS = document.getElementsByTagName('script')[0]
+  if (Array.isArray(scope)) {
+    amazonScopes = amazonScopes.concat(scope)
+  } else if (typeof scope === 'string' && scope) {
+    amazonScopes = amazonScopes.concat(scope.split(','))
+  }
+
+  amazonScopes = amazonScopes.reduce((acc, item) => {
+    if (typeof item === 'string' && acc.indexOf(item) === -1) {
+      acc.push(item.trim())
+    }
+
+    return acc
+  }, [])
+
+  const firstJS = document.getElementsByTagName('script')[ 0 ]
   const js = document.createElement('script')
 
   js.src = '//api-cdn.amazon.com/sdk/login1.js'
@@ -36,9 +53,10 @@ const load = ({ appId }) => new Promise((resolve) => {
 /**
  * Checks if user is logged in to app through Amazon.
  * Requires SDK to be loaded first.
+ * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/javascript_sdk_reference.html#authorize
  */
 const checkLogin = () => new Promise((resolve, reject) => {
-  window.amazon.Login.authorize({ scope: 'profile' }, (response) => {
+  window.amazon.Login.authorize({ scope: amazonScopes }, (response) => {
     if (response.error) {
       return reject(rslError({
         provider: 'amazon',
@@ -55,7 +73,6 @@ const checkLogin = () => new Promise((resolve, reject) => {
 /**
  * Trigger Amazon login process.
  * Requires SDK to be loaded first.
- * @see https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/javascript_sdk_reference.html#authorize
  */
 const login = () => new Promise((resolve, reject) => {
   return checkLogin()

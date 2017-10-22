@@ -12,8 +12,6 @@ const load = ({ appId, scope }) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
 
-  scope = scope ? ((Array.isArray(scope) && scope.join(',')) || scope) : null
-
   js.src = '//apis.google.com/js/platform.js'
   js.id = 'gapi-client'
 
@@ -22,7 +20,8 @@ const load = ({ appId, scope }) => new Promise((resolve, reject) => {
       if (!window.gapi.auth2.getAuthInstance()) {
         window.gapi.auth2.init({
           client_id: appId,
-          scope
+          fetchBasicProfile: true,
+          scope: scope ? ((Array.isArray(scope) && scope.join(' ')) || scope) : null
         }).then(() => resolve(), (err) => reject(rslError({
           provider: 'google',
           type: 'load',
