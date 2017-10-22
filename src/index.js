@@ -25,6 +25,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
     gatekeeper: PropTypes.string,
+    getRef: PropTypes.func,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
     onLogoutFailure: PropTypes.func,
@@ -55,6 +56,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.accessToken = null
     this.fetchProvider = props.provider === 'instagram' || props.provider === 'github'
     this.loadPromise = Promise.resolve()
+    this.node = null
 
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
@@ -62,6 +64,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.onLogoutSuccess = this.onLogoutSuccess.bind(this)
     this.login = this.login.bind(this)
     this.logout = this.logout.bind(this)
+    this.setInstance = this.setInstance.bind(this)
   }
 
   /**
@@ -124,6 +127,14 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.loadPromise.cancel()
   }
 
+  setInstance (node) {
+    this.node = node
+
+    if (typeof this.props.getRef === 'function') {
+      this.props.getRef(node)
+    }
+  }
+
   /**
    * Triggers login process.
    */
@@ -153,17 +164,23 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const user = new SocialUser(provider)
     const socialUserData = this.sdk.generateUser(response)
 
-    this.setState((prevState) => ({
-      ...prevState,
-      isFetching: false,
-      isConnected: true
-    }))
-
     user.profile = socialUserData.profile
     user.token = socialUserData.token
 
-    if (typeof onLoginSuccess === 'function') {
-      onLoginSuccess(user)
+    if (this.node) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isFetching: false,
+        isConnected: true
+      }), () => {
+        if (typeof onLoginSuccess === 'function') {
+          onLoginSuccess(user)
+        }
+      })
+    } else {
+      if (typeof onLoginSuccess === 'function') {
+        onLoginSuccess(user)
+      }
     }
   }
 
@@ -172,14 +189,22 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * @param err
    */
   onLoginFailure (err) {
-    this.setState((prevState) => ({
-      ...prevState,
-      isFetching: false,
-      isConnected: false
-    }))
+    const { onLoginFailure } = this.props
 
-    if (typeof this.props.onLoginFailure === 'function') {
-      this.props.onLoginFailure(err)
+    if (this.node) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isFetching: false,
+        isConnected: false
+      }), () => {
+        if (typeof onLoginFailure === 'function') {
+          onLoginFailure(err)
+        }
+      })
+    } else {
+      if (typeof onLoginFailure === 'function') {
+        onLoginFailure(err)
+      }
     }
   }
 
@@ -202,13 +227,19 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   onLogoutSuccess () {
     const { onLogoutSuccess } = this.props
 
-    this.setState((prevState) => ({
-      ...prevState,
-      isConnected: false
-    }))
-
-    if (typeof onLogoutSuccess === 'function') {
-      onLogoutSuccess()
+    if (this.node) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isConnected: false
+      }), () => {
+        if (typeof onLogoutSuccess === 'function') {
+          onLogoutSuccess()
+        }
+      })
+    } else {
+      if (typeof onLogoutSuccess === 'function') {
+        onLogoutSuccess()
+      }
     }
   }
 
@@ -227,19 +258,21 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const originalProps = omit(this.props, [
       'appId',
       'scope',
-      'autocleanUri',
+      'autoCleanUri',
       'autoLogin',
       'gatekeeper',
+      'getRef',
       'onLoginFailure',
       'onLoginSuccess',
       'onLogoutFailure',
       'onLogoutSuccess',
       'provider',
-      'redirect'
+      'redirect',
+      'ref'
     ])
 
     return (
-      <WrappedComponent triggerLogin={this.login} triggerLogout={this.logout} {...originalProps} />
+      <WrappedComponent triggerLogin={this.login} triggerLogout={this.logout} ref={this.setInstance} {...originalProps} />
     )
   }
 }
