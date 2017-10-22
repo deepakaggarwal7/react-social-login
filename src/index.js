@@ -258,7 +258,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const originalProps = omit(this.props, [
       'appId',
       'scope',
-      'autocleanUri',
+      'autoCleanUri',
       'autoLogin',
       'gatekeeper',
       'getRef',
