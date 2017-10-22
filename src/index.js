@@ -25,6 +25,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
     gatekeeper: PropTypes.string,
+    getRef: PropTypes.func,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
     onLogoutFailure: PropTypes.func,
@@ -62,6 +63,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.onLogoutSuccess = this.onLogoutSuccess.bind(this)
     this.login = this.login.bind(this)
     this.logout = this.logout.bind(this)
+    this.setInstance = this.setInstance.bind(this)
   }
 
   /**
@@ -122,6 +124,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
   componentWillUnmount () {
     this.loadPromise.cancel()
+  }
+
+  setInstance (node) {
+    if (this.props.getRef && typeof this.props.getRef === 'function') {
+      this.props.getRef(node)
+    }
   }
 
   /**
@@ -230,16 +238,18 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'autocleanUri',
       'autoLogin',
       'gatekeeper',
+      'getRef',
       'onLoginFailure',
       'onLoginSuccess',
       'onLogoutFailure',
       'onLogoutSuccess',
       'provider',
-      'redirect'
+      'redirect',
+      'ref'
     ])
 
     return (
-      <WrappedComponent triggerLogin={this.login} triggerLogout={this.logout} {...originalProps} />
+      <WrappedComponent triggerLogin={this.login} triggerLogout={this.logout} ref={this.setInstance} {...originalProps} />
     )
   }
 }
