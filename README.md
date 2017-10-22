@@ -54,7 +54,7 @@ import SocialLogin from 'react-social-login'
 const Button = ({ children, triggerLogin, ...props }) => (
   <button onClick={triggerLogin} {...props}>
     { children }
-  </div>
+  </button>
 )
 
 export default SocialLogin(Button)
@@ -105,9 +105,11 @@ Raw component props (before transform):
 | gatekeeper  | —  | string  | Gatekeeper URL to use for GitHub OAuth support (see [GitHub specifics][githubspecifics])  |
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
+| onLogoutFailure  | —  | function  | Callback on logout fail (`google` only)  |
+| onLogoutSuccess  | —  | function  | Callback on logout success  |
 | provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
 | redirect  | -  | string  | URL to redirect after login (available for `github` and `instagram` only)  |
-| scope  | -  | array, string  | An array or string of scopes to be forwarded in request. Current support is for [google scopes][googlescopes] only (more to come)  |
+| scope  | -  | array, string  | An array or string of scopes to be granted on login.  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 *Note about `redirect`: if you are redirecting on root (eg: https://localhost:8080), you **have** to omit the trailing slash.*
@@ -117,6 +119,7 @@ Transformed component props:
 | Prop  | Type  | Description  |
 |---|---|---|
 | triggerLogin  | function  | Function to trigger login process, usually attached to an event listener  |
+| triggerLogout  | function  | Function to trigger logout process, usually attached to an event listener  |
 | all your props  | —  | All props from your original component, minus SocialLogin specific props  |
 
 ## Old component support
@@ -267,6 +270,13 @@ __v3.2.1__ [06 October 2017] React 16, better build, update dep, additions and f
  * Preserve redirect url query string and hash
  * Cancel loading on componentWillUnmount
  * Various fixes
+ 
+__v3.3.0__ [22 October 2017] Logout, custom scopes and fixes
+ * Add publicProfileURL for LinkedIn
+ * Add logout support
+ * Fix wrong GitHub id
+ * Add custom scope support (all but LinkedIn)
+ * Update documentation
 
 ## Tests
 
