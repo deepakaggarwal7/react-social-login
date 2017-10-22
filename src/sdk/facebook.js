@@ -90,6 +90,15 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 /**
+ * Trigger Facebook logout.
+ * Requires SDK to be loaded first.
+ * @see https://developers.facebook.com/docs/reference/javascript/FB.logout
+ */
+const logout = () => new Promise((resolve) => {
+  window.FB.logout(resolve)
+})
+
+/**
  * Gets currently logged in user profile data.
  * Requires SDK to be loaded first.
  * @see https://developers.facebook.com/tools/explorer?method=GET&path=me%3Ffields%3Demail%2Cname%2Cid%2Cfirst_name%2Clast_name%2Cpicture&version=v2.9
@@ -151,5 +160,6 @@ export default {
   generateUser,
   load,
   login,
+  logout,
   oldLoad
 }
