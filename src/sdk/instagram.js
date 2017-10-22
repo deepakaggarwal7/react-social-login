@@ -124,14 +124,13 @@ const login = () => new Promise((resolve, reject) => {
 })
 
 /**
- * Fake Instagram logout always throwing error.
+ * Fake Instagram logout.
  */
-const logout = () => new Promise((resolve, reject) => reject(rslError({
-  provider: 'instagram',
-  type: 'logout',
-  description: 'Cannot logout from instagram provider',
-  error: null
-})))
+const logout = () => new Promise((resolve) => {
+  instagramAccessToken = undefined
+
+  return resolve()
+})
 
 /**
  * Helper to generate user account data.
