@@ -14,15 +14,33 @@ if (!window.fetch) {
 }
 
 /**
+ * @param {string} appId
+ * @param {string} redirect
+ * @param {array|string} scope
  * Fake Instagram SDK loading (needed to trick RSL into thinking its loaded).
  */
-const load = ({ appId, redirect }) => new Promise((resolve, reject) => {
+const load = ({ appId, redirect, scope }) => new Promise((resolve, reject) => {
   const _redirect = parseAsURL(redirect)
   const searchParams = 'rslCallback=instagram'
+  let instagramScopes = [ 'basic' ]
+
+  if (Array.isArray(scope)) {
+    instagramScopes = instagramScopes.concat(scope)
+  } else if (typeof scope === 'string' && scope) {
+    instagramScopes = instagramScopes.concat(scope.split(','))
+  }
+
+  instagramScopes = instagramScopes.reduce((acc, item) => {
+    if (typeof item === 'string' && acc.indexOf(item) === -1) {
+      acc.push(item.trim())
+    }
+
+    return acc
+  }, []).join('+')
 
   _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
 
-  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&response_type=token`
+  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&scope=${instagramScopes}&redirect_uri=${encodeURIComponent(_redirect.toString())}&response_type=token`
 
   if (getQueryStringValue('rslCallback') === 'instagram') {
     if (getQueryStringValue('error')) {

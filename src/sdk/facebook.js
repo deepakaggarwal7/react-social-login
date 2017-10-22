@@ -2,16 +2,36 @@ import Promise from 'bluebird'
 
 import { rslError, timestampFromNow } from '../utils'
 
+let facebookScopes = [
+  'public_profile',
+  'email'
+]
+
 /**
  * Loads Facebook SDK.
  * @param {string} appId
+ * @param {array|string} scope
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-const load = ({ appId }) => new Promise((resolve) => {
+const load = ({ appId, scope }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }
+
+  if (Array.isArray(scope)) {
+    facebookScopes = facebookScopes.concat(scope)
+  } else if (typeof scope === 'string' && scope) {
+    facebookScopes = facebookScopes.concat(scope.split(','))
+  }
+
+  facebookScopes = facebookScopes.reduce((acc, item) => {
+    if (typeof item === 'string' && acc.indexOf(item) === -1) {
+      acc.push(item.trim())
+    }
+
+    return acc
+  }, []).join(',')
 
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
@@ -86,7 +106,7 @@ const checkLogin = () => new Promise((resolve, reject) => {
  */
 const login = () => new Promise((resolve, reject) => {
   window.FB.login((response) => handleLoginStatus(response)
-    .then(resolve, reject), { scope: 'public_profile,email' })
+    .then(resolve, reject), { scope: facebookScopes })
 })
 
 /**
