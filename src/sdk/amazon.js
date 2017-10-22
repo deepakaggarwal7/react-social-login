@@ -87,7 +87,7 @@ const login = () => new Promise((resolve, reject) => {
 const logout = () => new Promise((resolve) => {
   window.amazon.Login.logout()
 
-  return resolve
+  return resolve()
 })
 
 /**
