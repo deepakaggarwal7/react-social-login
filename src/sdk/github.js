@@ -85,7 +85,7 @@ const checkLogin = (autoLogin = false) => {
       headers: new Headers({
         'Authorization': `Bearer ${githubAccessToken || githubAppId}`
       }),
-      body: JSON.stringify({ query: 'query { viewer { id, name, email, avatarUrl } }' })
+      body: JSON.stringify({ query: 'query { viewer { login, name, email, avatarUrl } }' })
     })
       .then((response) => response.json())
       .then((json) => {
@@ -178,7 +178,7 @@ const getAccessToken = () => new Promise((resolve, reject) => {
 const generateUser = ({ data: { viewer } }) => {
   return {
     profile: {
-      id: viewer.id,
+      id: viewer.login,
       name: viewer.name,
       firstName: viewer.name,
       lastName: viewer.name,
