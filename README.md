@@ -103,6 +103,7 @@ Raw component props (before transform):
 | autoCleanUri  | false  | boolean  | Enable auto URI cleaning with OAuth callbacks  |
 | autoLogin  | false  | boolean  | Enable auto login on `componentDidMount`  |
 | gatekeeper  | —  | string  | Gatekeeper URL to use for GitHub OAuth support (see [GitHub specifics][githubspecifics])  |
+| getInstance  | —  | function  | Return node ref like `ref` function would normally do ([react known issue](https://github.com/facebook/react/issues/4213))  |
 | onLoginFailure  | —  | function  | Callback on login fail  |
 | onLoginSuccess  | —  | function  | Callback on login success  |
 | onLogoutFailure  | —  | function  | Callback on logout fail (`google` only)  |
@@ -277,6 +278,12 @@ __v3.3.0__ [22 October 2017] Logout, custom scopes and fixes
  * Fix wrong GitHub id
  * Add custom scope support (all but LinkedIn)
  * Update documentation
+ 
+__v3.4.0__ [22 October 2017] Fix logout issues, expose wrapped component ref and fixes
+ * Fix logout issue with Amazon
+ * Don’t throw error on Instagram logout (like fake SDK load doesn’t throw)
+ * Expose wrapped component ref ([react know issue](https://github.com/facebook/react/issues/4213))
+ * Small fixes
 
 ## Tests
 
