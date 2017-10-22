@@ -132,9 +132,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       this.setState((prevState) => ({
         ...prevState,
         isFetching: true
-      }))
-
-      this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
+      }), () => {
+        this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
+      })
     } else if (this.state.isLoaded && this.state.isConnected) {
       this.props.onLoginFailure('User already connected')
     } else if (this.state.isLoaded && this.state.isFetching) {
