@@ -12,7 +12,7 @@ let githubAppId
 let githubAuth
 
 // Load fetch polyfill for browsers not supporting fetch API
-if (!window.fetch) {
+if (typeof window !== 'undefined' && !window.fetch) {
   require('whatwg-fetch')
 }
 
