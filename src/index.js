@@ -90,18 +90,16 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
           if (autoLogin || this.accessToken) {
             if (this.fetchProvider && !this.accessToken) {
               this.sdk.login(appId, redirect)
-                .catch((err) => this.onLoginFailure(err))
+                .catch(this.onLoginFailure)
             } else {
               this.sdk.checkLogin(true)
-                .then((authResponse) => this.onLoginSuccess(authResponse))
-                .catch((err) => this.onLoginFailure(err))
+                .then(this.onLoginSuccess, this.onLoginFailure)
             }
           }
         })
 
         return null
-      })
-      .catch(this.onLoginFailure)
+      }, this.onLoginFailure)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -118,7 +116,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
             ...prevState,
             isLoaded: true
           }))
-        }).catch(this.onLoginFailure)
+        }, this.onLoginFailure)
       })
     }
   }
