@@ -120,10 +120,26 @@ Transformed component props:
 | Prop  | Type  | Description  |
 |---|---|---|
 | triggerLogin  | function  | Function to trigger login process, usually attached to an event listener  |
-| triggerLogout  | function  | Function to trigger logout process, usually attached to an event listener  |
+| triggerLogout  | function  | Function to trigger logout process, usually attached to a container handling login state  |
 | all your props  | —  | All props from your original component, minus SocialLogin specific props  |
 
-## Old component support
+### Logout
+
+To implement logout, we need a container handling login state and triggering logout function from a `ref` to `SocialLogin` component.
+
+As it is implemented in the demo, we have two components working together to trigger logout:
+
+ * [`Demo` container][democontainer]
+ * [`UserCard` component][usercardcomponent]
+ 
+Here is how they work together:
+
+ 1. [`Demo` is displaying `UserCard` only if user is logged][logoutstep1]
+ 2. [`UserCard` gets forwarded a `logout` function][logoutstep2]
+ 3. [`UserCard` calls forwarded `logout` prop on click on the logout button][logoutstep3]
+ 4. [`logout` function triggers `triggerLogout` prop from a ref to SocialLogin component][logoutstep4]
+
+### Old component support
 
 We decided to keep the old behavior as a fallback, it only supports `facebook`, `google` and `linkedin` providers and is available as a named export:
 
@@ -315,3 +331,9 @@ TBD
 [googlescopes]: https://developers.google.com/identity/protocols/googlescopes
 [ghngoudry]: https://github.com/nicolas-goudry
 [ghdeepak]: https://github.com/deepakaggarwal7
+[democontainer]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/containers/demo.js
+[usercardcomponent]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/components/userCard.js
+[logoutstep1]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/containers/demo.js#L73
+[logoutstep2]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/containers/demo.js#L62
+[logoutstep3]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/components/userCard.js#L121
+[logoutstep4]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/containers/demo.js#L66

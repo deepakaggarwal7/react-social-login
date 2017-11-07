@@ -270,9 +270,16 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'redirect',
       'ref'
     ])
+    let logoutProps = {}
+
+    if (this.props.onLogoutFailure || this.props.onLogoutSuccess) {
+      logoutProps = {
+        triggerLogout: this.logout
+      }
+    }
 
     return (
-      <WrappedComponent triggerLogin={this.login} triggerLogout={this.logout} ref={this.setInstance} {...originalProps} />
+      <WrappedComponent triggerLogin={this.login} ref={this.setInstance} {...logoutProps} {...originalProps} />
     )
   }
 }

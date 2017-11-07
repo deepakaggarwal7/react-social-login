@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
-import SocialButton from './socialButton'
-import UserCard from './userCard'
+import SocialButton from '../components/socialButton'
+import UserCard from '../components/userCard'
 
 export default class Demo extends Component {
   constructor (props) {
