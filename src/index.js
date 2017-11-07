@@ -25,7 +25,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
     gatekeeper: PropTypes.string,
-    getRef: PropTypes.func,
+    getInstance: PropTypes.func,
     onLoginFailure: PropTypes.func,
     onLoginSuccess: PropTypes.func,
     onLogoutFailure: PropTypes.func,
@@ -130,8 +130,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   setInstance (node) {
     this.node = node
 
-    if (typeof this.props.getRef === 'function') {
-      this.props.getRef(node)
+    if (typeof this.props.getInstance === 'function') {
+      this.props.getInstance(node)
     }
   }
 
@@ -261,7 +261,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'autoCleanUri',
       'autoLogin',
       'gatekeeper',
-      'getRef',
+      'getInstance',
       'onLoginFailure',
       'onLoginSuccess',
       'onLogoutFailure',

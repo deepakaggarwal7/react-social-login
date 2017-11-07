@@ -80,7 +80,7 @@ export default class Demo extends Component {
           onLoginSuccess={this.onLoginSuccess}
           onLoginFailure={this.onLoginFailure}
           onLogoutSuccess={this.onLogoutSuccess}
-          getRef={this.setNodeRef.bind(this, 'facebook')}
+          getInstance={this.setNodeRef.bind(this, 'facebook')}
           key={'facebook'}
         >
           Login with Facebook
@@ -92,7 +92,7 @@ export default class Demo extends Component {
           onLoginFailure={this.onLoginFailure}
           onLogoutSuccess={this.onLogoutSuccess}
           onLogoutFailure={this.onLogoutFailure}
-          getRef={this.setNodeRef.bind(this, 'google')}
+          getInstance={this.setNodeRef.bind(this, 'google')}
           key={'google'}
         >
           Login with Google
@@ -105,7 +105,7 @@ export default class Demo extends Component {
           onLoginSuccess={this.onLoginSuccess}
           onLoginFailure={this.onLoginFailure}
           onLogoutSuccess={this.onLogoutSuccess}
-          getRef={this.setNodeRef.bind(this, 'instagram')}
+          getInstance={this.setNodeRef.bind(this, 'instagram')}
           key={'instagram'}
         >
           Login with Instagram
@@ -116,7 +116,7 @@ export default class Demo extends Component {
           onLoginSuccess={this.onLoginSuccess}
           onLoginFailure={this.onLoginFailure}
           onLogoutSuccess={this.onLogoutSuccess}
-          getRef={this.setNodeRef.bind(this, 'linkedin')}
+          getInstance={this.setNodeRef.bind(this, 'linkedin')}
           key={'linkedin'}
         >
           Login with LinkedIn
@@ -132,7 +132,7 @@ export default class Demo extends Component {
             onLoginSuccess={this.onLoginSuccess}
             onLoginFailure={this.onLoginFailure}
             onLogoutSuccess={this.onLogoutSuccess}
-            getRef={this.setNodeRef.bind(this, 'amazon')}
+            getInstance={this.setNodeRef.bind(this, 'amazon')}
             key={'amazon'}
           >
             Login with Amazon
@@ -150,7 +150,7 @@ export default class Demo extends Component {
             onLoginSuccess={this.onLoginSuccess}
             onLoginFailure={this.onLoginFailure}
             onLogoutSuccess={this.onLogoutSuccess}
-            getRef={this.setNodeRef.bind(this, 'github')}
+            getInstance={this.setNodeRef.bind(this, 'github')}
             key={'github'}
           >
             Login with GitHub OAuth
