@@ -24,7 +24,8 @@ module.exports = {
       exclude: /node_modules/,
       loader: 'babel-loader',
       options: {
-        presets: ['es2015', 'react', 'stage-2']
+        presets: ['es2015', 'react', 'stage-2'],
+        plugins: ['transform-inline-environment-variables']
       }
     }]
   }

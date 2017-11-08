@@ -76,7 +76,7 @@ export default class Demo extends Component {
       children = [
         <SocialButton
           provider='facebook'
-          appId='309479849514684'
+          appId={process.env.FB_APP_ID}
           onLoginSuccess={this.onLoginSuccess}
           onLoginFailure={this.onLoginFailure}
           onLogoutSuccess={this.onLogoutSuccess}
@@ -101,7 +101,7 @@ export default class Demo extends Component {
           autoCleanUri
           provider='instagram'
           appId='afdf675d26214280ac9a792afea5651c'
-          redirect='https://localhost:8080'
+          redirect={process.env.INSTAGRAM_REDIRECT}
           onLoginSuccess={this.onLoginSuccess}
           onLoginFailure={this.onLoginFailure}
           onLogoutSuccess={this.onLogoutSuccess}
