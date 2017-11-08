@@ -6,7 +6,7 @@ if ! git diff-index --quiet HEAD --; then
 fi
 
 export FB_APP_ID=530411637301990
-export INSTAGRAM_REDIRECT=https://nicolas-goudry.github.io/react-social-login
+export INSTAGRAM_REDIRECT=https://deepakaggarwal7.github.io/react-social-login
 
 npm run lint
 lint=$?
