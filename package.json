@@ -10,9 +10,29 @@
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run lint && webpack",
-    "start": "cd demo && { webpack-dev-server --https --progress --colors; cd -; }",
-    "start:insecure": "cd demo && { webpack-dev-server --progress --colors; cd -; }",
-    "start:old": "cd demo.old && { webpack-dev-server --progress --colors; cd -; }"
+    "build:demo": "npm run lint && cd demo && webpack && cd ..",
+    "start": "bnr start",
+    "start:insecure": "bnr start:insecure",
+    "start:old": "cd demo.old && webpack-dev-server --progress --colors && cd ..",
+    "deploy": "bash \"deploy.sh\""
+  },
+  "betterScripts": {
+    "start": {
+      "command": "cd demo && webpack-dev-server --https --progress --colors && cd ..",
+      "env": {
+        "NODE_ENV": "development",
+        "FB_APP_ID": "309479849514684",
+        "INSTAGRAM_REDIRECT": "https://localhost:8080"
+      }
+    },
+    "start:insecure": {
+      "command": "cd demo && webpack-dev-server --progress --colors && cd ..",
+      "env": {
+        "NODE_ENV": "development",
+        "FB_APP_ID": "309479849514684",
+        "INSTAGRAM_REDIRECT": "https://localhost:8080"
+      }
+    }
   },
   "pre-commit": [
     "lint"
@@ -47,6 +67,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.22.0",
     "babel-preset-stage-2": "^6.24.1",
+    "better-npm-run": "^0.1.0",
     "eslint": "^4.5.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-config-standard-jsx": "^4.0.2",
