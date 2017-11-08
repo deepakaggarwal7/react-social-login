@@ -23,6 +23,10 @@ React Social Login is an HOC which provides social login through multiple provid
  * Takes care of warnings from provider's SDKs when multiple instances are placed
  * Kind of re-birth of my previous .Net driven similar open source - SocialAuth.NET
 
+## Online demo
+
+See [https://deepakaggarwal7.github.io/react-social-login](https://deepakaggarwal7.github.io/react-social-login).
+
 ## Demo
 
 Edit `appId` props with your own ones in `demo/index.js` file and build demo:
@@ -301,6 +305,12 @@ __v3.4.0__ [22 October 2017] Fix logout issues, expose wrapped component ref and
  * Expose wrapped component ref ([react know issue](https://github.com/facebook/react/issues/4213))
  * Small fixes
 
+__v3.4.1__ [08 November 2017] Fix logout issues, adds SSR support and fixes
+ * Fix unknown prop `triggerLogout` forwarded to wrapped component
+ * Server-side rendering support
+ * Small fixes
+ * Update README to explain how logout is implemented in demo
+
 ## Tests
 
 TBD
@@ -313,7 +323,8 @@ TBD
 * Kamran Ahmed : custom Google scopes
 * Adrien Cohen : multiple Google buttons
 * Jason Loo : full google auth response
-
+* Andri Janusson : LinkedIn public profile URL
+* Adrien Pascal : SSR support
 
 [demo]: https://localhost:8080
 [findmyappid]: #find-my-appid
