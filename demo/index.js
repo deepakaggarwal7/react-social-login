@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import Demo from './components/demo'
+import Demo from './containers/demo'
 import { card as cardStyle, hr as hrStyle } from './utils/styles'
 
 // class GitHubLoginWithPersonalToken extends Component {

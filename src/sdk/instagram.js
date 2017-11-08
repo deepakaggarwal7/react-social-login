@@ -8,11 +8,6 @@ const INSTAGRAM_API = 'https://api.instagram.com/v1'
 let instagramAuth
 let instagramAccessToken
 
-// Load fetch polyfill for browsers not supporting fetch API
-if (!window.fetch) {
-  require('whatwg-fetch')
-}
-
 /**
  * @param {string} appId
  * @param {string} redirect
@@ -94,13 +89,13 @@ const checkLogin = (autoLogin = false) => {
 
         return resolve({ data: json.data, accessToken: instagramAccessToken })
       })
-      .catch(() => reject({ // eslint-disable-line prefer-promise-reject-errors
+      .catch((err) => reject({ // eslint-disable-line prefer-promise-reject-errors
         fetchErr: true,
         err: rslError({
           provider: 'instagram',
           type: 'check_login',
-          description: 'Failed to fetch user data due to window.fetch() error',
-          error: null
+          description: 'Failed to fetch user data due to fetch error',
+          error: err
         })
       }))
   })
