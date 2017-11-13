@@ -7,6 +7,30 @@ module.exports = {
     path: path.join(__dirname, 'public'),
     filename: '[name].js'
   },
+  module: {
+    rules: [{
+      test: /\.(js|jsx)$/,
+      exclude: /node_modules/,
+      loader: 'babel-loader',
+      options: {
+        presets: [
+          'react',
+          ['env', {
+            targets: {
+              browsers: ['> 5%'],
+              node: 6,
+              forceAllTransforms: process.env.NODE_ENV === 'production' // Fixes UglifyJS errors with ES6 syntax
+            }
+          }]
+        ],
+        plugins: [
+          'transform-inline-environment-variables',
+          'transform-object-rest-spread',
+          'transform-class-properties'
+        ]
+      }
+    }]
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'index.html'),
@@ -17,16 +41,5 @@ module.exports = {
         collapseWhitespace: true
       }
     })
-  ],
-  module: {
-    rules: [{
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader',
-      options: {
-        presets: ['es2015', 'react', 'stage-2'],
-        plugins: ['transform-inline-environment-variables']
-      }
-    }]
-  }
+  ]
 }

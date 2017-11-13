@@ -25,7 +25,21 @@ module.exports = {
       exclude: /node_modules/,
       loader: 'babel-loader',
       options: {
-        presets: ['es2015', 'react', 'stage-2']
+        presets: [
+          'react',
+          ['env', {
+            targets: {
+              browsers: ['>= 5%'],
+              node: 6,
+              forceAllTransforms: process.env.NODE_ENV === 'production' // Fixes UglifyJS errors with ES6 syntax
+            }
+          }]
+        ],
+        plugins: [
+          'transform-inline-environment-variables',
+          'transform-object-rest-spread',
+          'transform-class-properties'
+        ]
       }
     }]
   },
@@ -45,7 +59,7 @@ module.exports = {
         screw_ie8: true
       },
       output: {
-        comments: false,
+        comments: false
       },
       exclude: [/\.min\.js$/gi]
     }),
