@@ -3,6 +3,9 @@
   "version": "3.4.1",
   "description": "React Component for Login via Social Providers",
   "main": "dist/social-login.js",
+  "files": [
+    "dist"
+  ],
   "engines": {
     "node": ">=6.9.4"
   },
