@@ -1,4 +1,8 @@
-const urlParser = document.createElement('a')
+let urlParser
+
+if (typeof window !== 'undefined') {
+  urlParser = window.document.createElement('a')
+}
 
 /**
  * Create a copy of an object, omitting provided keys.
@@ -15,6 +19,10 @@ export const omit = (obj, arr) => Object.keys(obj).reduce((res, key) => {
 }, {})
 
 export const parseAsURL = (text) => {
+  if (!urlParser) {
+    urlParser = window.document.createElement('a')
+  }
+
   urlParser.href = text
 
   return {

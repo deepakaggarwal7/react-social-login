@@ -45,6 +45,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   constructor (props) {
     super(props)
 
+    this.isStateless = !WrappedComponent.prototype.render
+
     this.state = {
       isLoaded: false,
       isConnected: false,
@@ -106,7 +108,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const { appId, gatekeeper, provider } = this.props
 
     if (provider === 'github' && !gatekeeper && appId !== nextProps.appId) {
-      this.setState((prevState) => ({
+      this.setState(() => ({
         isLoaded: false,
         isFetching: false,
         isConnected: false
@@ -123,6 +125,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
   componentWillUnmount () {
     this.loadPromise.cancel()
+    this.node = null
   }
 
   setInstance (node) {
@@ -151,7 +154,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     } else if (!this.state.isLoaded) {
       this.props.onLoginFailure('SDK not loaded')
     } else {
-      this.props.onLoginFailure('Unknow error')
+      this.props.onLoginFailure('Unknown error')
     }
   }
 
@@ -167,6 +170,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     user.profile = socialUserData.profile
     user.token = socialUserData.token
 
+    // Here we check that node is not null,
+    // so we can update state before
+    // triggering login success function
     if (this.node) {
       this.setState((prevState) => ({
         ...prevState,
@@ -270,16 +276,23 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'redirect',
       'ref'
     ])
-    let logoutProps = {}
+    let additionnalProps = {}
 
     if (this.props.onLogoutFailure || this.props.onLogoutSuccess) {
-      logoutProps = {
+      additionnalProps = {
         triggerLogout: this.logout
       }
     }
 
+    if (!this.isStateless) {
+      additionnalProps = {
+        ...additionnalProps,
+        ref: this.setInstance
+      }
+    }
+
     return (
-      <WrappedComponent triggerLogin={this.login} ref={this.setInstance} {...logoutProps} {...originalProps} />
+      <WrappedComponent triggerLogin={this.login} {...additionnalProps} {...originalProps} />
     )
   }
 }

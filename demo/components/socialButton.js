@@ -10,7 +10,7 @@ class Button extends Component {
   }
 
   render () {
-    const { triggerLogin, triggerLogout, ...props } = this.props
+    const { children, triggerLogin, triggerLogout, ...props } = this.props
     const style = {
       background: '#eee',
       border: '1px solid black',
@@ -22,7 +22,7 @@ class Button extends Component {
 
     return (
       <div onClick={triggerLogin} style={style} {...props}>
-        { this.props.children }
+        { children }
       </div>
     )
   }
