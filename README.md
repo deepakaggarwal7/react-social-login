@@ -311,6 +311,11 @@ __v3.4.1__ [08 November 2017] Fix logout issues, adds SSR support and fixes
  * Small fixes
  * Update README to explain how logout is implemented in demo
 
+__v3.4.2__ [26 December 2017] Fix SSR, refs and update build
+ * Fixes url parser when window is undefined (SSR fix)
+ * Don’t use refs on stateless components
+ * Update build system (`babel-preset-env`, updated dependencies, lighter npm package)
+
 ## Tests
 
 TBD
