@@ -154,7 +154,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     } else if (!this.state.isLoaded) {
       this.props.onLoginFailure('SDK not loaded')
     } else {
-      this.props.onLoginFailure('Unknow error')
+      this.props.onLoginFailure('Unknown error')
     }
   }
 
