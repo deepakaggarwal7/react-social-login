@@ -125,6 +125,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
   componentWillUnmount () {
     this.loadPromise.cancel()
+    this.node = null
   }
 
   setInstance (node) {
