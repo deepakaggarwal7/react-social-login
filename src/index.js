@@ -45,6 +45,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   constructor (props) {
     super(props)
 
+    this.isStateless = !WrappedComponent.prototype.render
+
     this.state = {
       isLoaded: false,
       isConnected: false,
@@ -270,16 +272,23 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'redirect',
       'ref'
     ])
-    let logoutProps = {}
+    let additionnalProps = {}
 
     if (this.props.onLogoutFailure || this.props.onLogoutSuccess) {
-      logoutProps = {
+      additionnalProps = {
         triggerLogout: this.logout
       }
     }
 
+    if (!this.isStateless) {
+      additionnalProps = {
+        ...additionnalProps,
+        ref: this.setInstance
+      }
+    }
+
     return (
-      <WrappedComponent triggerLogin={this.login} ref={this.setInstance} {...logoutProps} {...originalProps} />
+      <WrappedComponent triggerLogin={this.login} {...additionnalProps} {...originalProps} />
     )
   }
 }
