@@ -170,6 +170,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     user.profile = socialUserData.profile
     user.token = socialUserData.token
 
+    // Here we check that node is not null,
+    // so we can update state before
+    // triggering login success function
     if (this.node) {
       this.setState((prevState) => ({
         ...prevState,
