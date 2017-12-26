@@ -108,7 +108,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const { appId, gatekeeper, provider } = this.props
 
     if (provider === 'github' && !gatekeeper && appId !== nextProps.appId) {
-      this.setState((prevState) => ({
+      this.setState(() => ({
         isLoaded: false,
         isFetching: false,
         isConnected: false
