@@ -7,31 +7,33 @@ let facebookScopes = [
   'email'
 ]
 
+let facebookFields = [
+  'email','name','id','first_name','last_name','picture'
+]
+
 /**
  * Loads Facebook SDK.
  * @param {string} appId
  * @param {array|string} scope
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-const load = ({ appId, scope }) => new Promise((resolve) => {
+const load = ({ appId, scope, field }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }
-
-  if (Array.isArray(scope)) {
-    facebookScopes = facebookScopes.concat(scope)
-  } else if (typeof scope === 'string' && scope) {
-    facebookScopes = facebookScopes.concat(scope.split(','))
-  }
-
-  facebookScopes = facebookScopes.reduce((acc, item) => {
-    if (typeof item === 'string' && acc.indexOf(item) === -1) {
-      acc.push(item.trim())
+  
+  handleInput(scope).then(s => {
+    if (s && s.length > 0){
+      facebookScopes = s
     }
+  })
 
-    return acc
-  }, []).join(',')
+  handleInput(field).then(f => {
+    if (f && f.length > 0){
+      facebookFields = f
+    }
+  })
 
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
@@ -54,6 +56,23 @@ const load = ({ appId, scope }) => new Promise((resolve) => {
   } else {
     firstJS.parentNode.appendChild(js)
   }
+})
+
+const handleInput = (input) => new Promise((resolve, reject) => {
+  let items = []
+  if (Array.isArray(input)) {
+    items = items.concat(input)
+  } else if (typeof input === 'string' && input) {
+    items = items.concat(input.split(','))
+  }
+
+  items = items.reduce((acc, item) => {
+    if (typeof item === 'string' && acc.indexOf(item) === -1)
+      acc.push(item.trim())
+    return acc
+  }, []).join(',')
+
+  return resolve(items)
 })
 
 /**
@@ -125,7 +144,7 @@ const logout = () => new Promise((resolve) => {
  */
 const getProfile = () => new Promise((resolve) => {
   window.FB.api('/me', 'GET', {
-    fields: 'email,name,id,first_name,last_name,picture'
+    fields: facebookFields
   }, resolve)
 })
 
@@ -133,20 +152,29 @@ const getProfile = () => new Promise((resolve) => {
  * Helper to generate user account data.
  * @param {Object} response
  */
-const generateUser = (response) => ({
-  profile: {
-    id: response.id,
-    name: response.name,
-    firstName: response.first_name,
-    lastName: response.last_name,
-    email: response.email,
-    profilePicURL: response.picture.data.url
-  },
-  token: {
-    accessToken: response.accessToken,
-    expiresAt: timestampFromNow(response.expiresIn)
-  }
-})
+const generateUser = (response) => {
+  const excludeKeys = ["id", "name", "first_name", "last_name", "email", "picture", "userID", "accessToken", "expiresIn"]
+  return ({
+    profile: {
+      id: response.id,
+      name: response.name,
+      firstName: response.first_name,
+      lastName: response.last_name,
+      email: response.email,
+      profilePicURL: response.picture.data.url
+    },
+    token: {
+      accessToken: response.accessToken,
+      expiresAt: timestampFromNow(response.expiresIn)
+    },
+    other: Object.keys(response).reduce((ret, key) => {
+      if (excludeKeys.indexOf(key) === -1){
+        ret[key] = response[key]
+      }
+      return ret
+    }, {})
+  })
+}
 
 const oldLoad = (appId) => {
   const id = 'fb-client'

@@ -6,6 +6,7 @@ import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
 import { cleanLocation, omit } from './utils'
+import socialButton from '../demo/components/socialButton';
 
 export { default as OldSocialLogin } from './component'
 
@@ -37,6 +38,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       }
     },
     scope: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string
+    ]),
+    field: PropTypes.oneOfType([
       PropTypes.array,
       PropTypes.string
     ])
@@ -73,9 +78,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope } = this.props
+    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, field } = this.props
 
-    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope })
+    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope, field })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -169,6 +174,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
     user.profile = socialUserData.profile
     user.token = socialUserData.token
+    user.other = socialUserData.other
 
     // Here we check that node is not null,
     // so we can update state before
@@ -264,6 +270,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     const originalProps = omit(this.props, [
       'appId',
       'scope',
+      'field',
       'autoCleanUri',
       'autoLogin',
       'gatekeeper',
