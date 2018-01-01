@@ -115,6 +115,7 @@ Raw component props (before transform):
 | provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
 | redirect  | -  | string  | URL to redirect after login (available for `github` and `instagram` only)  |
 | scope  | -  | array, string  | An array or string of scopes to be granted on login.  |
+| field  | -  | array, string  | An array or string of field to be return on login. (`facebook` only) (see [Facebook specifics](https://developers.facebook.com/docs/graph-api/reference/user/)) |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 *Note about `redirect`: if you are redirecting on root (eg: https://localhost:8080), you **have** to omit the trailing slash.*
