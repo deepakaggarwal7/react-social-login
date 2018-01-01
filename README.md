@@ -331,6 +331,7 @@ TBD
 * Jason Loo : full google auth response
 * Andri Janusson : LinkedIn public profile URL
 * Adrien Pascal : SSR support
+* Pan Teparak : Facebook custom returned field
 
 [demo]: https://localhost:8080
 [findmyappid]: #find-my-appid
