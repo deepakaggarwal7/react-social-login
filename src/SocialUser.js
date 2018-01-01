@@ -20,6 +20,8 @@ export default class SocialUser {
       accessToken: undefined,
       expiresAt: undefined
     }
+
+    this._other = undefined
   }
 
   /**
@@ -68,5 +70,21 @@ export default class SocialUser {
    */
   get token () {
     return this._token
+  }
+
+  /**
+   * Set other.
+   * @param {Object} other
+   */
+  set other (other) {
+    this._other = other
+  }
+
+  /**
+   * Get other
+   * @returns {Object}
+   */
+  get other () {
+    return this._other
   }
 }
