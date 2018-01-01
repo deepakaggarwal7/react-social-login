@@ -6,7 +6,6 @@ import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
 import { cleanLocation, omit } from './utils'
-import socialButton from '../demo/components/socialButton';
 
 export { default as OldSocialLogin } from './component'
 

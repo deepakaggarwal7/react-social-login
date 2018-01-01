@@ -8,7 +8,12 @@ let facebookScopes = [
 ]
 
 let facebookFields = [
-  'email','name','id','first_name','last_name','picture'
+  'email',
+  'name',
+  'id',
+  'first_name',
+  'last_name',
+  'picture'
 ]
 
 /**
@@ -22,15 +27,14 @@ const load = ({ appId, scope, field }) => new Promise((resolve) => {
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }
-  
   handleInput(scope).then(s => {
-    if (s && s.length > 0){
+    if (s && s.length > 0) {
       facebookScopes = s
     }
   })
 
   handleInput(field).then(f => {
-    if (f && f.length > 0){
+    if (f && f.length > 0) {
       facebookFields = f
     }
   })
@@ -67,8 +71,9 @@ const handleInput = (input) => new Promise((resolve, reject) => {
   }
 
   items = items.reduce((acc, item) => {
-    if (typeof item === 'string' && acc.indexOf(item) === -1)
+    if (typeof item === 'string' && acc.indexOf(item) === -1) {
       acc.push(item.trim())
+    }
     return acc
   }, []).join(',')
 
@@ -153,7 +158,7 @@ const getProfile = () => new Promise((resolve) => {
  * @param {Object} response
  */
 const generateUser = (response) => {
-  const excludeKeys = ["id", "name", "first_name", "last_name", "email", "picture", "userID", "accessToken", "expiresIn"]
+  const excludeKeys = ['id', 'name', 'first_name', 'last_name', 'email', 'picture', 'userID', 'accessToken', 'expiresIn']
   return ({
     profile: {
       id: response.id,
@@ -168,7 +173,7 @@ const generateUser = (response) => {
       expiresAt: timestampFromNow(response.expiresIn)
     },
     other: Object.keys(response).reduce((ret, key) => {
-      if (excludeKeys.indexOf(key) === -1){
+      if (excludeKeys.indexOf(key) === -1) {
         ret[key] = response[key]
       }
       return ret
