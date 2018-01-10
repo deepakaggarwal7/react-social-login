@@ -124,7 +124,7 @@ const generateUser = (response) => {
   }
 }
 
-const oldLoad = (appId, cid, fn, err) => {
+const oldLoad = (appId, cid, fn, err, prompt) => {
   const js = document.createElement('script')
 
   js.src = 'https://apis.google.com/js/platform.js'
@@ -134,7 +134,8 @@ const oldLoad = (appId, cid, fn, err) => {
     window.gapi.load('auth2', () => {
       if (!window.gapi.auth2.getAuthInstance()) {
         window.gapi.auth2.init({
-          client_id: appId
+          client_id: appId,
+          prompt: prompt || undefined
         })
       }
 
