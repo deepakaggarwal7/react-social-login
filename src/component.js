@@ -19,6 +19,9 @@ export default class SocialLogin extends Component {
       'google',
       'linkedin'
     ]).isRequired,
+    prompt: PropTypes.string,
+    cookie: PropTypes.bool,
+    authorize: PropTypes.bool,
     version: PropTypes.string
   }
 
@@ -160,11 +163,11 @@ export default class SocialLogin extends Component {
     const appId = this.props.appId
 
     if (this.props.provider === 'google') {
-      sdk.google.oldLoad(appId, this.id, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure)
+      sdk.google.oldLoad(appId, this.id, this.handleSocialLoginInvokeSuccess, this.handleSocialLoginInvokeFailure, this.props.prompt)
     } else if (this.props.provider === 'facebook') {
       sdk.facebook.oldLoad(appId)
     } else if (this.props.provider === 'linkedin') {
-      sdk.linkedin.oldLoad(appId)
+      sdk.linkedin.oldLoad(appId, this.props.authorize, this.props.cookie)
     }
   }
 
