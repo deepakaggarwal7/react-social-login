@@ -20,6 +20,7 @@ let facebookFields = [
  * Loads Facebook SDK.
  * @param {string} appId
  * @param {array|string} scope
+ * @param {array|string} field
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
 const load = ({ appId, scope, field }) => new Promise((resolve) => {
@@ -27,17 +28,8 @@ const load = ({ appId, scope, field }) => new Promise((resolve) => {
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }
-  handleInput(scope).then(s => {
-    if (s && s.length > 0) {
-      facebookScopes = s
-    }
-  })
-
-  handleInput(field).then(f => {
-    if (f && f.length > 0) {
-      facebookFields = f
-    }
-  })
+  facebookScopes = handleInput(field, facebookScopes)
+  facebookFields = handleInput(field, facebookFields)
 
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
@@ -62,23 +54,25 @@ const load = ({ appId, scope, field }) => new Promise((resolve) => {
   }
 })
 
-const handleInput = (input) => new Promise((resolve, reject) => {
-  let items = []
+const handleInput = (input, defaultInput) => {
+  let result
+
   if (Array.isArray(input)) {
-    items = items.concat(input)
-  } else if (typeof input === 'string' && input) {
-    items = items.concat(input.split(','))
+    result = defaultInput.concat(input)
+  } else if (input && typeof input === 'string') {
+    result = defaultInput.concat(input.split(','))
   }
 
-  items = items.reduce((acc, item) => {
+  result = result.reduce((acc, item) => {
     if (typeof item === 'string' && acc.indexOf(item) === -1) {
-      acc.push(item.trim())
+      acc.add(item.trim())
     }
-    return acc
-  }, []).join(',')
 
-  return resolve(items)
-})
+    return acc
+  }, new Set())
+
+  return [...result]
+}
 
 /**
  * Gets Facebook user profile if connected.
@@ -157,29 +151,21 @@ const getProfile = () => new Promise((resolve) => {
  * Helper to generate user account data.
  * @param {Object} response
  */
-const generateUser = (response) => {
-  const excludeKeys = ['id', 'name', 'first_name', 'last_name', 'email', 'picture', 'userID', 'accessToken', 'expiresIn']
-  return ({
-    profile: {
-      id: response.id,
-      name: response.name,
-      firstName: response.first_name,
-      lastName: response.last_name,
-      email: response.email,
-      profilePicURL: response.picture.data.url
-    },
-    token: {
-      accessToken: response.accessToken,
-      expiresAt: timestampFromNow(response.expiresIn)
-    },
-    other: Object.keys(response).reduce((ret, key) => {
-      if (excludeKeys.indexOf(key) === -1) {
-        ret[key] = response[key]
-      }
-      return ret
-    }, {})
-  })
-}
+const generateUser = ({ accessToken, id, email, expiresIn, first_name, last_name, name, picture, userID, ...other }) => ({
+  profile: {
+    id,
+    email,
+    name,
+    firstName: first_name,
+    lastName: last_name,
+    profilePicURL: picture.data.url
+  },
+  token: {
+    accessToken,
+    expiresAt: timestampFromNow(expiresIn)
+  },
+  other
+})
 
 const oldLoad = (appId) => {
   const id = 'fb-client'
