@@ -13,7 +13,7 @@ let facebookScopes = [
  * @param {array|string} scope
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-const load = ({ appId, scope }) => new Promise((resolve) => {
+const load = ({ appId, scope, version }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
@@ -43,7 +43,7 @@ const load = ({ appId, scope }) => new Promise((resolve) => {
     window.FB.init({
       appId,
       xfbml: true,
-      version: 'v2.9'
+      version: version || 'v2.9'
     })
 
     return resolve()

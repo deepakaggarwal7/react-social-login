@@ -39,7 +39,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     scope: PropTypes.oneOfType([
       PropTypes.array,
       PropTypes.string
-    ])
+    ]),
+    version: PropTypes.string
   }
 
   constructor (props) {
@@ -73,9 +74,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope } = this.props
+    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, version } = this.props
 
-    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope })
+    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope, version })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -263,6 +264,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
       'appId',
+      'version',
       'scope',
       'autoCleanUri',
       'autoLogin',
