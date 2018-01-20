@@ -24,6 +24,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     appId: PropTypes.string.isRequired,
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
+    field: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string
+    ]),
     gatekeeper: PropTypes.string,
     getInstance: PropTypes.func,
     onLoginFailure: PropTypes.func,
@@ -74,9 +78,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, version } = this.props
+    const { appId, autoCleanUri, autoLogin, field, gatekeeper, redirect, scope, version } = this.props
 
-    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope, version })
+    this.loadPromise = this.sdk.load({ appId, field, gatekeeper, redirect, scope, version })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -170,6 +174,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
     user.profile = socialUserData.profile
     user.token = socialUserData.token
+    user.other = socialUserData.other
 
     // Here we check that node is not null,
     // so we can update state before
@@ -266,6 +271,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'appId',
       'version',
       'scope',
+      'field',
       'autoCleanUri',
       'autoLogin',
       'gatekeeper',

@@ -113,7 +113,7 @@ const generateUser = (response) => ({
   }
 })
 
-const oldLoad = (appId) => {
+const oldLoad = (appId, authorize, cookie) => {
   const id = 'li-client'
   const fjs = document.getElementsByTagName('script')[0]
   let js
@@ -130,7 +130,8 @@ const oldLoad = (appId) => {
   js.onload = () => {
     window.IN.init({
       api_key: appId,
-      authorize: true
+      authorize: authorize !== false,
+      credentials_cookie: cookie ? true : undefined
     })
   }
 
