@@ -24,6 +24,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     appId: PropTypes.string.isRequired,
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
+    field: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string
+    ]),
     gatekeeper: PropTypes.string,
     getInstance: PropTypes.func,
     onLoginFailure: PropTypes.func,
@@ -40,10 +44,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       PropTypes.array,
       PropTypes.string
     ]),
-    field: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.string
-    ])
+    version: PropTypes.string
   }
 
   constructor (props) {
@@ -77,9 +78,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, field } = this.props
+    const { appId, autoCleanUri, autoLogin, field, gatekeeper, redirect, scope, version } = this.props
 
-    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope, field })
+    this.loadPromise = this.sdk.load({ appId, field, gatekeeper, redirect, scope, version })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -268,6 +269,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
       'appId',
+      'version',
       'scope',
       'field',
       'autoCleanUri',
