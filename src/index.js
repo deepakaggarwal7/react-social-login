@@ -265,6 +265,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   }
 
   render () {
+    const {
+      isLoaded,
+      isConnected,
+      isFetching
+    } = this.state
+
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
       'appId',
@@ -282,7 +288,11 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'redirect',
       'ref'
     ])
-    let additionnalProps = {}
+    let additionnalProps = {
+      isLoaded,
+      isConnected,
+      isFetching
+    }
 
     if (this.props.onLogoutFailure || this.props.onLogoutSuccess) {
       additionnalProps = {
