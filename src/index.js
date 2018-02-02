@@ -50,6 +50,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     super(props)
 
     this.isStateless = !WrappedComponent.prototype.render
+    this._isMounted = null
 
     this.state = {
       isLoaded: false,
@@ -78,6 +79,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    */
   componentDidMount () {
     const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, field } = this.props
+
+    this._isMounted = true
 
     this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope, field })
       .then((accessToken) => {
@@ -130,6 +133,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   componentWillUnmount () {
     this.loadPromise.cancel()
     this.node = null
+    this._isMounted = null
   }
 
   setInstance (node) {
@@ -175,10 +179,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     user.token = socialUserData.token
     user.other = socialUserData.other
 
-    // Here we check that node is not null,
+    // Here we check if component is mounted,
     // so we can update state before
     // triggering login success function
-    if (this.node) {
+    if (this._isMounted) {
       this.setState((prevState) => ({
         ...prevState,
         isFetching: false,
@@ -202,7 +206,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   onLoginFailure (err) {
     const { onLoginFailure } = this.props
 
-    if (this.node) {
+    if (this._isMounted) {
       this.setState((prevState) => ({
         ...prevState,
         isFetching: false,
@@ -238,7 +242,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   onLogoutSuccess () {
     const { onLogoutSuccess } = this.props
 
-    if (this.node) {
+    if (this._isMounted) {
       this.setState((prevState) => ({
         ...prevState,
         isConnected: false
