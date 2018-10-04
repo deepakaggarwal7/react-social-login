@@ -24,10 +24,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     appId: PropTypes.string.isRequired,
     autoCleanUri: PropTypes.bool,
     autoLogin: PropTypes.bool,
-    field: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.string
-    ]),
     gatekeeper: PropTypes.string,
     getInstance: PropTypes.func,
     onLoginFailure: PropTypes.func,
@@ -43,8 +39,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     scope: PropTypes.oneOfType([
       PropTypes.array,
       PropTypes.string
-    ]),
-    version: PropTypes.string
+    ])
   }
 
   constructor (props) {
@@ -78,9 +73,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, field, gatekeeper, redirect, scope, version } = this.props
+    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope } = this.props
 
-    this.loadPromise = this.sdk.load({ appId, field, gatekeeper, redirect, scope, version })
+    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -145,22 +140,25 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Triggers login process.
    */
   login () {
-    if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
-      this.setState((prevState) => ({
-        ...prevState,
-        isFetching: true
-      }), () => {
-        this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
-      })
-    } else if (this.state.isLoaded && this.state.isConnected) {
-      this.props.onLoginFailure('User already connected')
-    } else if (this.state.isLoaded && this.state.isFetching) {
-      this.props.onLoginFailure('Fetching user')
-    } else if (!this.state.isLoaded) {
-      this.props.onLoginFailure('SDK not loaded')
-    } else {
-      this.props.onLoginFailure('Unknown error')
-    }
+      if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
+          this.setState((prevState) => ({
+              ...prevState,
+              isFetching: true
+          }), () => {
+              this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
+          })
+      } else if (this.state.isLoaded && this.state.isConnected) {
+          this.props.onLoginFailure('User already connected')
+      } else if (this.state.isLoaded && this.state.isFetching) {
+          this.setState({isFetching:false},()=>{
+              this.login()
+          })
+          // this.props.onLoginFailure('Fetching user')
+      } else if (!this.state.isLoaded) {
+          this.props.onLoginFailure('SDK not loaded')
+      } else {
+          this.props.onLoginFailure('Unknown error')
+      }
   }
 
   /**
@@ -174,7 +172,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
 
     user.profile = socialUserData.profile
     user.token = socialUserData.token
-    user.other = socialUserData.other
 
     // Here we check that node is not null,
     // so we can update state before
@@ -269,9 +266,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
       'appId',
-      'version',
       'scope',
-      'field',
       'autoCleanUri',
       'autoLogin',
       'gatekeeper',
