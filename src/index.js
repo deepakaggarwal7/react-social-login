@@ -1,13 +1,21 @@
 import Promise from 'bluebird'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, {
+  Component
+} from 'react'
 
 import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
-import { cleanLocation, omit } from './utils'
+import {
+  cleanLocation,
+  omit
+} from './utils'
 
-export { default as OldSocialLogin } from './component'
+export {
+  default as OldSocialLogin
+}
+from './component'
 
 // Enable Promises cancellation
 Promise.config({
@@ -42,7 +50,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     ])
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.isStateless = !WrappedComponent.prototype.render
@@ -72,10 +80,22 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Loads SDK on componentDidMount and handles auto login.
    */
-  componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope } = this.props
+  componentDidMount() {
+    const {
+      appId,
+      autoCleanUri,
+      autoLogin,
+      gatekeeper,
+      redirect,
+      scope
+    } = this.props
 
-    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope })
+    this.loadPromise = this.sdk.load({
+        appId,
+        redirect,
+        gatekeeper,
+        scope
+      })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -104,8 +124,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       }, this.onLoginFailure)
   }
 
-  componentWillReceiveProps (nextProps) {
-    const { appId, gatekeeper, provider } = this.props
+  componentWillReceiveProps(nextProps) {
+    const {
+      appId,
+      gatekeeper,
+      provider
+    } = this.props
 
     if (provider === 'github' && !gatekeeper && appId !== nextProps.appId) {
       this.setState(() => ({
@@ -123,12 +147,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.loadPromise.cancel()
     this.node = null
   }
 
-  setInstance (node) {
+  setInstance(node) {
     this.node = node
 
     if (typeof this.props.getInstance === 'function') {
@@ -139,34 +163,39 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Triggers login process.
    */
-  login () {
-      if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
-          this.setState((prevState) => ({
-              ...prevState,
-              isFetching: true
-          }), () => {
-              this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
-          })
-      } else if (this.state.isLoaded && this.state.isConnected) {
-          this.props.onLoginFailure('User already connected')
-      } else if (this.state.isLoaded && this.state.isFetching) {
-          this.setState({isFetching:false},()=>{
-              this.login()
-          })
-          // this.props.onLoginFailure('Fetching user')
-      } else if (!this.state.isLoaded) {
-          this.props.onLoginFailure('SDK not loaded')
-      } else {
-          this.props.onLoginFailure('Unknown error')
-      }
+  login() {
+    if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
+      this.setState((prevState) => ({
+        ...prevState,
+        isFetching: true
+      }), () => {
+        this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
+      })
+    } else if (this.state.isLoaded && this.state.isConnected) {
+      this.props.onLoginFailure('User already connected')
+    } else if (this.state.isLoaded && this.state.isFetching) {
+      this.setState({
+        isFetching: false
+      }, () => {
+        this.login()
+      })
+      // this.props.onLoginFailure('Fetching user')
+    } else if (!this.state.isLoaded) {
+      this.props.onLoginFailure('SDK not loaded')
+    } else {
+      this.props.onLoginFailure('Unknown error')
+    }
   }
 
   /**
    * Create SocialUser on login success and transmit it to onLoginSuccess prop.
    * @param {Object} response
    */
-  onLoginSuccess (response) {
-    const { onLoginSuccess, provider } = this.props
+  onLoginSuccess(response) {
+    const {
+      onLoginSuccess,
+      provider
+    } = this.props
     const user = new SocialUser(provider)
     const socialUserData = this.sdk.generateUser(response)
 
@@ -197,8 +226,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Handles login failure.
    * @param err
    */
-  onLoginFailure (err) {
-    const { onLoginFailure } = this.props
+  onLoginFailure(err) {
+    const {
+      onLoginFailure
+    } = this.props
 
     if (this.node) {
       this.setState((prevState) => ({
@@ -220,7 +251,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Triggers logout process.
    */
-  logout () {
+  logout() {
     if (this.state.isLoaded && this.state.isConnected) {
       this.sdk.logout().then(this.onLogoutSuccess, this.onLogoutFailure)
     } else if (this.state.isLoaded && !this.state.isConnected) {
@@ -233,8 +264,10 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Handles logout success
    */
-  onLogoutSuccess () {
-    const { onLogoutSuccess } = this.props
+  onLogoutSuccess() {
+    const {
+      onLogoutSuccess
+    } = this.props
 
     if (this.node) {
       this.setState((prevState) => ({
@@ -256,13 +289,13 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Handles logout failure.
    * @param err
    */
-  onLogoutFailure (err) {
+  onLogoutFailure(err) {
     if (typeof this.props.onLoginFailure === 'function') {
       this.props.onLoginFailure(err)
     }
   }
 
-  render () {
+  render() {
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
       'appId',
@@ -279,23 +312,28 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'redirect',
       'ref'
     ])
-    let additionnalProps = {}
+    let additionalProps = {}
 
     if (this.props.onLogoutFailure || this.props.onLogoutSuccess) {
-      additionnalProps = {
+      additionalProps = {
         triggerLogout: this.logout
       }
     }
 
     if (!this.isStateless) {
-      additionnalProps = {
-        ...additionnalProps,
+      additionalProps = {
+        ...additionalProps,
         ref: this.setInstance
       }
     }
 
-    return (
-      <WrappedComponent triggerLogin={this.login} {...additionnalProps} {...originalProps} />
+    return ( <
+      WrappedComponent triggerLogin = {
+        this.login
+      } { ...additionalProps
+      } { ...originalProps
+      }
+      />
     )
   }
 }
