@@ -242,9 +242,14 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         }
       })
     } else {
-      if (typeof onLoginFailure === 'function') {
-        onLoginFailure(err)
-      }
+      this.setState({
+        isFetching: false,
+        isConnected: false
+      }, () => {
+        if (typeof onLoginFailure === 'function') {
+          onLoginFailure(err)
+        }
+      })
     }
   }
 
