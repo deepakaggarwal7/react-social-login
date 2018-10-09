@@ -23,7 +23,7 @@ const load = ({ appId, scope }) => new Promise((resolve) => {
   }
 
   amazonScopes = amazonScopes.reduce((acc, item) => {
-    if (typeof item === 'string' && acc.indexOf(item) === -1) {
+    if (typeof item === 'string' && acc && acc.indexOf(item) === -1) {
       acc.push(item.trim())
     }
 

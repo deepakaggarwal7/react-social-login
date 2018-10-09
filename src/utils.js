@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
  * @returns {Object}
  */
 export const omit = (obj, arr) => Object.keys(obj).reduce((res, key) => {
-  if (arr.indexOf(key) === -1) {
+  if (arr && arr.indexOf(key) === -1) {
     res[key] = obj[key]
   }
 
