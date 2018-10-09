@@ -26,7 +26,7 @@ const load = ({ appId, redirect, scope }) => new Promise((resolve, reject) => {
   }
 
   instagramScopes = instagramScopes.reduce((acc, item) => {
-    if (typeof item === 'string' && acc && acc.indexOf(item) === -1) {
+    if (typeof item === 'string' && acc && acc.indexOf && acc.indexOf(item) === -1) {
       acc.push(item.trim())
     }
 
