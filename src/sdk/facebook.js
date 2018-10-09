@@ -65,7 +65,7 @@ const handleInput = (input, defaultInput) => {
   }
 
   result = result.reduce((acc, item) => {
-    if (typeof item === 'string' && acc.indexOf(item) === -1) {
+    if (typeof item === 'string' && acc && acc.indexOf(item) === -1) {
       acc.add(item.trim())
     }
 
