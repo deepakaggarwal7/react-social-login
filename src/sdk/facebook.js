@@ -56,7 +56,7 @@ const load = ({ appId, field, scope, version }) => new Promise((resolve) => {
 })
 
 const handleInput = (input, defaultInput) => {
-  let result
+  let result = ['default']
 
   if (Array.isArray(input)) {
     result = defaultInput.concat(input)
