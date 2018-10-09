@@ -15,7 +15,7 @@ import {
 export {
   default as OldSocialLogin
 }
-from './component'
+  from './component'
 
 // Enable Promises cancellation
 Promise.config({
@@ -50,7 +50,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     ])
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.isStateless = !WrappedComponent.prototype.render
@@ -80,7 +80,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Loads SDK on componentDidMount and handles auto login.
    */
-  componentDidMount() {
+  componentDidMount () {
     const {
       appId,
       autoCleanUri,
@@ -91,11 +91,11 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     } = this.props
 
     this.loadPromise = this.sdk.load({
-        appId,
-        redirect,
-        gatekeeper,
-        scope
-      })
+      appId,
+      redirect,
+      gatekeeper,
+      scope
+    })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -124,7 +124,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       }, this.onLoginFailure)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       appId,
       gatekeeper,
@@ -147,12 +147,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.loadPromise.cancel()
     this.node = null
   }
 
-  setInstance(node) {
+  setInstance (node) {
     this.node = node
 
     if (typeof this.props.getInstance === 'function') {
@@ -163,7 +163,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Triggers login process.
    */
-  login() {
+  login () {
     if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
       this.setState((prevState) => ({
         ...prevState,
@@ -191,7 +191,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Create SocialUser on login success and transmit it to onLoginSuccess prop.
    * @param {Object} response
    */
-  onLoginSuccess(response) {
+  onLoginSuccess (response) {
     const {
       onLoginSuccess,
       provider
@@ -226,7 +226,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Handles login failure.
    * @param err
    */
-  onLoginFailure(err) {
+  onLoginFailure (err) {
     const {
       onLoginFailure
     } = this.props
@@ -256,7 +256,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Triggers logout process.
    */
-  logout() {
+  logout () {
     if (this.state.isLoaded && this.state.isConnected) {
       this.sdk.logout().then(this.onLogoutSuccess, this.onLogoutFailure)
     } else if (this.state.isLoaded && !this.state.isConnected) {
@@ -269,7 +269,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   /**
    * Handles logout success
    */
-  onLogoutSuccess() {
+  onLogoutSuccess () {
     const {
       onLogoutSuccess
     } = this.props
@@ -294,13 +294,13 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Handles logout failure.
    * @param err
    */
-  onLogoutFailure(err) {
+  onLogoutFailure (err) {
     if (typeof this.props.onLoginFailure === 'function') {
       this.props.onLoginFailure(err)
     }
   }
 
-  render() {
+  render () {
     // Don’t forward unneeded props
     const originalProps = omit(this.props, [
       'appId',
@@ -332,13 +332,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       }
     }
 
-    return ( <
-      WrappedComponent triggerLogin = {
-        this.login
-      } { ...additionalProps
-      } { ...originalProps
-      }
-      />
+    return (<WrappedComponent triggerLogin={
+      this.login
+    } {...additionalProps
+    } {...originalProps
+    }
+    />
     )
   }
 }

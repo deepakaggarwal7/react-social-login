@@ -8,7 +8,6 @@ import { rslError } from '../utils'
  */
 
 const load = ({ appId }) => new Promise((resolve, reject) => {
-
   if (document.getElementById('micrsofot-client')) {
     return resolve()
   }
@@ -23,11 +22,11 @@ const load = ({ appId }) => new Promise((resolve, reject) => {
     window.WL.init({
       client_id: appId,
       redirect_uri: 'https://localhost:8082/',
-      scope: "wl.signin", 
-      response_type: "token"
+      scope: 'wl.signin',
+      response_type: 'token'
     })
 
-    return resolve();
+    return resolve()
   }
 
   if (!firstJS) {
@@ -66,12 +65,12 @@ const checkLogin = () => new Promise((resolve, reject) => {
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthsignin
  */
 const login = () => new Promise((resolve, reject) => {
-  console.log('attempting login');
+  console.log('attempting login')
   window.WL.login({
-    scope: ["wl.signin", "wl.basic"]
+    scope: ['wl.signin', 'wl.basic']
   }).then(
     function (response) {
-      console.log(response);
+      console.log(response)
     }
   )
 })
@@ -82,7 +81,7 @@ const login = () => new Promise((resolve, reject) => {
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleauthsignout
  */
 const logout = () => new Promise((resolve, reject) => {
-  Window.WL.logout().then(resolve, reject);
+  Window.WL.logout().then(resolve, reject)
 })
 
 /**
