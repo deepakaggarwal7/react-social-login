@@ -89,6 +89,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
           ...prevState,
           isLoaded: true
         }), () => {
+          if (typeof this.props.onLoaded === 'function') {
+            this.props.onLoaded()
+          }
           if (autoLogin || this.accessToken) {
             if (this.fetchProvider && !this.accessToken) {
               this.sdk.login(appId, redirect)
