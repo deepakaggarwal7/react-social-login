@@ -276,6 +276,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'redirect',
       'ref'
     ])
+    originalProps.isLoaded = this.state.isLoaded
     let additionnalProps = {}
 
     if (this.props.onLogoutFailure || this.props.onLogoutSuccess) {
