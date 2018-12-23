@@ -315,6 +315,9 @@ __v3.4.2__ [26 December 2017] Fix SSR, refs and update build
  * Fixes url parser when window is undefined (SSR fix)
  * Don’t use refs on stateless components
  * Update build system (`babel-preset-env`, updated dependencies, lighter npm package)
+ 
+ __v3.4.3__ [23 December 2018] merged pull request [#112](https://github.com/deepakaggarwal7/react-social-login/pull/112)
+ * Github ID now avilable (Thanks to [MuhamadOmr](https://github.com/deepakaggarwal7/)
 
 ## Tests
 
