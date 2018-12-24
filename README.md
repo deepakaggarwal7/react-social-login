@@ -23,6 +23,17 @@ React Social Login is an HOC which provides social login through multiple provid
  * Takes care of warnings from provider's SDKs when multiple instances are placed
  * Kind of re-birth of my previous .Net driven similar open source - SocialAuth.NET
 
+## Scopes
+
+While this library does a good job of fetching basic profile, at times you might need to get additional attributes from providers like DateOfBirth, HomeTowm, etc. which aren't returned by default. Scopes are purely provider dependent and their documentation is the best place to look for supported scopes and literal to be passed as argument. You can pass those scopes using the scope tag. For example, if you want birth date from Facebook (which isn't returned by default), you'd add following scope to your tag:
+```js
+ scope='user_birthday,user_hometown'
+ ```
+ Below are some links to official scopes guide for a few providers:
+  * [FACEBOOK](https://developers.facebook.com/docs/facebook-login/permissions/)
+  * [GOOGLE](https://developers.google.com/identity/protocols/googlescopes)
+
+
 ## Online demo
 
 See [https://deepakaggarwal7.github.io/react-social-login](https://deepakaggarwal7.github.io/react-social-login).
