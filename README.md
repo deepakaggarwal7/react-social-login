@@ -16,6 +16,8 @@ React Social Login is an HOC which provides social login through multiple provid
 
 **Currently supports Amazon, Facebook, GitHub, Google, Instagram and LinkedIn as providers (more to come!)**
 
+##### We aren't using Google+ Api. Library will work fine even after Google+ deprecation.
+
 ## Motivation
 
  * Having a component that doesn't dictates the HTML
