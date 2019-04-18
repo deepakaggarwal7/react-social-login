@@ -2,18 +2,18 @@ type Provider = "amazon" | "facebook" | "github" | "google" | "instagram" | "lin
 
 interface Props {
   appId: string
-  autoCleanUri: boolean
-  autoLogin: boolean
-  gatekeeper: string
-  getInstance: () => React.RefObject<any>
-  onLoginFailure: (result: any) => void
-  onLoginSuccess: (result: any) => void
-  onLogoutFailure: (result: any) => void
-  onLogoutSuccess: (result: any) => void
+  autoCleanUri?: boolean
+  autoLogin?: boolean
+  gatekeeper?: string
+  getInstance?: () => React.RefObject<any>
+  onLoginFailure?: (result: any) => void
+  onLoginSuccess?: (result: any) => void
+  onLogoutFailure?: (result: any) => void
+  onLogoutSuccess?: (result: any) => void
   provider: Provider
   className?: string
-  redirect: string
-  scope: [] | string
+  redirect?: string
+  scope?: [] | string
   [key: string]: any
 }
 
