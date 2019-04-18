@@ -9,6 +9,7 @@
   "engines": {
     "node": ">=6.9.4"
   },
+  "types": "types",
   "scripts": {
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
