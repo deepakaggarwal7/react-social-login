@@ -330,11 +330,11 @@ __v3.4.2__ [26 December 2017] Fix SSR, refs and update build
  * Update build system (`babel-preset-env`, updated dependencies, lighter npm package)
  
  __v3.4.3__ [23 December 2018] merged pull request [#112](https://github.com/deepakaggarwal7/react-social-login/pull/112)
- * Github ID now avilable (Thanks to [MuhamadOmr](https://github.com/deepakaggarwal7/)
+ * Github ID now avilable (Thanks to [MuhamadOmr](https://github.com/deepakaggarwal7/))
 
-__v3.4.3__ [25 Sep 2019] merged pull request [#135](https://github.com/deepakaggarwal7/react-social-login/pull/135)
- * Types added (Thanks to [Daria Moreno-Gogoleva](https://github.com/iwanttobealight)
- 
+__v3.4.4__ [25 Sep 2019] merged pull request [#135](https://github.com/deepakaggarwal7/react-social-login/pull/135)
+ * Types added (Thanks to [Daria Moreno-Gogoleva](https://github.com/iwanttobealight))
+
 ## Tests
 
 TBD
