@@ -68,13 +68,18 @@ Create the component of your choice and transform it into a SocialLogin componen
 import React from 'react'
 import SocialLogin from 'react-social-login'
 
-const Button = ({ children, triggerLogin, ...props }) => (
-  <button onClick={triggerLogin} {...props}>
-    { children }
-  </button>
-)
+class SocialButton extends React.Component {
 
-export default SocialLogin(Button)
+    render() {
+        return (
+            <button onClick={this.props.triggerLogin} {...this.props}>
+              { this.props.children }
+            </button>
+        );
+    }
+}
+
+export default SocialLogin(SocialButton);
 ```
 
 Then, use it like a normal component.
