@@ -10,6 +10,8 @@
 [license:img]: https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square
 [license:url]: https://opensource.org/licenses/MIT
 
+![alt text](https://raw.githubusercontent.com/deepakaggarwal7/react-social-login/master/react-social-login-logo.png)
+
 # React Social Login &middot; [![NPM version][npm:img]][npm:url] &middot; [![Standard - JavaScript Style Guide][standard:img]][standard:url] &middot; [![Dependencies][dependencies:img]][dependencies:url] &middot; [![License: MIT][license:img]][license:url]
 
 React Social Login is an HOC which provides social login through multiple providers.
