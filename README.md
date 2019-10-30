@@ -342,6 +342,9 @@ __v3.4.2__ [26 December 2017] Fix SSR, refs and update build
 __v3.4.5__ [25 Sep 2019] merged pull request [#135](https://github.com/deepakaggarwal7/react-social-login/pull/135)
  * Types added (Thanks to [Daria Moreno-Gogoleva](https://github.com/iwanttobealight))
 
+__v3.4.6__ [30 Oct 2019] merged pull request, logo added [#143](https://github.com/deepakaggarwal7/react-social-login/pull/143)
+* Example button fixed(Thanks to [https://github.com/xzessmedia](https://github.com/xzessmedia))
+
 ## Tests
 
 TBD
