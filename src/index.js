@@ -197,21 +197,15 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   onLoginFailure (err) {
     const { onLoginFailure } = this.props
 
-    if (this.node) {
-      this.setState((prevState) => ({
-        ...prevState,
-        isFetching: false,
-        isConnected: false
-      }), () => {
-        if (typeof onLoginFailure === 'function') {
-          onLoginFailure(err)
-        }
-      })
-    } else {
+    this.setState((prevState) => ({
+      ...prevState,
+      isFetching: false,
+      isConnected: false
+    }), () => {
       if (typeof onLoginFailure === 'function') {
         onLoginFailure(err)
       }
-    }
+    })
   }
 
   /**
@@ -292,7 +286,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     }
 
     return (
-      <WrappedComponent triggerLogin={this.login} {...additionnalProps} {...originalProps} />
+      <WrappedComponent
+        triggerLogin={this.login}
+        disabled={!this.state.isLoaded}
+        {...additionnalProps}
+        {...originalProps}
+      />
     )
   }
 }
