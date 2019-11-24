@@ -89,6 +89,9 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
           ...prevState,
           isLoaded: true
         }), () => {
+          if (typeof this.props.onLoaded === 'function') {
+            this.props.onLoaded()
+          }
           if (autoLogin || this.accessToken) {
             if (this.fetchProvider && !this.accessToken) {
               this.sdk.login(appId, redirect)
@@ -146,6 +149,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         isFetching: true
       }), () => {
         this.sdk.login().then(this.onLoginSuccess, this.onLoginFailure)
+          .catch(this.onLoginFailure)
       })
     } else if (this.state.isLoaded && this.state.isConnected) {
       this.props.onLoginFailure('User already connected')
@@ -197,21 +201,15 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   onLoginFailure (err) {
     const { onLoginFailure } = this.props
 
-    if (this.node) {
-      this.setState((prevState) => ({
-        ...prevState,
-        isFetching: false,
-        isConnected: false
-      }), () => {
-        if (typeof onLoginFailure === 'function') {
-          onLoginFailure(err)
-        }
-      })
-    } else {
+    this.setState((prevState) => ({
+      ...prevState,
+      isFetching: false,
+      isConnected: false
+    }), () => {
       if (typeof onLoginFailure === 'function') {
         onLoginFailure(err)
       }
-    }
+    })
   }
 
   /**
