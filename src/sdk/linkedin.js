@@ -23,7 +23,9 @@ const load = ({ appId }) => new Promise((resolve) => {
       api_key: appId
     })
 
-    return resolve()
+    window.IN.Event.onOnce(window.IN, 'systemReady', () => {
+      resolve()
+    })
   }
 
   if (!firstJS) {
