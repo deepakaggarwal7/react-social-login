@@ -345,6 +345,11 @@ __v3.4.5__ [25 Sep 2019] merged pull request [#135](https://github.com/deepakagg
 __v3.4.6__ [30 Oct 2019] merged pull request, logo added [#143](https://github.com/deepakaggarwal7/react-social-login/pull/143)
 * Example button fixed(Thanks to [https://github.com/xzessmedia](https://github.com/xzessmedia))
 
+__v3.4.7__ [07 May 2020] Fb version upgrade, more control on github scopes
+ * [#142](https://github.com/deepakaggarwal7/react-social-login/pull/142) fixed! Thanks to [John](https://github.com/johndavedecano)
+ * **Github users** - Earlier if any github scope was specified, it was concatenated with the default user scope. However, [csweaver](https://github.com/csweaver) raised a good point in bug [#95](https://github.com/deepakaggarwal7/react-social-login/pull/95) and there was a good solution from [Lennart](https://github.com/lennartkramer1988) which is implemented. Thanks to them!
+ * [#140](https://github.com/deepakaggarwal7/react-social-login/pull/140) Fixed Move react and blueprint dependencies to peer. Thanks to [Oumar](https://github.com/wattazoum)
+
 ## Tests
 
 TBD
