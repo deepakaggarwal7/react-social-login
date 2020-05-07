@@ -44,9 +44,9 @@ const load = ({ appId, gatekeeper, redirect, scope }) => new Promise((resolve, r
     let githubScopes = [ 'user' ]
 
     if (Array.isArray(scope)) {
-      githubScopes = githubScopes.concat(scope)
+      githubScopes = scope
     } else if (typeof scope === 'string' && scope) {
-      githubScopes = githubScopes.concat(scope.split(','))
+      githubScopes = scope.split(',')
     }
 
     githubScopes = githubScopes.reduce((acc, item) => {
