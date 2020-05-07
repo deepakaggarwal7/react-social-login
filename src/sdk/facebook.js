@@ -43,7 +43,7 @@ const load = ({ appId, scope }) => new Promise((resolve) => {
     window.FB.init({
       appId,
       xfbml: true,
-      version: 'v2.9'
+      version: 'v4.0'
     })
 
     return resolve()
@@ -167,7 +167,7 @@ const oldLoad = (appId) => {
       window.FB.init({
         appId: appId,
         xfbml: true,
-        version: 'v2.8'
+        version: 'v3.3'
       })
     }
   }
