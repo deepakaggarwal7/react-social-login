@@ -87,6 +87,6 @@
     "pre-commit": "1.2.2",
     "react-dom": "16.1.2",
     "webpack": "3.8.1",
-    "webpack-dev-server": "2.9.4"
+    "webpack-dev-server": "3.1.11"
   }
 }
