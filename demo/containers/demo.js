@@ -94,6 +94,7 @@ export default class Demo extends Component {
           onLogoutFailure={this.onLogoutFailure}
           getInstance={this.setNodeRef.bind(this, 'google')}
           key={'google'}
+          scope={'https://www.googleapis.com/auth/user.gender.read'}
         >
           Login with Google
         </SocialButton>,

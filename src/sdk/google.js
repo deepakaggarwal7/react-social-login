@@ -101,8 +101,19 @@ const logout = () => new Promise((resolve, reject) => {
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#googleusergetauthresponseincludeauthorizationdata
  */
 const generateUser = (response) => {
+  var gender = ''
   const profile = response.getBasicProfile()
   const authResponse = response.getAuthResponse(true)
+
+  // Need to get gender if defined within scope
+  var xmlHttp = new XMLHttpRequest()
+  xmlHttp.open('GET', 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + authResponse.access_token, false)
+  xmlHttp.send(null)
+  if (xmlHttp.status === 200) {
+    var strJSON = xmlHttp.responseText
+    var objJSON = JSON.parse(strJSON)
+    gender = objJSON.gender
+  }
 
   return {
     profile: {
@@ -111,7 +122,8 @@ const generateUser = (response) => {
       firstName: profile.getGivenName(),
       lastName: profile.getFamilyName(),
       email: profile.getEmail(),
-      profilePicURL: profile.getImageUrl()
+      profilePicURL: profile.getImageUrl(),
+      gender: gender
     },
     token: {
       accessToken: authResponse.access_token,
