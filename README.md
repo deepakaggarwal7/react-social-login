@@ -350,6 +350,10 @@ __v3.4.7__ [07 May 2020] Fb version upgrade, more control on github scopes
  * **Github users** - Earlier if any github scope was specified, it was concatenated with the default user scope. However, [csweaver](https://github.com/csweaver) raised a good point in bug [#95](https://github.com/deepakaggarwal7/react-social-login/pull/95) and there was a good solution from [Lennart](https://github.com/lennartkramer1988) which is implemented. Thanks to them!
  * [#140](https://github.com/deepakaggarwal7/react-social-login/pull/140) Fixed Move react and blueprint dependencies to peer. Thanks to [Oumar](https://github.com/wattazoum)
 
+ __v3.4.8__ [07 July 2020] Gender pulled for Google
+ * [#163](https://github.com/deepakaggarwal7/react-social-login/pull/163) fixed! Thanks to [Tanya](https://github.com/TanyaTPG)
+ 
+
 ## Tests
 
 TBD
