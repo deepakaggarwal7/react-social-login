@@ -115,6 +115,7 @@ export default class UserCard extends Component {
             <Detail label='Firstname' data={_profile.firstName} />
             <Detail label='Lastname' data={_profile.lastName} />
             <Detail label='Email' data={_profile.email} />
+            <Detail label='Gender' data={_profile.gender} />
             <Detail label='Expiration' data={expiration} />
             <AccessToken token={_token.accessToken} />
           </div>

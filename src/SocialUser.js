@@ -13,7 +13,8 @@ export default class SocialUser {
       firstName: undefined,
       lastName: undefined,
       email: undefined,
-      profilePicUrl: undefined
+      profilePicUrl: undefined,
+      gender: undefined
     }
 
     this._token = {
