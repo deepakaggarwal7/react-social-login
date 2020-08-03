@@ -353,7 +353,7 @@ __v3.4.7__ [07 May 2020] Fb version upgrade, more control on github scopes
  __v3.4.8__ [07 July 2020] Gender pulled for Google
  * [#163](https://github.com/deepakaggarwal7/react-social-login/pull/163) fixed! Thanks to [Tanya](https://github.com/TanyaTPG)
  
-
+ __v3.4.9__ [03 August 2020] types included in dist and example functional component added
 ## Tests
 
 TBD
