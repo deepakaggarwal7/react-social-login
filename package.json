@@ -9,11 +9,11 @@
   "engines": {
     "node": ">=6.9.4"
   },
-  "types": "types",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run lint && webpack",
+    "build": "npm run lint && webpack && cp -r types dist/",
     "build:demo": "npm run lint && cd demo && webpack && cd ..",
     "start": "bnr start",
     "start:insecure": "bnr start:insecure",
@@ -25,7 +25,7 @@
       "command": "cd demo && webpack-dev-server --https --progress --colors && cd ..",
       "env": {
         "NODE_ENV": "development",
-        "FB_APP_ID": "309479849514684",
+        "FB_APP_ID": "657319568198782",
         "INSTAGRAM_REDIRECT": "https://localhost:8080"
       }
     },
@@ -33,7 +33,7 @@
       "command": "cd demo && webpack-dev-server --progress --colors && cd ..",
       "env": {
         "NODE_ENV": "development",
-        "FB_APP_ID": "309479849514684",
+        "FB_APP_ID": "657319568198782",
         "INSTAGRAM_REDIRECT": "https://localhost:8080"
       }
     }

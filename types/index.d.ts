@@ -1,6 +1,6 @@
-type Provider = "amazon" | "facebook" | "github" | "google" | "instagram" | "linkedin";
+export type Provider = "amazon" | "facebook" | "github" | "google" | "instagram" | "linkedin";
 
-interface Props {
+export interface Props {
   appId: string
   autoCleanUri?: boolean
   autoLogin?: boolean
