@@ -76,7 +76,7 @@ export default class Demo extends Component {
       children = [
         <SocialButton
           provider='facebook'
-          appId={process.env.FB_APP_ID}
+          appId='657319568198782'
           onLoginSuccess={this.onLoginSuccess}
           onLoginFailure={this.onLoginFailure}
           onLogoutSuccess={this.onLogoutSuccess}
