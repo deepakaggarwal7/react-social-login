@@ -354,6 +354,10 @@ __v3.4.7__ [07 May 2020] Fb version upgrade, more control on github scopes
  * [#163](https://github.com/deepakaggarwal7/react-social-login/pull/163) fixed! Thanks to [Tanya](https://github.com/TanyaTPG)
  
  __v3.4.9__ [03 August 2020] types included in dist and example functional component added
+
+  __v3.4.10__ [03 August 2020] types included in dist and example functional 
+ * Fixes #61 - Button shows without sdk getting loaded
+ * Fixes #173 - Fb demo app broken
 ## Tests
 
 TBD
