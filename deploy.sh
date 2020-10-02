@@ -17,7 +17,7 @@ fi
 
 cd demo && .././node_modules/.bin/webpack -p; cd -; 
 build=$?
-exit 1
+
 if [ $build -ne 0 ]; then
   exit 1
 fi
