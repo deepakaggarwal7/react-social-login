@@ -15,7 +15,7 @@ if [ $lint -ne 0 ]; then
   exit 1
 fi
 
-cd demo && { webpack -p; cd -; }
+cd demo && {npx webpack -p; cd -; }
 build=$?
 
 if [ $build -ne 0 ]; then
