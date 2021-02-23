@@ -30,6 +30,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     onLoginSuccess: PropTypes.func,
     onLogoutFailure: PropTypes.func,
     onLogoutSuccess: PropTypes.func,
+    onInternetFailure: PropTypes.func,
     provider: PropTypes.oneOf(config.providers).isRequired,
     redirect: (props, propName, componentName) => {
       if (props.provider === 'instagram' && (!props[propName] || typeof props[propName] !== 'string')) {
@@ -59,7 +60,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     this.fetchProvider = props.provider === 'instagram' || props.provider === 'github'
     this.loadPromise = Promise.resolve()
     this.node = null
-
     this.onLoginSuccess = this.onLoginSuccess.bind(this)
     this.onLoginFailure = this.onLoginFailure.bind(this)
     this.onLogoutFailure = this.onLogoutFailure.bind(this)
@@ -74,7 +74,6 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    */
   componentDidMount () {
     const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, version } = this.props
-
     this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope, version })
       .then((accessToken) => {
         if (autoCleanUri) {
@@ -140,6 +139,12 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Triggers login process.
    */
   login () {
+    if (!navigator.onLine && this.props.onInternetFailure) {
+      let shouldSkip = this.props.onInternetFailure()
+      if (shouldSkip === false) {
+        return
+      }
+    }
     if (this.state.isLoaded && !this.state.isConnected && !this.state.isFetching) {
       this.setState((prevState) => ({
         ...prevState,
@@ -274,6 +279,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'onLogoutSuccess',
       'provider',
       'redirect',
+      'onInternetFailure',
       'ref'
     ])
     let additionnalProps = {}

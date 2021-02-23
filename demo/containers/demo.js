@@ -82,6 +82,7 @@ export default class Demo extends Component {
           onLogoutSuccess={this.onLogoutSuccess}
           getInstance={this.setNodeRef.bind(this, 'facebook')}
           key={'facebook'}
+          onInternetFailure = {()=>{return true}}
         >
           Login with Facebook
         </SocialButton>,
@@ -95,6 +96,7 @@ export default class Demo extends Component {
           getInstance={this.setNodeRef.bind(this, 'google')}
           key={'google'}
           scope={'https://www.googleapis.com/auth/user.gender.read'}
+     
         >
           Login with Google
         </SocialButton>,
