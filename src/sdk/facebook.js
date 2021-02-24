@@ -23,11 +23,12 @@ let facebookFields = [
  * @param {array|string} field
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-const load = ({ appId, scope, field }) => new Promise((resolve) => {
+const load = ({ appId, field, scope, version }) => new Promise((resolve) => {
   // @TODO: handle errors
   if (document.getElementById('facebook-jssdk')) {
     return resolve()
   }
+
   facebookScopes = handleInput(field, facebookScopes)
   facebookFields = handleInput(field, facebookFields)
 
@@ -41,7 +42,7 @@ const load = ({ appId, scope, field }) => new Promise((resolve) => {
     window.FB.init({
       appId,
       xfbml: true,
-      version: 'v2.9'
+      version: version || 'v2.9'
     })
 
     return resolve()

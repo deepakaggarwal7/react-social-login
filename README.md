@@ -106,6 +106,7 @@ Raw component props (before transform):
 | appId  | —  | string  | Your app identifier (see [find my appId][findmyappid])  |
 | autoCleanUri  | false  | boolean  | Enable auto URI cleaning with OAuth callbacks  |
 | autoLogin  | false  | boolean  | Enable auto login on `componentDidMount`  |
+| field  | -  | array, string  | An array or string of field to be return on login. (`facebook` only) (see [Facebook specifics](https://developers.facebook.com/docs/graph-api/reference/user/)) |
 | gatekeeper  | —  | string  | Gatekeeper URL to use for GitHub OAuth support (see [GitHub specifics][githubspecifics])  |
 | getInstance  | —  | function  | Return node ref like `ref` function would normally do ([react known issue](https://github.com/facebook/react/issues/4213))  |
 | onLoginFailure  | —  | function  | Callback on login fail  |
@@ -115,7 +116,7 @@ Raw component props (before transform):
 | provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
 | redirect  | -  | string  | URL to redirect after login (available for `github` and `instagram` only)  |
 | scope  | -  | array, string  | An array or string of scopes to be granted on login.  |
-| field  | -  | array, string  | An array or string of field to be return on login. (`facebook` only) (see [Facebook specifics](https://developers.facebook.com/docs/graph-api/reference/user/)) |
+| version | -  | string  | Specify SDK version (available for `facebook` only).  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 *Note about `redirect`: if you are redirecting on root (eg: https://localhost:8080), you **have** to omit the trailing slash.*
