@@ -16,7 +16,10 @@
 
 React Social Login is an HOC which provides social login through multiple providers.
 
-**Currently supports Amazon, Facebook, GitHub, Google, Instagram and LinkedIn as providers (more to come!)**
+**Currently supports Amazon, Facebook, GitHub, Google, Instagram and ~~LinkedIn~~ as providers (more to come!)**
+
+*<small>LinkedIn has deprecated it's JS SDK. Hence, not supported anymore.</small>
+
 
 ##### We aren't using Google+ Api. Library will work fine even after Google+ deprecation.
 
@@ -133,9 +136,11 @@ Raw component props (before transform):
 | onLoginSuccess  | —  | function  | Callback on login success  |
 | onLogoutFailure  | —  | function  | Callback on logout fail (`google` only)  |
 | onLogoutSuccess  | —  | function  | Callback on logout success  |
-| provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, `linkedin`  | Social provider to use  |
+| onInternetFailure  | —  | function  | Doesn't open popup if returns false and internet isn't there |
+| provider  | —  | `amazon`, `facebook`, `github`, `google`, `instagram`, ~~`linkedin`~~  | Social provider to use  |
 | redirect  | -  | string  | URL to redirect after login (available for `github` and `instagram` only)  |
 | scope  | -  | array, string  | An array or string of scopes to be granted on login.  |
+| version  | -  | string  | Can be used to explicitly specify FBsdk version (default is v5.0)  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 *Note about `redirect`: if you are redirecting on root (eg: https://localhost:8080), you **have** to omit the trailing slash.*
@@ -356,9 +361,16 @@ __v3.4.7__ [07 May 2020] Fb version upgrade, more control on github scopes
  
  __v3.4.9__ [03 August 2020] types included in dist and example functional component added
 
-  __v3.4.10__ [03 August 2020] types included in dist and example functional 
+  __v3.4.10__ [30 September 2020] types included in dist and example functional 
  * Fixes #61 - Button shows without sdk getting loaded
  * Fixes #173 - Fb demo app broken
+
+__v3.4.11__ [27 February 2021] onInternetFailure, explicit FB version, Webpack 
+ * Fixes #55 - Button shows without sdk getting loaded
+ * Fixes #170 - Facebook SDK upgraded to v5.0. Can be overriden using version prop.
+ * Fixes #180 - README.md updated to remove triggerLogin prop warning
+ * Webpack issues fixed
+ 
 ## Tests
 
 TBD
