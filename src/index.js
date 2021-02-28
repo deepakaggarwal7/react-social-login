@@ -1,4 +1,4 @@
-import Promise from 'bluebird'
+
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -6,13 +6,13 @@ import config from './config'
 import sdk from './sdk'
 import SocialUser from './SocialUser'
 import { cleanLocation, omit } from './utils'
-
+import cancelable from './cancelable'
 export { default as OldSocialLogin } from './component'
 
-// Enable Promises cancellation
-Promise.config({
-  cancellation: true
-})
+// // Enable Promises cancellation
+// Promise.config({
+//   cancellation: true
+// })
 
 /**
  * React Higher Order Component handling social login for multiple providers.
@@ -74,7 +74,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    */
   componentDidMount () {
     const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, version } = this.props
-    this.loadPromise = this.sdk.load({ appId, redirect, gatekeeper, scope, version })
+    this.loadPromise = cancelable(this.sdk.load({ appId, redirect, gatekeeper, scope, version })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -100,7 +100,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
         })
 
         return null
-      }, this.onLoginFailure)
+      }, this.onLoginFailure))
   }
 
   componentWillReceiveProps (nextProps) {

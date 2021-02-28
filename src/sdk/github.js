@@ -1,4 +1,4 @@
-import Promise from 'bluebird'
+
 import uuid from 'uuid/v5'
 
 import { getQueryStringValue, parseAsURL, rslError } from '../utils'
