@@ -36,7 +36,7 @@ const load = ({ appId, scope, version }) => new Promise((resolve) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
 
-  js.src = '//connect.facebook.net/en_US/sdk.js'
+  js.src = 'https://connect.facebook.net/en_US/sdk.js'
   js.id = 'facebook-jssdk'
 
   window.fbAsyncInit = () => {

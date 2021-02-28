@@ -32,7 +32,7 @@ const load = ({ appId, scope }) => new Promise((resolve) => {
   const firstJS = document.getElementsByTagName('script')[ 0 ]
   const js = document.createElement('script')
 
-  js.src = '//api-cdn.amazon.com/sdk/login1.js'
+  js.src = 'https://api-cdn.amazon.com/sdk/login1.js'
   js.id = 'amazon-sdk'
   js.async = true
 

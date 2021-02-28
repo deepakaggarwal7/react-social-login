@@ -59,7 +59,7 @@ const load = ({ appId, gatekeeper, redirect, scope }) => new Promise((resolve, r
 
     _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
 
-    githubAuth = `http://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&scope=${githubScopes}&state=${uuid(redirect, uuid.URL)}`
+    githubAuth = `https://github.com/login/oauth/authorize?client_id=${githubAppId}&redirect_uri=${encodeURIComponent(_redirect.toString())}&scope=${githubScopes}&state=${uuid(redirect, uuid.URL)}`
 
     if (getQueryStringValue('rslCallback') === 'github') {
       getAccessToken()
