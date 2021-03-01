@@ -25798,7 +25798,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
           }, function () {
             _this4.sdk.login().then(_this4.onLoginSuccess, _this4.onLoginFailure);
           });
-        } else if (this.state.isLoaded && this.state.isConnected) {
+        } else if (this.state.isLoaded && this.state.isConnected && this.props.forceLogin) {
           this.props.onLoginFailure('User already connected');
         } else if (this.state.isLoaded && this.state.isFetching) {
           this.props.onLoginFailure('Fetching user');

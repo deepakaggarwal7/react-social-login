@@ -365,11 +365,12 @@ __v3.4.7__ [07 May 2020] Fb version upgrade, more control on github scopes
  * Fixes #61 - Button shows without sdk getting loaded
  * Fixes #173 - Fb demo app broken
 
-__v3.4.11__ [27 February 2021] onInternetFailure, explicit FB version, Webpack 
+__v3.4.11/12__ [27 February 2021] onInternetFailure, explicit FB version, Webpack 
  * Fixes #55 - Button shows without sdk getting loaded
  * Fixes #170 - Facebook SDK upgraded to v5.0. Can be overriden using version prop.
  * Fixes #180 - README.md updated to remove triggerLogin prop warning
  * Webpack issues fixed
+ * 13.4.12 - use this instead of 3.4.11 which misses build
  
 ## Tests
 
