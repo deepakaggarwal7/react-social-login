@@ -17,7 +17,7 @@ let instagramAccessToken
 const load = ({ appId, redirect, scope }) => new Promise((resolve, reject) => {
   const _redirect = parseAsURL(redirect)
   const searchParams = 'rslCallback=instagram'
-  let instagramScopes = [ 'basic' ]
+  let instagramScopes = [ 'user_profile' ]
 
   if (Array.isArray(scope)) {
     instagramScopes = instagramScopes.concat(scope)
@@ -35,7 +35,7 @@ const load = ({ appId, redirect, scope }) => new Promise((resolve, reject) => {
 
   _redirect.search = _redirect.search ? _redirect.search + '&' + searchParams : '?' + searchParams
 
-  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&scope=${instagramScopes}&redirect_uri=${encodeURIComponent(_redirect.toString())}&response_type=token`
+  instagramAuth = `https://api.instagram.com/oauth/authorize/?client_id=${appId}&scope=${instagramScopes}&redirect_uri=${encodeURIComponent(_redirect.toString())}&response_type=code`
 
   if (getQueryStringValue('rslCallback') === 'instagram') {
     if (getQueryStringValue('error')) {
