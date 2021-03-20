@@ -56,7 +56,7 @@
   },
   "homepage": "https://github.com/deepakaggarwal7/react-social-login#readme",
   "peerDependencies": {
-    "react": "^16.1.0"
+    "react": "^16 || ^17"
   },
   "dependencies": {
     "fetch-jsonp": "1.1.3",
