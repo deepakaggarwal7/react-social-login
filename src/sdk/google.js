@@ -11,7 +11,7 @@ const load = ({ appId, scope }) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
 
-  js.src = 'https://apis.google.com/js/platform.js'
+  js.src = 'https://apis.google.com/js/api.js'
   js.id = 'gapi-client'
 
   js.onload = () => {
@@ -138,7 +138,7 @@ const generateUser = (response) => {
 const oldLoad = (appId, cid, fn, err) => {
   const js = document.createElement('script')
 
-  js.src = 'https://apis.google.com/js/platform.js'
+  js.src = 'https://apis.google.com/js/api.js'
   js.id = 'gapi-client'
 
   js.onload = () => {
