@@ -24476,7 +24476,7 @@ var Demo = function (_Component) {
           _socialButton2.default,
           {
             provider: 'facebook',
-            appId: undefined,
+            appId: 657319568198782,
             onLoginSuccess: this.onLoginSuccess,
             onLoginFailure: this.onLoginFailure,
             onLogoutSuccess: this.onLogoutSuccess,
