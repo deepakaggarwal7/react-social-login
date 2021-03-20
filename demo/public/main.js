@@ -24503,7 +24503,7 @@ var Demo = function (_Component) {
             autoCleanUri: true,
             provider: 'instagram',
             appId: 'afdf675d26214280ac9a792afea5651c',
-            redirect: undefined,
+            redirect: 657319568198782,
             onLoginSuccess: this.onLoginSuccess,
             onLoginFailure: this.onLoginFailure,
             onLogoutSuccess: this.onLogoutSuccess,
