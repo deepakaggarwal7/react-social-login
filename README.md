@@ -276,6 +276,10 @@ RSL demo is served over https with `webpack-dev-server`. This is a requirement o
 ```shell
 $ npm run start:insecure
 ```
+## FAQs
+
+* How to get a bigger picture in FB?
+=use **/me/picture?width=999**
 
 ## Change Log
 
