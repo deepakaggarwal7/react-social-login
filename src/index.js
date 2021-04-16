@@ -40,7 +40,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     scope: PropTypes.oneOfType([
       PropTypes.array,
       PropTypes.string
-    ])
+    ]),
+    providerInitOptions: PropTypes.object
   }
 
   constructor (props) {
@@ -73,8 +74,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
    * Loads SDK on componentDidMount and handles auto login.
    */
   componentDidMount () {
-    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, version } = this.props
-    this.loadPromise = cancelable(this.sdk.load({ appId, redirect, gatekeeper, scope, version })
+    const { appId, autoCleanUri, autoLogin, gatekeeper, redirect, scope, version, providerInitOptions } = this.props
+    this.loadPromise = cancelable(this.sdk.load({ appId, redirect, gatekeeper, scope, version, providerInitOptions })
       .then((accessToken) => {
         if (autoCleanUri) {
           cleanLocation()
@@ -280,7 +281,8 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
       'provider',
       'redirect',
       'onInternetFailure',
-      'ref'
+      'ref',
+      'providerInitOptions'
     ])
     let additionnalProps = {}
 
