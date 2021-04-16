@@ -141,6 +141,7 @@ Raw component props (before transform):
 | redirect  | -  | string  | URL to redirect after login (available for `github` and `instagram` only)  |
 | scope  | -  | array, string  | An array or string of scopes to be granted on login.  |
 | version  | -  | string  | Can be used to explicitly specify FBsdk version (default is v5.0)  |
+| providerInitOptions  | -  | object  | An object of options that will be passed along to the sdk initialization (only supported for facebook and google)  |
 | any other prop  | —  | —  | Any other prop will be forwarded to your component  |
 
 *Note about `redirect`: if you are redirecting on root (eg: https://localhost:8080), you **have** to omit the trailing slash.*
@@ -161,7 +162,7 @@ As it is implemented in the demo, we have two components working together to tri
 
  * [`Demo` container][democontainer]
  * [`UserCard` component][usercardcomponent]
- 
+
 Here is how they work together:
 
  1. [`Demo` is displaying `UserCard` only if user is logged][logoutstep1]
@@ -321,14 +322,14 @@ __v3.2.1__ [06 October 2017] React 16, better build, update dep, additions and f
  * Preserve redirect url query string and hash
  * Cancel loading on componentWillUnmount
  * Various fixes
- 
+
 __v3.3.0__ [22 October 2017] Logout, custom scopes and fixes
  * Add publicProfileURL for LinkedIn
  * Add logout support
  * Fix wrong GitHub id
  * Add custom scope support (all but LinkedIn)
  * Update documentation
- 
+
 __v3.4.0__ [22 October 2017] Fix logout issues, expose wrapped component ref and fixes
  * Fix logout issue with Amazon
  * Don’t throw error on Instagram logout (like fake SDK load doesn’t throw)
@@ -345,7 +346,7 @@ __v3.4.2__ [26 December 2017] Fix SSR, refs and update build
  * Fixes url parser when window is undefined (SSR fix)
  * Don’t use refs on stateless components
  * Update build system (`babel-preset-env`, updated dependencies, lighter npm package)
- 
+
  __v3.4.3__ [23 December 2018] merged pull request [#112](https://github.com/deepakaggarwal7/react-social-login/pull/112)
  * Github ID now avilable (Thanks to [MuhamadOmr](https://github.com/deepakaggarwal7/))
 
@@ -362,21 +363,21 @@ __v3.4.7__ [07 May 2020] Fb version upgrade, more control on github scopes
 
  __v3.4.8__ [07 July 2020] Gender pulled for Google
  * [#163](https://github.com/deepakaggarwal7/react-social-login/pull/163) fixed! Thanks to [Tanya](https://github.com/TanyaTPG)
- 
+
  __v3.4.9__ [03 August 2020] types included in dist and example functional component added
 
-  __v3.4.10__ [30 September 2020] types included in dist and example functional 
+  __v3.4.10__ [30 September 2020] types included in dist and example functional
  * Fixes #61 - Button shows without sdk getting loaded
  * Fixes #173 - Fb demo app broken
 
-__v3.4.13__ [06 March 2021] onInternetFailure, explicit FB version, Webpack 
+__v3.4.13__ [06 March 2021] onInternetFailure, explicit FB version, Webpack
  * Fixes #55 - Button shows without sdk getting loaded
  * Fixes #170 - Facebook SDK upgraded to v5.0. Can be overriden using version prop.
  * Fixes #180 - README.md updated to remove triggerLogin prop warning
  * Webpack issues fixed
  * Fixes #191 - use this instead of 3.4.  12 if you are using nextjs
 
- 
+
 ## Tests
 
 TBD

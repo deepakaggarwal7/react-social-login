@@ -7,7 +7,7 @@ import { rslError } from '../utils'
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2initparams
  * @see https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2getauthinstance
  */
-const load = ({ appId, scope }) => new Promise((resolve, reject) => {
+const load = ({ appId, scope, providerInitOptions = {} }) => new Promise((resolve, reject) => {
   const firstJS = document.getElementsByTagName('script')[0]
   const js = document.createElement('script')
 
@@ -20,7 +20,8 @@ const load = ({ appId, scope }) => new Promise((resolve, reject) => {
         window.gapi.auth2.init({
           client_id: appId,
           fetchBasicProfile: true,
-          scope: scope ? ((Array.isArray(scope) && scope.join(' ')) || scope) : null
+          scope: scope ? ((Array.isArray(scope) && scope.join(' ')) || scope) : null,
+          ...providerInitOptions
         }).then(() => resolve(), (err) => reject(rslError({
           provider: 'google',
           type: 'load',
