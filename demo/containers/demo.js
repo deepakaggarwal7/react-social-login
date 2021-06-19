@@ -113,7 +113,7 @@ export default class Demo extends Component {
         >
           Login with Instagram
         </SocialButton>,
-        <SocialButton
+        /*        <SocialButton
           provider='linkedin'
           appId='7775kne2guetd0'
           onLoginSuccess={this.onLoginSuccess}
@@ -123,7 +123,7 @@ export default class Demo extends Component {
           key={'linkedin'}
         >
           Login with LinkedIn
-        </SocialButton>
+        </SocialButton> */
       ]
 
       // Amazon only supports HTTPS
