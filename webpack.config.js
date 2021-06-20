@@ -31,7 +31,7 @@ module.exports = {
             targets: {
               browsers: ['>= 5%'],
               node: 6,
-              forceAllTransforms: process.env.NODE_ENV === 'production' // Fixes UglifyJS errors with ES6 syntax
+              forceAllTransforms: process.env.NODE_ENV === 'development' // Fixes UglifyJS errors with ES6 syntax
             }
           }]
         ],
@@ -46,7 +46,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('production')
+        NODE_ENV: JSON.stringify('development')
       }
     }),
     new webpack.NoEmitOnErrorsPlugin(),
