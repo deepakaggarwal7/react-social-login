@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './index.js',
@@ -40,6 +41,7 @@ module.exports = {
       minify: {
         collapseWhitespace: true
       }
-    })
+    }),
+    new CleanWebpackPlugin()
   ]
 }
