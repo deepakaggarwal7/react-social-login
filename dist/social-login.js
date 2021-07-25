@@ -1032,6 +1032,9 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
               isLoaded: true
             });
           }, function () {
+            if (typeof _this2.props.onLoaded === 'function') {
+              _this2.props.onLoaded();
+            }
             if (autoLogin || _this2.accessToken) {
               if (_this2.fetchProvider && !_this2.accessToken) {
                 _this2.sdk.login(appId, redirect).catch(_this2.onLoginFailure);
@@ -1110,7 +1113,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
               isFetching: true
             });
           }, function () {
-            _this4.sdk.login().then(_this4.onLoginSuccess, _this4.onLoginFailure);
+            _this4.sdk.login().then(_this4.onLoginSuccess, _this4.onLoginFailure).catch(_this4.onLoginFailure);
           });
         } else if (this.state.isLoaded && this.state.isConnected) {
           this.props.onLoginFailure('User already connected');
@@ -1173,22 +1176,16 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
         var onLoginFailure = this.props.onLoginFailure;
 
 
-        if (this.node) {
-          this.setState(function (prevState) {
-            return _extends({}, prevState, {
-              isFetching: false,
-              isConnected: false
-            });
-          }, function () {
-            if (typeof onLoginFailure === 'function') {
-              onLoginFailure(err);
-            }
+        this.setState(function (prevState) {
+          return _extends({}, prevState, {
+            isFetching: false,
+            isConnected: false
           });
-        } else {
+        }, function () {
           if (typeof onLoginFailure === 'function') {
             onLoginFailure(err);
           }
-        }
+        });
       }
 
       /**
