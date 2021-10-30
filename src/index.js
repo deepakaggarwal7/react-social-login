@@ -17,9 +17,10 @@ export { default as OldSocialLogin } from './component'
 /**
  * React Higher Order Component handling social login for multiple providers.
  * @param {Element} WrappedComponent
+ * @param {Element} LoaderComponent
  * @constructor
  */
-const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
+const SocialLogin = (WrappedComponent, LoaderComponent) => class SocialLogin extends Component {
   static propTypes = {
     appId: PropTypes.string.isRequired,
     autoCleanUri: PropTypes.bool,
@@ -298,7 +299,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
     return (
       this.state.isLoaded
         ? <WrappedComponent triggerLogin={this.login} {...additionnalProps} {...originalProps} />
-        : null
+        : (LoaderComponent ? <LoaderComponent /> : null)
     )
   }
 }
