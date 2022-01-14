@@ -21,5 +21,5 @@ export interface Props {
 
 export default function SocialLogin(
   WrappedComponent: React.ComponentType<any>,
-  LoaderComponent: React.ComponentType<any>
+  LoaderComponent?: React.ComponentType<any>
 ): React.ComponentType<Props>
