@@ -963,9 +963,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /**
  * React Higher Order Component handling social login for multiple providers.
  * @param {Element} WrappedComponent
+ * @param {Element} LoaderComponent
  * @constructor
  */
-var SocialLogin = function SocialLogin(WrappedComponent) {
+var SocialLogin = function SocialLogin(WrappedComponent, LoaderComponent) {
   var _class, _temp;
 
   return _temp = _class = function (_Component) {
@@ -1262,7 +1263,7 @@ var SocialLogin = function SocialLogin(WrappedComponent) {
           });
         }
 
-        return this.state.isLoaded ? _react2.default.createElement(WrappedComponent, _extends({ triggerLogin: this.login }, additionnalProps, originalProps)) : null;
+        return this.state.isLoaded ? _react2.default.createElement(WrappedComponent, _extends({ triggerLogin: this.login }, additionnalProps, originalProps)) : LoaderComponent ? _react2.default.createElement(LoaderComponent, null) : null;
       }
     }]);
 
