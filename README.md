@@ -397,7 +397,7 @@ $ npm run start:insecure
 
 **v3.4.15** [26 Dec 2021] merged [pr/219](https://github.com/deepakaggarwal7/react-social-login/pull/219)
 
-- Ability to add otional loader component. Thanks to [Kartik](https://github.com/karthikdivi)
+- Ability to add optional loader component. Thanks to [Kartik](https://github.com/karthikdivi)
 
 ## Tests
 
