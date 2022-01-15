@@ -118,6 +118,33 @@ ReactDOM.render(
 );
 ```
 
+### Optional Loader Component
+There are times when initialization of a component can take longer than expected.
+To support these changes there is the optional loader component.
+
+Simply pass the component as a second parameter to SocialLogin
+
+**SocialButton.js**
+
+```js
+import React from "react";
+import SocialLogin from "react-social-login";
+import Loading from "./Loading";
+
+class SocialButton extends React.Component {
+  render() {
+    const { children, triggerLogin, ...props } = this.props;
+    return (
+      <button onClick={triggerLogin} {...props}>
+        {children}
+      </button>
+    );
+  }
+}
+
+export default SocialLogin(SocialButton, Loading);
+```
+
 ### Reference
 
 Raw component props (before transform):
@@ -397,7 +424,7 @@ $ npm run start:insecure
 
 **v3.4.15** [26 Dec 2021] merged [pr/219](https://github.com/deepakaggarwal7/react-social-login/pull/219)
 
-- Ability to add otional loader component. Thanks to [Kartik](https://github.com/karthikdivi)
+- Ability to add optional loader component. Thanks to [Kartik](https://github.com/karthikdivi)
 
 ## Tests
 

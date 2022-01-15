@@ -1,3 +1,5 @@
+import React from "react";
+
 export type Provider = "amazon" | "facebook" | "github" | "google" | "instagram" | "linkedin";
 
 export interface Props {
@@ -18,5 +20,6 @@ export interface Props {
 }
 
 export default function SocialLogin(
-  WrappedComponent: React.ComponentType<any>
+  WrappedComponent: React.ComponentType<any>,
+  LoaderComponent?: React.ComponentType<any>
 ): React.ComponentType<Props>
