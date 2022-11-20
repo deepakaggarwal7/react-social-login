@@ -50,7 +50,7 @@ const SocialLogin = (WrappedComponent) => class SocialLogin extends Component {
   constructor (props) {
     super(props)
 
-    this.isStateless = !WrappedComponent.prototype.render
+    this.isStateless = WrappedComponent.prototype && !WrappedComponent.prototype.render;
 
     this.state = {
       isLoaded: false,
