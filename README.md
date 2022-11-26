@@ -426,6 +426,10 @@ $ npm run start:insecure
 
 - Ability to add optional loader component. Thanks to [Kartik](https://github.com/karthikdivi)
 
+**v3.4.16** [26 Nov 2022] 
+
+- Fixes #228 based on comment from [ewinata](https://github.com/ewinata)
+
 ## Tests
 
 TBD
@@ -442,6 +446,7 @@ TBD
 - Jason Loo : full google auth response
 - Andri Janusson : LinkedIn public profile URL
 - Adrien Pascal : SSR support
+- [jimrroberts] : Types and cleanup
 
 [demo]: https://localhost:8080
 [findmyappid]: #find-my-appid
@@ -459,6 +464,7 @@ TBD
 [googlescopes]: https://developers.google.com/identity/protocols/googlescopes
 [ghngoudry]: https://github.com/nicolas-goudry
 [ghdeepak]: https://github.com/deepakaggarwal7
+[jimrroberts]: https://github.com/jimrroberts
 [democontainer]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/containers/demo.js
 [usercardcomponent]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/components/userCard.js
 [logoutstep1]: https://github.com/deepakaggarwal7/react-social-login/blob/master/demo/containers/demo.js#L73
