@@ -22,7 +22,7 @@
   },
   "betterScripts": {
     "start": {
-      "command": "cd demo && webpack-dev-server --https --progress --colors && cd ..",
+      "command": "cd demo && webpack-dev-server --https --progress && cd ..",
       "env": {
         "NODE_ENV": "development",
         "FB_APP_ID": "657319568198782",
@@ -63,6 +63,7 @@
     "prop-types": "15.7.2",
     "react": "^16.13.1",
     "uuid": "3.1.0",
+    "webpack-cli": "^4.10.0",
     "whatwg-fetch": "2.0.3"
   },
   "devDependencies": {
@@ -84,10 +85,10 @@
     "eslint-plugin-promise": "3.6.0",
     "eslint-plugin-react": "7.4.0",
     "eslint-plugin-standard": "3.0.1",
-    "html-webpack-plugin": "2.30.1",
+    "html-webpack-plugin": "^3.0.0",
     "pre-commit": "1.2.2",
-    "react-dom": "16.1.2",
-    "webpack": "3.8.1",
-    "webpack-dev-server": "3.1.11"
+    "react-dom": "16.1.0",
+    "webpack": "4.37.0",
+    "webpack-dev-server": "4.11.1"
   }
 }
