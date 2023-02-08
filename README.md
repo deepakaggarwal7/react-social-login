@@ -17,7 +17,7 @@ React Social Login is an HOC which provides social login through multiple provid
 
 \*<small>LinkedIn has deprecated it's JS SDK. Hence, not supported anymore.</small>
 
-##### We aren't using Google+ Api. Library will work fine even after Google+ deprecation.
+## IMPORTANT: Google is deprecating its JS library on 31-Mar-2023 in favour of new Google Identity Service. GIS deprecates many of the methods used in our library. While we are exploring possibility of integrating new GIS, but there's no guarantee (as of now) and it is recommended to switch to GIS instead of this library if it is a business blocker for you.
 
 ## Motivation
 
